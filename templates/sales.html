@@ -1,0 +1,269 @@
+       <div class="container" style="width: 100% !important;">
+            <div class="row">
+
+                <div class="col-sm-4">                    
+                      <div id="card" class="weater test1" style=" background-image: url('http://zalonstyle.in/angular/images/blue2.jpg');">
+                        <div class="city-selected" style="background-color: #5cc3f0; ">
+                          <article>
+                            <div class="info">
+                              <div class="city">Collection By Type</div>
+                            </div>
+                          </article>            
+                          <!-- <figure style="background-image: url(http://136.243.1.253/~creolitic/bootsnipp/home.jpg)"></figure> -->
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>Service</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="service"></span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>Product</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="product"></span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="col-sm-4">
+                    
+                      <div id="card" class="weater test2">
+                        <div class="city-selected" style="background-color:  #a64aee ; ">
+                          <article>
+                            <div class="info">
+                              <div class="city">Monthly</div>
+                            </div>
+                          </article>            
+                          <!-- <figure style="background-image: url(http://136.243.1.253/~creolitic/bootsnipp/home.jpg)"></figure> -->
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>Average</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="avg_income"></span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>Projection</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="projection"></span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+
+                <div class="col-sm-4">
+                    
+                      <div id="card" class="weater test3">
+                        <div class="city-selected" style="background-color:  #4aeec7 ;">
+                          <article>
+                            <div class="info">
+                              <div class="city">Additional Revenue</div>
+                            </div>
+                          </article>            
+                          <!-- <figure style="background-image: url(http://136.243.1.253/~creolitic/bootsnipp/home.jpg)"></figure> -->
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>Membership</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="membership">0</span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>Gift Cards</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="gift_card">0</span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+
+                </div>           
+
+          </div>
+        </div>
+
+
+        <div class="container" style="width: 100% !important;margin-top: 12px;">
+            <div class="row">
+
+                 <div class="col-sm-8">   
+                    <div class="box box-default" style="background-color: #252836">
+                        <div class="box-header with-border">
+                          <h3 class="box-title" style="color:white;">Sales By Product</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="chart-responsive">
+                                <canvas id="barChart" height="140"></canvas>
+                              </div>
+                             
+                            </div>                            
+                          </div>
+                          <!-- /.row -->
+                        </div>
+                                    
+                    </div>
+                </div>
+
+                <div class="col-sm-4">   
+                    <div class="box box-default" style="background-color: #252836">
+                        <div class="box-header with-border">
+                          <h3 class="box-title" style="color:white;">Sales By Service</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                          <div class="row">
+                            <div class="col-md-8">
+                              <div class="chart-responsive">
+                                <canvas id="pieChart" height="305"></canvas>
+                              </div>
+                             
+                            </div>
+                           
+                          </div>
+                          <!-- /.row -->
+                        </div>
+                                    
+                    </div>
+                </div>
+
+          </div>
+        </div>
+      
+
+<script>
+var access_token = 1;
+var url = 'http://52.33.37.151:8080/admin/sales?access_token='+access_token;
+
+//var url = 'http://zalonstyle.in:8080/admin/sales';
+
+var ctx = document.getElementById("pieChart");
+var bar = document.getElementById("barChart");
+
+Chart.defaults.global.defaultFontColor = "#ffffff";
+
+
+function randomRGBComponent() {
+  return Math.round(Math.random() * 255);
+}
+ 
+function randomRGBColor() {
+  return 'rgba(' + randomRGBComponent() + ', ' + randomRGBComponent() + ', ' + randomRGBComponent() + ', 0.2'  + ')';
+}
+
+function randomRGBHover(){
+  return 'rgba(' + randomRGBComponent() + ', ' + randomRGBComponent() + ', ' + randomRGBComponent() + ', 1'  + ')';
+}
+
+$.ajax({
+  url:url,
+  type:'GET'
+}).done(function(response){     
+    $.each(response.data, function(i,row){
+        $('#service').text(row.service);
+        $('#product').text(row.product);
+        $('#avg_income').text(row.total);
+        $('#projection').text(row.projection);      
+        
+    });
+
+    var pieLabel = [];
+    var pieData  = [];
+    var pieColor = [];
+    var pieHover = [];
+    $.each(response.chart[0], function(i,row){
+       pieLabel.push(row.name);
+       pieData.push(row.total);
+       pieColor.push(randomRGBColor());
+       pieHover.push(randomRGBHover());
+    });
+//rgba(255, 99, 132, 0.2)
+
+    var data = { 
+    labels: pieLabel,  
+    datasets: [
+        {
+            data: pieData,
+            backgroundColor: pieColor,
+            borderColor: pieHover, 
+        }
+      ]
+    };
+    var myPieChart = new Chart(ctx,{
+        type: 'doughnut',
+        data: data   
+    });
+
+    
+
+    var barLabel = [];
+    var barData  = [];
+    var barColor = [];
+    var barHover = [];
+    $.each(response.chart[1], function(i,row){
+       barLabel.push(row.category);
+       barData.push(row.total);
+       barColor.push(randomRGBColor());
+       barHover.push(randomRGBHover());
+    });
+
+    var data = {
+    labels: barLabel,
+    datasets: [
+        {
+            label: "Total",
+            backgroundColor: barColor,
+            borderColor: barHover,
+            borderWidth: 1,
+            data: barData
+        }
+    ]
+  };
+  var barChart = new Chart(bar,{
+      type: 'bar',
+      data: data,
+      options: {
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem) {
+              //console.log(tooltipItem)
+              return tooltipItem.yLabel;
+            }
+          }
+        }
+      }  
+  });
+
+});
+
+</script>   

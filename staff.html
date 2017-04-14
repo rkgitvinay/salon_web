@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<meta name="viewport" content="width=device-width,height=device-height initial-scale=1">
+<link href='css/fullcalendar.css' rel='stylesheet' />
+<link href='css/bootstrap.min.css' rel='stylesheet' />
+<link href='css/bootstrap-responsive.min.css' rel='stylesheet' />
+<link href='css/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="css/sweetalert.css">
+<link rel="stylesheet" href="css/vertical-navbar.css">
+
+<script src='js/moment.min.js'></script>
+<script src='js/jquery.min.js'></script>
+<script src='js/fullcalendar.js'></script>
+<script src='js/scheduler.min.js'></script>
+<script src='js/bootstrap.min.js'></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type='text/javascript' src='js/jquery.ui.touch.js'></script>
+<script src="js/sweetalert.min.js"></script>
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<link rel="stylesheet" href="css/jquery.timepicker.css">
+<script src="js/jquery.timepicker.min.js"></script>
+
+
+<script type="text/javascript">
+    function  bookAppointment(start_time) {
+        Android.moveToNextScreen(start_time);
+    } 
+
+
+	   $(function() { 
+            var d = new Date();
+            var n = d.getHours();             
+            var block;
+            var staff_id;
+            var billing_data = [];
+            var start_test;
+            var start_time;
+            var end_test;
+            var end_time;        
+		    //var base_url = 'localhost:3000';
+            var base_url = '52.33.37.151:8080';
+            var days;
+	        var access_token = location.search.split('access_token=')[1];
+            var current_time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss'); 
+		    $('#calendar').fullCalendar({
+      			defaultView: 'agendaThreeDay',			
+      			editable: true,
+      			selectable: true,
+      			eventLimit: true,
+      			allDaySlot:false,
+            eventOverlap :false,
+            eventStartEditable:false,
+            eventDurationEditable:false,
+      			minTime: '08:00:00',
+            maxTime:'22:00:00',
+      			slotDuration: '00:15:00',
+      			aspectRatio: 2, 
+            columnFormat:'ddd',
+            titleFormat:'MMM D',           
+      			header: {
+      				left: 'prev',
+      				center: 'title',
+      				right: 'next'
+      			},
+            views: {
+              agendaThreeDay: {
+                  type: 'agenda',
+                  duration: { days: 3 },
+                  buttonText: '3 day'
+              }
+            },
+          	scrollTime: ''+n+':00:00',                              			
+      			events: 'http://'+base_url+'/calendar/getMyEvents?access_token='+access_token+'',
+                eventRender: function(event, element) {
+                    element.find('.fc-title').append("<br/><div class='e_cust'>"+event.description+"</div>");
+                    element.find('.fc-title').append("<br/><div class='e_note'>" + event.notes+"</div>");                     
+                    $(element).addTouch();                 
+                        element.bind( 'click', function( event ) {
+                            var doubleClickOpportunity = 300, 
+                              $elem = $( event.target ),
+                              clicker = $elem.data( 'clicker' );
+                            if ( clicker ) {                          
+                              clearTimeout( clicker );
+                              $elem.data( 'clicker', '' );
+                              $elem.trigger( 'doubleclick' );
+                            } else {                         
+                              $elem.data( 'clicker', setTimeout(function() {
+                                  $elem.data( 'clicker', '' );
+                                  $elem.trigger( 'singleclick' );
+                              }, doubleClickOpportunity ));
+                            }
+                        });                        
+                        element.bind( 'doubleclick', function() {                        
+                                if(event.editable == true){
+                                  var btn = '<button id="noShowBtn" data-event_id="'+event.id+'" data-editable="false" data-color="#FF7145">No Show</button>';
+                                }else if(event.editable == false && event.color == '#A1A2A3'){
+                                  var btn = '';
+                                }else{
+                                  var btn = '<button id="noShowBtn" data-event_id="'+event.id+'" data-editable="true" data-color="#6BA5C2">Show</button>';
+                                }                            
+                                swal({
+                                  title: "Are you sure?",
+                                  text: btn,
+                                  showCancelButton: true,
+                                  confirmButtonColor: "#DD6B55",
+                                  confirmButtonText: "delete",
+                                  closeOnConfirm: false,
+                                  allowOutsideClick: true,
+                                  customClass: 'swal-wide',
+                                  html:true
+                                },
+                                function(){
+                                    $.ajax({
+                                       url: 'http://'+base_url+'/calendar/removeEvent',
+                                       data: 'staff_token='+access_token+'&id='+ event.id,
+                                       type: "GET",
+                                       success: function(json){
+                                            console.log(json);
+                                           $('#calendar').fullCalendar('removeEvents',event.id);
+                                       }
+                                    });
+                                  swal("Deleted!", "Your event has been deleted.", "success");
+                                });
+                                $('#noShowBtn').on('click', function(e){
+                                    e.preventDefault();
+                                    var event_id = $(this).data('event_id');
+                                    var editable = $(this).data('editable'); 
+                                    var count = 1;
+                                    while(count == 1){                               
+                                        $.ajax({
+                                           url: 'http://'+base_url+'/calendar/updateNoShow',
+                                           data: 'access_token='+access_token+'&id='+event_id+'&editable='+editable,
+                                           type: "GET",
+                                           success: function(json){                                            
+                                                var color;
+                                                if(editable == false){ 
+                                                  if(event.id == event_id){
+                                                    event.editable = false;                  
+                                                    event.color = '#FF7145';
+                                                  }
+                                                }else{
+                                                    if(event.id == event_id){    
+                                                        event.editable = true;              
+                                                        event.color = '#6BA5C2';
+                                                    }
+                                                }                                       
+                                                $('#calendar').fullCalendar('updateEvent', event);
+                                           }
+                                        });
+                                        count++;
+                                    }
+                                    swal.close();
+                                });     
+                        });               
+                },                
+                dayClick: function(date, jsEvent, view) {
+                    var current_time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss'); 
+                    var start = date.format('YYYY-MM-DD HH:mm:ss');       
+                    if(start < current_time){
+                      swal("Failed", "Appointment is closed for previous time");
+                    }else{
+                      var start_time = moment(start).format("MMMM DD YYYY hh:mm A");
+                      //bookAppointment(start_time);
+                      console.log(start_time);
+                    }                                            
+                },
+                //eventDurationEditable:false,                                            
+    		});
+
+            window.setInterval(function(){
+                $('#calendar').fullCalendar( 'refetchEvents' );    
+            }, 30000);
+            
+
+        $('#myModal').on('hidden.bs.modal', function () {            
+            $('#event_form')[0].reset();  
+            $('#service_search').val('');
+            $('#segession_box').hide();            
+        });
+
+		$( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd',minDate:0 });
+        $('#end_time').timepicker({ 'scrollDefault': 'now','timeFormat': 'h:i A' }); 
+        $('#end_time').on('changeTime', function() {
+            var end = $(this).val();
+            end = moment(end, ["h:mm A"]).format("HH:mm:ss");
+            end_test = moment(end_test).format("YYYY-MM-DD");
+            end_test = end_test + ' '+ end;          
+        });  
+
+        $('#addEventBtn').on('click', function(){
+            var event_id = 0;
+            var service     = $('#service_search').val();
+            var cust_mobile = $('#cust_mobile').val();
+            var cust_name = $('#cust_name').val();
+            var notes = $('#eventNotes').val();
+            var repeat = $('#repeat').val();
+            if(service.length == 0 && block == 0){
+              swal("Failed", "Enter valid service name"); 
+            }else if(cust_mobile.length != 10 && block == 0){
+              swal("Failed", "Enter valid mobile number");
+            }else{            
+                $.ajax({
+                    url: 'http://'+base_url+'/calendar/addEvent',
+                    data: 'access_token='+access_token+'&event_id='+event_id+'&service='+service+'&start='+ start_test +'&end='+ end_test +'&staff_id='+ staff_id +'&cust_mobile='+cust_mobile+'&cust_name='+cust_name+'&notes='+notes+'&block='+block+'&repeat='+repeat,
+                    type: 'GET',                         
+                    success: function(json) { 
+                        if(json.data != 'exist'){
+                              if(block == 1){
+                                  eventData = {id:json.data[0].id,title: json.data[0].service,start: start_test,end: end_test,resourceId: json.data[0].staff_id,description:json.data[0].cust_name,editable:false,notes:json.data[0].notes,color:'#A1A2A3'};
+                              }else{
+                                  eventData = {id:json.data[0].id,title: service,start: start_test,end: end_test,resourceId: json.data[0].staff_id,description:json.data[0].cust_name,editable:true,notes:json.data[0].notes};    
+                              }
+                              $('#calendar').fullCalendar('renderEvent', eventData, true);                      
+                              $('#calendar').fullCalendar('unselect');
+                              $('#event_form')[0].reset();                                  
+                              $('#myModal').modal('hide');  
+                        }else{
+                            $('#myModal').modal('hide');                         
+                            swal("Failed", "You can not create event");
+                        }                      
+                    }
+                });
+              }              
+        });
+
+
+
+      
+
+         
+
+
+        $(document).on('click', '#blockBtn', function(e){
+            e.preventDefault();
+            if (!$(this).attr('data-toggled') || $(this).attr('data-toggled') == 'off'){
+                $(this).text('Unblock');
+                $(this).attr('data-toggled','on');
+                block = 1;
+                $('#block').val(1);
+                $('#end_time').prop("disabled", false);
+                $('#service_info, #stylist_info, #cust_info, #notes_info').hide();   
+            }
+            else if ($(this).attr('data-toggled') == 'on'){                
+                   $(this).text('Block');
+                   $('#block').val(0);
+                   block = 0;
+                   $(this).attr('data-toggled','off');
+                   $('#end_time').prop("disabled", true);
+                   $('#service_info, #stylist_info, #cust_info, #notes_info').show();   
+            }
+        });
+		
+	});
+
+    var lastScrollLeft = 0;
+    $(window).scroll(function() {
+        var documentScrollLeft = $(document).scrollLeft();
+        if (lastScrollLeft != documentScrollLeft) {   
+            if(lastScrollLeft > 44){
+                $(".fc-axis.fc-widget-content").css({"color":"blue"});    
+            }
+            // else{
+            //     $(".fc-axis.fc-widget-content").css({"background-color":"white"});
+            // }         
+            
+            //console.log(lastScrollLeft);
+            lastScrollLeft = documentScrollLeft;
+        }
+    });
+
+  // $(window).on('load', function() {   
+  //   $(".se-pre-con").fadeOut("slow");;
+    
+  // });
+
+</script>
+<style>
+
+	body {
+		margin: 0;
+		padding: 0px;		
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;	
+    position: fixed;
+	}
+  .fc-event{
+    /*right: -8px !important;*/
+  }
+  .fc-toolbar{
+    padding: 8px !important;
+  }
+	.swal-wide{
+    width:300px !important;
+  }
+	.fc-license-message{
+		display: none;
+	}	
+	.fc-scroller{
+		height: 490px !important;
+	}
+	.fc-time-grid .fc-slats td {
+    	height: 3em;
+	}    	
+  .fc-today{
+    background-color:  #efefeb  !important;
+  }
+  .no-js #loader { display: none;  }
+.js #loader { display: block; position: absolute; left: 100px; top: 0; }
+.se-pre-con {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: url(Preloader_4.gif) center no-repeat #fff;
+}
+.fc-title{
+  font-weight: bold;
+  color: black;
+}
+.e_cust{
+  color: white;
+}
+.e_note{
+  font-weight: normal;
+}
+</style>
+</head>
+<body>
+  <!-- <div class="se-pre-con"></div> -->
+	<div id='calendar'></div>
+	
+
+
+
+
+</body>
+</html>

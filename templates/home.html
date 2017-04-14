@@ -1,0 +1,238 @@
+
+       <div class="container" style="width: 100% !important;">
+            <div class="row">
+                <div class="col-sm-4">
+                   
+                      <div id="card" class="weater test1">
+                        <div class="city-selected" style="background-color: #5cc3f0; ">
+                          <article>
+                            <div class="info">
+                              <div class="city">Sales</div>
+                            </div>
+                          </article>            
+                          <!-- <figure style="background-image: url(http://zalonstyle.in/angular/images/home.jpg)"></figure> -->
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>Today</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="today"></span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>This Month</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="this_month"></span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                <div class="col-sm-4">
+                    
+                      <div id="card" class="weater test2">
+                        <div class="city-selected" style="background-color:  #a64aee ; ">
+                          <article>
+                            <div class="info">
+                              <div class="city">Customer Visits</div>
+                            </div>
+                          </article>            
+                          <figure style="background-image: url(http://zalonstyle.in/angular/images/bbbb.jpg)"></figure>
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>All Visits</h1>
+                                <b><span id="all_visits"></span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>New Visits</h1>
+                                <b><span id="new_visit"></span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="col-sm-4">
+                   
+                      <div id="card" class="weater test3">
+                        <div class="city-selected" style="background-color:  #4aeec7 ;">
+                          <article>
+                            <div class="info">
+                              <div class="city">Top Employee</div>
+                            </div>
+                          </article>            
+                          <!-- <figure style="background-image: url(http://136.243.1.253/~creolitic/bootsnipp/home.jpg)"></figure> -->
+                        </div>
+                        <div class="days">
+                          <div class="row row-no-gutter" style="margin: 0px;">
+                            <div class="col-sm-6">
+                              <div class="day">
+                                <h1>Name</h1>
+                                <b><span id="stylist"></span></b>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                              <div class="day" style="border-right: medium none navy">
+                                <h1>Sale</h1>
+                                <span><i class="fa fa-inr" aria-hidden="true"></i>
+</span><b><span id="total"></span></b>
+                              </div>
+                            </div>            
+
+                          </div>
+                        </div>
+                      </div>
+                </div>           
+
+          </div>
+        </div>
+
+
+        <div class="container" style="width: 100% !important;margin-top: 12px;">
+            <div class="row">
+
+                 <div class="col-sm-8">   
+                    <div class="box box-default" style="background-color: #252836">
+                        <div class="box-header with-border">
+                          <h3 class="box-title" style="color:white;">Sales Mix</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="chart-responsive">
+                                <canvas id="barChart" height="140"></canvas>
+                              </div>
+                             
+                            </div>                            
+                          </div>
+                          <!-- /.row -->
+                        </div>
+                                    
+                    </div>
+                </div>
+
+                <div class="col-sm-4">   
+                    <div class="box box-default" style="background-color: #252836">
+                        <div class="box-header with-border">
+                          <h3 class="box-title" style="color:white;">Income vs. Expense</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                          <div class="row">
+                            <div class="col-md-8">
+                              <div class="chart-responsive">
+                                <canvas id="pieChart" height="305"></canvas>
+                              </div>
+                             
+                            </div>
+                           
+                          </div>
+                          <!-- /.row -->
+                        </div>
+                                    
+                    </div>
+                </div>
+
+          </div>
+        </div>
+      
+
+
+<script>
+var access_token = 1;
+var url = 'http://52.33.37.151:8080/admin/dashboard?access_token='+access_token;
+
+//var url = 'http://zalonstyle.in:8080/admin/dashboard';
+
+var ctx = document.getElementById("pieChart");
+var bar = document.getElementById("barChart");
+
+Chart.defaults.global.defaultFontColor = "#ffffff";
+
+$.ajax({
+  url:url,
+  type:'GET'
+}).done(function(response){    
+    $.each(response.static, function(i,row){
+        $('#today').text(row.today);
+        $('#this_month').text(row.this_month);
+        $('#all_visits').text(row.all_visits);
+        $('#new_visit').text(row.new_visit);
+        $('#stylist').text(row.stylist);
+        $('#total').text(row.total);
+    });
+
+    var data = { 
+      labels: ["Income","Expense"],  
+      datasets: [
+        {
+          data: [response.pieChart[0].income,0], 
+          backgroundColor: ['rgba(255, 99, 132, 0.2)','rgba(54, 162, 235, 0.2)'],
+          borderColor: ['rgba(255,99,132,1)','rgba(54, 162, 235, 1)'], 
+        }
+      ]
+    };
+    var myPieChart = new Chart(ctx,{
+        type: 'doughnut',
+        data: data   
+    });
+
+    var data = {
+    labels: ["Service", "Product", "Membership", "Gift Card"],
+    datasets: [
+        {
+            label: "Total",
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'                
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'               
+            ],
+            borderWidth: 1,
+            data: [response.barChart[0].service, response.barChart[1].product, 0, 0],
+        }
+    ]
+  };
+  var barChart = new Chart(bar,{
+      type: 'bar',
+      data: data,
+      options: {
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem) {
+              //console.log(tooltipItem)
+              return tooltipItem.yLabel;
+            }
+          }
+        }
+      }  
+  });
+
+});
+
+</script>   

@@ -1,0 +1,367 @@
+
+<style type="text/css">
+  .
+</style>
+<div class="container" style="width: 100% !important;">
+    <div class="row">
+        <div class="col-sm-3 nopadding" style="background-color: #fafbfb;height: 765px;">
+          
+            <div class="cards">
+
+              <div class="nav-side-menu">
+                      <div class="menu-list">                
+                          <ul ng-repeat="cat in category" id="menu-content" class="menu-content collapse in">
+                              
+                              <li ng-class="{active_list:cat.category_name==transaction_type}" ng-if="cat.category_name != 'Vendor' && cat.category_name != 'Staff'" ng-click="getCategoryStats({id:cat.id,name:cat.category_name,category:cat.category_name})">
+                                <a href="javascript:void(0)">
+                                  <i class="fa fa-dashboard fa-lg"></i>{{cat.category_name}}
+                                </a>
+                              </li>
+
+                              <li ng-if="cat.category_name == 'Vendor'" data-toggle="collapse" data-target="#vendor" class="collapsed">
+                                <a href="javascript:void(0)">
+                                  <i class="fa fa-dashboard fa-lg"></i>{{cat.category_name}}
+                                </a>
+                              </li>
+
+                              <ul ng-if="cat.category_name == 'Vendor'" class="sub-menu collapse" id="vendor">                                 
+                                  <div ng-repeat="vendor in vendors" ng-if="vendor.is_active == 'true'">
+                                    <li ng-if="vendor.name != null" ng-click="getCategoryStats({id:vendor.vendor_id,name:vendor.name,category:vendor.category})">
+                                      <a href="javascript:void(0)">{{vendor.name}}</a>
+                                    </li>  
+                                  </div>
+                                                                   
+                              </ul>
+
+                              <li ng-if="cat.category_name == 'Staff'" data-toggle="collapse" data-target="#staff" class="collapsed">
+                                <a href="javascript:void(0)">
+                                  <i class="fa fa-dashboard fa-lg"></i>{{cat.category_name}}
+                                </a>
+                              </li>
+
+                              <ul ng-if="cat.category_name == 'Staff'" class="sub-menu collapse" id="staff">                                 
+                                  <div ng-repeat="staff in staffs">
+                                    <li ng-if="staff.name != null" ng-click="getCategoryStats({id:staff.staff_id,name:staff.name,category:staff.category})"><a href="javascript:void(0)">{{staff.name}}</a></li>  
+                                  </div>                              
+                              </ul>
+                          </ul>
+                   </div>
+              </div>                        
+           </div>
+        </div>
+
+
+        <div class="col-sm-9 nopadding" style="background-color: #ffffff;height: 765px;">   
+            <div class="menu-head">
+                <span class="dropdown">
+                    <i class="fa fa-calendar dropbtn icon" aria-hidden="true"></i>
+                    <div class="dropdown-content">
+                        <a href="javascript:void(0)" ng-click="allDate()">All Dates</a>
+                        <a href="javascript:void(0)" onclick="assignmentInfo()">Custom</a>
+                    </div>
+                </span>
+
+                <b><span style="margin-left: 40%;">{{transaction_type}}</span></b>
+                <button style="padding: 2px 12px !important;" data-toggle="modal" data-target="#addExpenseModal" class="btn btn-default pull-right">
+                    <i class="fa fa-plus icon" aria-hidden="true"></i> Add Transaction
+                <!-- </span> -->
+                </button>
+            </div>
+
+            <div class="content nopadding">
+                <table class="table table-bordered">
+                    <thead id="thead">
+                        <tr id="tr">
+                          <th>Date</th>
+                          <th>Payee</th>
+                          <th>Description</th>
+                          <th>Amount</th>
+                          <!-- <th>Balance</th> -->
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+
+                        <tr ng-repeat="log in payment_log | orderBy:'-created_at'" id="tr">
+                            <td>{{log.date}}</td>
+                            <td>{{log.payee}}</td>
+                            <td>{{log.description}}</td>
+
+                            <td ng-if="log.addition == 0 && log.substraction == 0">{{log.total}}</td>
+                            <td class="credit" ng-if="log.substraction == 0 && log.addition != 0">{{log.addition}}</td>
+                            <td class="debit" ng-if="log.substraction != 0 && log.addition == 0">{{log.substraction}}</td>
+
+                            <!-- <td ng-if="transaction_type != 'Billing'">{{log.total}}</td> -->
+                            <!-- <td ng-if="transaction_type == 'Billing'">N/A</td>                          -->
+                        </tr>
+                       
+                                                                 
+                    </tbody>
+                </table>               
+
+            </div>
+            <div ng-if="transaction_type != 'Billing'" class="col-sm-9 bottom-menu">
+                <div class="col-sm-4 debit" style="border-right: solid;border-color: gray">
+                  Pay : <span class="count">{{stats.pay}}</span>
+                </div>
+                <div class="col-sm-4 credit count" style="border-right: solid;border-color: gray">
+                  Receive : <span class="count">{{stats.receive}}</span>
+                </div>
+                <div class="col-sm-4 count">
+                  Balance : <span class="count">{{stats.balance}}</span>
+                </div>
+            </div>
+        </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-sm" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 35%;font-size: 15px;"><b>Add Account</b></span>
+        <a href="javascript:void(0);" data-dismiss="modal" ng-click="saveData()" class="pull-right">Save</a>
+      </div>
+      <div class="modal-body">
+        <form>
+            <fieldset>                
+                <input ng-model="accFormInfo.acc_name" class="list-unstyled ios-input" style="margin-top: 0px;"  placeholder="Account Name"  type="text">
+                <div style="white-space:nowrap">
+                    <span for="balance">&#x20B9;</span>
+                     <input ng-model="accFormInfo.open_bal" id="balance" class="list-unstyled ios-input num-valid" placeholder="Opening Balance" type="text">
+                </div>
+                <input ng-model="accFormInfo.acc_number" class="list-unstyled ios-input num-valid" placeholder="Bank a/c Or wallet number (optional)" type="text">
+                <div class="ios-input type-input">
+                    <span>Type</span>
+                    <label style="margin-left: 35%;" class="radio-inline" for="radios-0">
+                    <input ng-model="accFormInfo.type" name="type" value="bank" type="radio">
+                        Bank
+                    </label> 
+                    <label class="radio-inline pull-right" for="radios-1">
+                        <input ng-model="accFormInfo.type" name="type" value="wallet" type="radio">
+                        Wallet
+                    </label> 
+                </div>
+                <div class="ios-input input-cc" style="display: none;">
+                    <span>Do you have any credit card linked with this bank</span>
+                    <label style="margin-left: 20px;" class="radio-inline" for="radios-0">
+                    <input ng-model="accFormInfo.credit_card" name="credit_card" value="true" type="radio">
+                        Yes
+                    </label> 
+                    <label class="radio-inline pull-right" for="radios-1">
+                        <input ng-model="accFormInfo.credit_card" name="credit_card" value="false" type="radio">
+                        No
+                    </label> 
+                </div>
+        </fieldset>
+        </form>
+
+      </div>     
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-sm" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 35%;font-size: 15px;"><b>New Transaction</b></span>
+        <a href="javascript:void(0);" data-dismiss="modal" ng-click="addTransaction()" class="pull-right addTransaction">Save</a>
+      </div>
+      <div class="modal-body" style="padding: 0 !important;">
+          <div class="btn-group selector"  data-toggle="buttons" style="padding-left: 25%;">
+              <label class="btn btn-primary blue active">
+                <input type="radio" class="toggle" value="1">Pay
+              </label>
+              <label class="btn btn-primary blue">
+                <input type="radio" class="toggle" value="2">Receive
+              </label>
+              <label class="btn btn-primary blue">
+                <input type="radio" class="toggle" value="3">Transfer
+              </label>             
+          </div>
+
+          <div id="pay" style="padding: 5px;">
+               <form id="payForm">
+                  <fieldset>                                            
+                      <div class="form-group">                        
+                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">                        
+                            <option ng-repeat="cat in category" value="{{cat.category_name}}">{{cat.category_name}}</option>                          
+                        </select>                       
+                      </div>
+                      <div class="form-group" ng-show='subCat'>                        
+                        <select ng-model="subCat_id" class="form-control">
+                          <option value="">{{testOpt}}</option>
+                          <option ng-repeat="scat in subCategory" value="{{scat.id}}">{{scat.name}}</option>                          
+                        </select>
+                      </div>
+
+                      <div class="form-group">                        
+                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">                        
+                          <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
+                        </select>
+                      </div>
+
+                      <div style="white-space:nowrap;margin-bottom: 10px;">
+                          <span for="balance">&#x20B9;</span>
+                           <input ng-model="payForm.amount" class="list-unstyled ios-input num-valid" placeholder="Amount" type="text">
+                      </div>                      
+
+                      <input ng-model="payForm.desc" class="list-unstyled ios-input"  placeholder="Description"  type="text">                     
+                </fieldset>
+              </form>
+          </div>
+
+
+          <div id="receive" style="padding: 5px;display: none;">
+               <form id="receiveForm">
+                  <fieldset>                      
+                      <div class="form-group">                        
+                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">                        
+                            <option ng-repeat="cat in category" value="{{cat.category_name}}">{{cat.category_name}}</option>                          
+                        </select>                       
+                      </div>                      
+                      <div class="form-group">                        
+                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">                         
+                          <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
+                        </select>
+                      </div>
+
+                      <div style="white-space:nowrap;margin-bottom: 10px;">
+                          <span for="balance">&#x20B9;</span>
+                           <input ng-model="payForm.amount" class="list-unstyled ios-input num-valid" placeholder="Amount" type="text">
+                      </div>                      
+
+                      <input ng-model="payForm.desc" class="list-unstyled ios-input"  placeholder="Description"  type="text">                     
+                </fieldset>
+              </form>
+          </div>
+
+           <div id="transfer" style="padding: 5px;display: none;">
+               <form id="transferForm">
+                  <fieldset>                                            
+                      <div class="form-group">                        
+                        <select ng-model="payment_id_from" ng-init="acc_name" class="form-control">
+                          <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
+                        </select>
+                      </div>
+
+                      <div class="form-group">                        
+                        <select ng-model="payment_id_to" ng-init="acc_name" class="form-control">
+                          <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
+                        </select>
+                      </div>
+
+                      <div style="white-space:nowrap;margin-bottom: 10px;">
+                          <span for="balance">&#x20B9;</span>
+                           <input ng-model="payForm.amount" class="list-unstyled ios-input num-valid" placeholder="Amount" type="text">
+                      </div>                      
+
+                      <input ng-model="payForm.desc" class="list-unstyled ios-input"  placeholder="Description"  type="text">                     
+                </fieldset>
+              </form>
+          </div>
+
+
+
+      </div>     
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade bd-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 35%;font-size: 15px;"><b>Add Account</b></span>
+        <a href="javascript:void(0);" data-dismiss="modal" ng-click="getCategoryStatsByDate({from:fromDate,to:toDate})" class="pull-right">Save</a>
+      </div>
+        <div class="modal-body">
+            <div class="form-group">            
+                <input autocomplete="off" ng-model="fromDate" placeholder="From Date" id="fromDatepicker" class="form-control" type="text">
+            </div>
+             <div class="form-group">            
+                <input autocomplete="off" ng-model="toDate" placeholder="To Date" id="toDatepicker" class="form-control" type="text">
+            </div>
+        </div>     
+    </div>
+  </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    $( "#fromDatepicker" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    $( "#toDatepicker" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    function assignmentInfo(){
+        $('#myModal').modal();
+    }
+
+    $(document).on('click','.addTransaction', function(){
+        $('#payForm')[0].reset();
+    });
+    var type = 1;
+    $(".selector :input").change(function() {
+        if($(this).val() == 2){
+          $('#pay').css({'display':'none'});
+          $('#transfer').css({'display':'none'});
+          $('#receive').css({'display':'block'});
+          type = 2;
+        }else if($(this).val() == 3){
+          $('#pay').css({'display':'none'});
+          $('#receive').css({'display':'none'});
+          $('#transfer').css({'display':'block'});
+          type = 3;
+        }else{
+          $('#receive').css({'display':'none'});
+          $('#transfer').css({'display':'none'});
+          $('#pay').css({'display':'block'});
+          type = 1;
+        }
+    });
+
+    $('.type-input input:radio').click(function() {
+        if ($(this).val() === 'bank') {
+            $('.input-cc').css({"display":"block"});
+        } else if ($(this).val() === 'wallet') {
+            $('.input-cc').css({"display":"none"});
+        } 
+    });
+
+    $(".num-valid").keydown(function (e) {       
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||             
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||              
+            (e.keyCode >= 35 && e.keyCode <= 40)) {                 
+                 return;
+        }        
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    $(function(){       
+        $("[data-toggle=popover]").popover();
+    });
+
+    $('.datepicker').datepicker();    
+
+    $('html').click(function() {
+        $('.dropdown-content').css({"display": "none"});        
+    });
+
+    $(document).on('click','.dropdown', function(){
+        $('.dropdown-content').css({"display": "block"});        
+    });
+   
+</script>
+
