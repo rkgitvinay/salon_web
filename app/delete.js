@@ -25,7 +25,7 @@ $routeProvider
         });
 });
 
-var access_token = location.search.split('access_token=')[1];
+var access_token = localStorage.getItem("access_token");
 //var base_url = '52.33.37.151:8080';
 var base_url = 'localhost:3000';
 

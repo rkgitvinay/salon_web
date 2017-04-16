@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html ng-app="login">
+
+<head>
+<title>Login | Admin Panel</title>
+ <meta charset="UTF-8">
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link href="css/AdminLTE.min.css" rel="stylesheet" type="text/css" media="all"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="stylesheets/bootstrap.min.css">  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/vertical-navbar.css">
+<link rel="stylesheet" href="stylesheets/header-login-signup.css">
+<link rel="stylesheet" href="css/accounting.css">
+
+<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css"> -->
+
+<script src="app/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"></script>
+<script src="app/login.js"></script>
+<script src="javascripts/bootstrap.min.js"></script>	
+
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script> -->
+
+
+
+</head>
+<body>
+
+
+
+<div class="login-form" ng-controller="loginCtrl">
+  <div class="top-login">
+    <span><img src="images/logo.png" alt=""/></span>
+  </div>
+  <h1>Login</h1>
+  <div class="login-top">
+  <!-- <div ng-show="error" class="alert alert-danger">{{error}}</div> -->
+    <form name="form" ng-submit="login()" role="form">
+      <div class="login-ic">
+        <i ></i>
+        <input type="text" ng-model='formData.username' value="User name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'User name';}"/>
+        <div class="clear"> </div>          
+      </div>
+      <div class="login-ic">
+        <i class="icon"></i>
+        <input type="password" ng-model='formData.password' value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'password';}"/>
+        <div class="clear"> </div>
+      </div>
+    
+      <div class="log-bwn">
+        <input type="button" ng-click="login(formData)" value="Login" >
+      </div>
+    </form>
+  </div>      
+</div>
+
+
+
+
+</body>
+</html>
