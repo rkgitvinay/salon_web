@@ -23,8 +23,8 @@ $routeProvider
         });
 });
 var access_token = localStorage.getItem("access_token");
-//var base_url = '52.33.37.151:8080';
-var base_url = 'localhost:3000';
+var base_url = '52.33.37.151:8080';
+//var base_url = 'localhost:3000';
 
 
 phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){  

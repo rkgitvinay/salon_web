@@ -45,7 +45,7 @@
                 <td class="debit" ng-if="log.substraction != 0 && log.addition == 0">{{log.substraction}}</td>
 
                 <td ng-if="log.description == 'Cash'">
-                    <a style="color: red;" ng-click="deleteInvoice({invoice:log.payee,total:log.total})" href="javascript:void(0)">
+                    <a style="color: red;" ng-click="deleteInvoice({invoice:log.payee,total:log.total,payment_type_id:log.payment_method})" href="javascript:void(0)">
                       Delete
                     </a>
                 </td>

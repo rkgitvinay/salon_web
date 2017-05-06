@@ -149,7 +149,27 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             <li><a href="account.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Account</a></li>
             <li><a href="chart.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Chart</a></li>
             <li><a href="delete.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Delete Bill</a></li>
-          </ul>        
+          </ul> 
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Select Salon
+                <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                </ul>
+            </li>
+
+            <li><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Logout</a></li>
+            
+          </ul> 
+
+
        </div>
     </div>
 </nav>
@@ -276,7 +296,8 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             var days;  
             var day_end_time = null;   
             var day_start_time = null;       
-            var access_token = 1;
+            var access_token = localStorage.getItem("access_token");
+
             var current_time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss'); 
             $(document).ready(function(){                   
                 $.ajax({

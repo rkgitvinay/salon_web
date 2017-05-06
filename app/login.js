@@ -4,8 +4,8 @@ var phpro = angular.module('login', ['ngRoute']);
 
 var access_token = localStorage.getItem("access_token");
 
-var base_url = '52.33.37.151:8080';
-var local_url = 'localhost:3000';
+var local_url = '52.33.37.151:8080';
+//var local_url = 'localhost:3000';
 
 phpro.factory('Session', function($http) {
     var Session = {

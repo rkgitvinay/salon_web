@@ -26,8 +26,8 @@ $routeProvider
 });
 
 var access_token = localStorage.getItem("access_token");
-//var base_url = '52.33.37.151:8080';
-var base_url = 'localhost:3000';
+var base_url = '52.33.37.151:8080';
+// var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http) {
     var url = 'http://'+base_url+'/accounting/getInfoStats?access_token='+access_token;
@@ -68,11 +68,13 @@ phpro.controller('mainCtrl', function($scope,$http) {
                 $http({
                     method  : 'GET',
                     url     : url ,
-                    params  :{access_token:access_token,invoice:data.invoice,total:data.total}          
+                    params  :{access_token:access_token,invoice:data.invoice,total:data.total,payment_type_id:data.payment_type_id}          
                 }).then(function(response){               
-                    // $scope.items = response.data.items;
-                    // $scope.result = response.data.result;       
-                    console.log(response);   
+                    if(response.data.status == 'success'){
+                        swal("Deleted!", "Your bill has been deleted.", "success");
+                    }else if(response.data.status == 'pending'){
+                        sweetAlert("Error", "First, Close your all pending bills", "error");
+                    }
                 });
 
 
