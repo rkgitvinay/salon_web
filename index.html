@@ -149,6 +149,8 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             <li><a href="account.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Account</a></li>
             <li><a href="chart.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Chart</a></li>
             <li><a href="delete.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Delete Bill</a></li>
+            <li><a href="customer.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Customer</a></li>
+            <li><a href="billing.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Billing</a></li>
           </ul> 
 
           <ul class="nav navbar-nav navbar-right">
@@ -165,7 +167,7 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                 </ul>
             </li>
 
-            <li><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Logout</a></li>
+            <li id="btnLogout"><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Logout</a></li>
             
           </ul> 
 
@@ -291,12 +293,17 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             var duration = 0; 
             var eventDuration = 15;   
             var is_button = 0; 
-            var base_url = 'localhost:3000';
-            //var base_url = 'zalonstyle.in:8080';
+            // var base_url = 'localhost:3000';
+            var base_url = 'zalonstyle.in:8080';
             var days;  
             var day_end_time = null;   
-            var day_start_time = null;       
-            var access_token = localStorage.getItem("access_token");
+            var day_start_time = null;  
+            // console.log(localStorage.getItem('access_token'));
+            if(localStorage.getItem("access_token") == null){
+              window.location = 'login.html';
+            }else{
+              var access_token = localStorage.getItem("access_token");  
+            }
 
             var current_time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss'); 
             $(document).ready(function(){                   
@@ -811,6 +818,10 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             end_test    = local_end;          
 
         }); 
+
+        $(document).on('click','#btnLogout', function(){
+            localStorage.removeItem("access_token");
+        });
     
   });  
 

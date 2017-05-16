@@ -42,7 +42,27 @@
             <li><a href="account.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Account</a></li>
             <li><a href="chart.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Chart</a></li>
             <li><a href="delete.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Delete Bill</a></li>
-          </ul>        
+            <li><a href="customer.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Customer</a></li>
+            <li><a href="billing.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Billing</a></li>
+          </ul>  
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Select Salon
+                <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                </ul>
+            </li>
+
+            <li id="btnLogout"><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Logout</a></li>
+            
+          </ul>       
        </div>
     </div>
 </nav>
@@ -91,6 +111,10 @@
         $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
     });
 });
+
+  $(document).on('click','#btnLogout', function(){
+            localStorage.removeItem("access_token");
+        });
 </script>
 
 

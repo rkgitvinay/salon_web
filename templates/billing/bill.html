@@ -1,0 +1,383 @@
+<style type="text/css">
+	/* USER PROFILE PAGE */
+ .card {
+    margin-top: 20px;
+    padding: 30px;
+    background-color: rgba(214, 224, 226, 0.2);
+    -webkit-border-top-left-radius:5px;
+    -moz-border-top-left-radius:5px;
+    border-top-left-radius:5px;
+    -webkit-border-top-right-radius:5px;
+    -moz-border-top-right-radius:5px;
+    border-top-right-radius:5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.card.hovercard {
+    position: relative;
+    padding-top: 0;
+    overflow: hidden;
+    text-align: center;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, 1);
+}
+.card.hovercard .card-background {
+    height: 130px;
+}
+.card-background img {
+    -webkit-filter: blur(25px);
+    -moz-filter: blur(25px);
+    -o-filter: blur(25px);
+    -ms-filter: blur(25px);
+    filter: blur(25px);
+    margin-left: -100px;
+    margin-top: -200px;
+    min-width: 130%;
+}
+.card.hovercard .useravatar {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+}
+.card.hovercard .useravatar img {
+    width: 100px;
+    height: 100px;
+    max-width: 100px;
+    max-height: 100px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.5);
+}
+.card.hovercard .card-info {
+    position: absolute;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+}
+.card.hovercard .card-info .card-title {
+    padding:0 5px;
+    font-size: 20px;
+    line-height: 1;
+    color: #262626;
+    background-color: rgba(255, 255, 255, 0.1);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.card.hovercard .card-info {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 20px;
+    color: #737373;
+    text-overflow: ellipsis;
+}
+.card.hovercard .bottom {
+    padding: 0 20px;
+    margin-bottom: 17px;
+}
+.btn-pref .btn {
+    -webkit-border-radius:0 !important;
+}
+select{
+	height: 31px;
+	padding: 5px;
+}
+.custome-padding{
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+
+</style>
+
+<div class="col-md-2 well">
+	Hold Bill
+</div>
+
+<div class="col-md-10">
+
+	<nav class="navbar navbar-default" style="margin-bottom: 8px;">
+	  <div class="container-fluid"> 
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+	      <form class="navbar-form navbar-left" role="search">
+
+	        <div class="form-group">
+	          <input type="text" ng-model="name" ng-change="searchCustomerByMobile({str:name,type:'name'})" class="form-control" placeholder="Customer Name">
+	        </div>
+
+	        <div class="well" style="position: absolute; width: 31%;z-index: 100;" ng-show="suggestionBox">
+	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+	             <li ng-repeat="list in customerList">
+	             		<a ng-click="getCustomerDetails(list)" href="javascript:void(0)">
+	             			<span>{{list.name}}</span>
+	             			<span class="pull-right">{{list.mobile}}</span>
+	             		</a>
+	             </li>
+	          </ul>  
+	        </div>
+
+	        <div class="form-group">
+	          <input type="text" ng-model="mobile" ng-change="searchCustomerByMobile({str:mobile,type:'mobile'})" class="form-control" placeholder="Customer Mobile">
+	        </div>
+
+	      </form> 
+
+	     <ul class="nav navbar-nav" style="margin-top: 9px;">        
+	      	<div class="btn-group" data-toggle="buttons">
+			  <label class="btn btn-primary" ng-class="{active: gender=='male'}">
+			    <input type="radio" autocomplete="off">Male
+			  </label>
+			  <label class="btn btn-primary" ng-class="{active: gender=='female'}">
+			    <input type="radio" autocomplete="off">Female
+			  </label>
+			</div>
+		</ul>
+
+
+      	<ul class="nav navbar-nav" ng-show="membership_tab">        
+	        <li class="dropdown">
+	          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Membership<span class="caret"></span></a>
+	          <ul class="dropdown-menu">
+	            <li ng-repeat="mem in membershipList">
+	              <a href="javascript:void(0)">{{mem.name}}</a>
+	            </li>            
+	          </ul>
+	        </li>
+	    </ul>
+
+      	<ul class="nav navbar-nav" ng-show="package_tab">        
+	        <li class="dropdown">
+	          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Packages<span class="caret"></span></a>
+	          <ul class="dropdown-menu">
+	            <li ng-repeat="pkg in packageList">
+	              <a href="javascript:void(0)">{{pkg.package_name}}</a>
+	            </li>            
+	          </ul>
+	        </li>
+	    </ul>
+
+	    <div style="padding-top: 15px;" class="pull-right">
+	    	<span>Invoice - {{invoice_new}}</span>
+	    	<span>Date - {{date | date:'dd-MM-yyyy'}}</span>
+	    </div>
+
+	    </div>
+	  </div>
+	</nav>
+
+	
+	<div class="col-md-5 well" style="height: 80vh;position: relative;">
+
+		 <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+	        <div class="btn-group" role="group">
+	            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab">
+	                <div class="hidden-xs">Service/Product</div>
+	            </button>
+	        </div>
+	        <div class="btn-group" role="group">
+	            <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab">
+	                <div class="hidden-xs">Packages</div>
+	            </button>
+	        </div>
+	        <div class="btn-group" role="group">
+	            <button type="button" id="following" class="btn btn-default" href="#tab3" data-toggle="tab">
+	                <div class="hidden-xs">Membership</div>
+	            </button>
+	        </div>
+	        <div class="btn-group" role="group">
+	            <button type="button" id="following" class="btn btn-default" href="#tab4" data-toggle="tab">
+	                <div class="hidden-xs">Prepaid Card</div>
+	            </button>
+	        </div>
+	        
+	    </div>
+
+	     
+	      <div class="tab-content">
+
+	        <div class="tab-pane fade in active" id="tab1">
+	        	<br>
+		        <div class="form-group">
+		          <input type="text" ng-model="service" ng-change="searchItem({query:service,type:'service'})" class="form-control" placeholder="Search Service or Product">
+		        </div>
+	        </div>
+
+	        <div class="tab-pane fade in" id="tab2">
+	        	<br>
+		        <div class="form-group">
+		          <select style="width: 100%;" class="select" ng-model="package" ng-change="getStaffByService({id:package,type:'package',name:''})" ng-options="pkg.id as pkg.item for pkg in packageToSale">
+			        </select>
+		        </div>
+	        </div>
+
+	        <div class="tab-pane fade in" id="tab3">
+	        	<br>
+		        <div class="form-group">
+		          <select style="width: 100%;" class="select" ng-model="membership" ng-change="getStaffByService({id:membership,type:'membership',name:''})" ng-options="mem.id as mem.item for mem in membershipToSale">
+			        </select>
+		        </div>
+	        </div>
+
+	         <div class="tab-pane fade in" id="tab4">
+	        	<br>
+		        <div class="form-group">
+		          <select style="width: 100%;" class="select" ng-model="card" ng-change="getStaffByService({id:card,type:'card',name:''})" ng-options="cc.id as cc.item for cc in cardToSale">
+			        </select>
+		        </div>
+	        </div>
+
+	      </div>
+	    	
+	    	<div class="well" style="position: absolute; width: 92%;z-index: 100;" ng-show="searchItemBox">
+	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+	             <li ng-repeat="list in itemList">
+	             		<a ng-click="getStaffByService({id:list.id,type:list.type,name:list.name})" href="javascript:void(0)">
+	             			<span>{{list.name}}</span>
+	             		</a>
+	             </li>
+	          </ul>  
+	        </div>
+
+	      	<div class="col-md-12 custome-padding">
+	      		<div class="col-md-4 pull-left custome-padding">
+	        		<!-- <span>Staff</span> -->
+			        <select class="select" ng-model="stylist" ng-change="getPrice(stylist)" ng-options="staff.id as staff.category for staff in staffList">
+			        </select>
+	        	</div>
+
+	        	<div class="col-md-4 custome-padding">
+	        		<span>Quantity</span>
+			        <select class="select" ng-model="quantity" ng-options="qty as qty for qty in quantityList">
+			        	
+			        </select>
+	        	</div>
+	        	<div class="col-md-4 custome-padding">
+	        		<span>Discount</span>
+			        <select class="select" ng-model="discount" ng-options="disc as disc for disc in discountList">
+			        </select>
+			        <span>%</span>
+	        	</div>
+	        </div>
+	        <br><br><br>
+	        <div class="col-md-12 custome-padding">
+	        	<div class="col-md-6 custome-padding">
+					<span>Price :</span>
+					<span>{{price}}</span>
+	        	</div>
+	        	<!-- <div class="col-md-6 custome-padding">
+					 <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Custome Price">
+			        </div>
+	        	</div> -->
+	        </div>
+	        <br><br><br>
+	        <div class="col-md-12 custome-padding" ng-show="packageInfoBox">
+	        	<div class="col-md-12 custome-padding">
+					<span>Package :</span>
+					<span>{{package}}</span>
+	        	</div>
+	        	
+	        </div>
+
+	   	 <div style="position: absolute;bottom: 15px;">
+	      	<button ng-click="calculateBill()" class="btn btn-primary">Add Selected Item</button>
+	    </div>
+
+	</div>
+
+	<div class="col-md-7 well" style="height: 80vh; position: relative;">
+		<div style="height: 335px;">
+			<table class="table">
+				  <thead>
+				    <tr>
+				      <th>SN</th>
+				      <th>Description</th>
+				      <th>Stylist</th>
+				      <th>Quantity</th>
+				      <th>Rate</th>
+				      <th>Amount</th>
+				      <th>Action</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr ng-repeat="item in info">
+				      <td>{{$index + 1}}</td>
+				      <td>{{item.description}}</td>
+				      <td>{{item.is_stylist}}</td>
+				      <td>{{item.quantity}}</td>
+				      <td>{{item.rate}}</td>
+				      <td>{{item.amount}}</td>
+				      <td><a ng-click="removeItem(item.index)" href="javascript:void(0)">Delete</a></td>
+				    </tr>
+				    
+				  </tbody>
+			</table>
+		</div>
+
+		<hr>
+		<div>
+			<button class="btn btn-primary pull-left">Hold Bill</button>
+			<button ng-click="generateBill()" class="btn btn-primary pull-right">Calculate Bill</button>
+		</div>
+		<br><br>
+		<div>
+			<table class="table">
+				  <thead>
+				    <tr>
+				      <th>Sub Total</th>
+				      <th>Discount</th>
+				      <th>Service Tax</th>
+				      <th>Luxury Tax</th>
+				      <th>Vat</th>
+				      <th>Total</th>
+				      <th>Action</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				      <td>{{sum.sub_total}}</td>
+				      <td>{{sum.discount}}</td>
+				      <td>{{sum.service_tax}}</td>
+				      <td>{{sum.luxury_tax}}</td>
+				      <td>{{sum.vat}}</td>
+				      <td>{{total}}</td>
+				      <td><a ng-click="cancelOrder()" href="javascript:void(0)">Cancel</a></td>
+				    </tr>
+				    
+				  </tbody>
+			</table>
+		</div>
+		<br>
+
+		<!-- <div style="position: absolute;bottom: 10px;"> -->
+			<div class="pull-left custome-padding">
+			    <select class="select" ng-model="pay_id" ng-change="getPrice(pay_id)" ng-options="pay.id as pay.payment_method for pay in payMethod">
+			    </select>
+	        </div>
+	        <div class="pull-right">
+	        	<button ng-click="checkout()" class="btn btn-primary">Checkout</button>	
+	        </div>
+	        
+		<!-- </div> -->
+		
+
+
+	</div>
+
+
+
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".btn-pref .btn").click(function () {
+		    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+		    // $(".tab").addClass("active"); // instead of this do the below 
+		    $(this).removeClass("btn-default").addClass("btn-primary");   
+		});
+	});
+</script>

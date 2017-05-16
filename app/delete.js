@@ -25,8 +25,14 @@ $routeProvider
         });
 });
 
-var access_token = localStorage.getItem("access_token");
-var base_url = '52.33.37.151:8080';
+// var access_token = localStorage.getItem("access_token");
+if(localStorage.getItem("access_token") == null){
+    window.location = 'login.html';
+}else{
+    // window.location = 'index.html';
+    var access_token = localStorage.getItem("access_token");  
+}
+var base_url = 'zalonstyle.in:8080';
 // var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http) {

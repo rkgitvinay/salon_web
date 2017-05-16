@@ -144,8 +144,14 @@
       
 
 <script>
-var access_token = 1;
-var url = 'http://52.33.37.151:8080/admin/customers?access_token='+access_token;
+// var access_token = 1;
+if(localStorage.getItem("access_token") == null){
+    window.location = 'login.html';
+}else{
+    // window.location = 'index.html';
+    var access_token = localStorage.getItem("access_token");  
+}
+var url = 'http://zalonstyle.in:8080/admin/customers?access_token='+access_token;
 
 var ctx = document.getElementById("pieChart");
 var bar = document.getElementById("barChart");
