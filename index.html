@@ -145,33 +145,22 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
       <div class="container">
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-left">
-            <li class="active"><a href="index.html"><span><i aria-hidden="true" class="fa fa-home fa-lg">&nbsp</i></span>Calendar</a></li>
-            <li><a href="account.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Account</a></li>
-            <li><a href="chart.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Chart</a></li>
-            <li><a href="delete.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Delete Bill</a></li>
-            <li><a href="customer.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Customer</a></li>
-            <li><a href="billing.html"><span><i aria-hidden="true" class="fa fa-comment fa-lg">&nbsp</i></span>Billing</a></li>
-          </ul> 
+            <li class="active"><a href="index.html"><span><i aria-hidden="true" class="fa fa-calendar fa-lg">&nbsp</i></span>Calendar</a></li>
+            <li><a href="billing.html"><span><i aria-hidden="true" class="fa fa-id-card fa-lg">&nbsp</i></span>Billing</a></li>
+            <li><a href="account.html"><span><i aria-hidden="true" class="fa fa-inr fa-lg">&nbsp</i></span>Account</a></li>
+            <li><a href="chart.html"><span><i aria-hidden="true" class="fa fa-bar-chart fa-lg">&nbsp</i></span>Chart</a></li>
+            <li><a href="delete.html"><span><i aria-hidden="true" class="fa fa-trash-o fa-lg">&nbsp</i></span>Delete Bill</a></li>
+            <li><a href="customer.html"><span><i aria-hidden="true" class="fa fa-users fa-lg">&nbsp</i></span>Customer</a></li>
+          </ul>  
+
+         <!--  <ul class="nav navbar-nav">
+            <li id="btnLogout"><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Hibiscus</a></li>
+          </ul>  -->
 
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                Select Salon
-                <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Link</a></li>
-                    <li><a href="#">Link</a></li>
-                    <li><a href="#">Link</a></li>
-                    <li><a href="#">Link</a></li>
-                </ul>
-            </li>
-
             <li id="btnLogout"><a href="login.html"><span><i aria-hidden="true" class="fa fa-bell fa-lg">&nbsp</i></span>Logout</a></li>
             
-          </ul> 
-
-
+          </ul>       
        </div>
     </div>
 </nav>
@@ -204,7 +193,7 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                         </div>
                         <div id="service_info" class="form-group pull-right">
                             <label>Service</label>
-                            <input autocomplete="off" class="form-control" id="service_search" type="text" required="">
+                            <input autocomplete="off" placeholder="Service Name" class="form-control" id="service_search" type="text" required="">
                         </div>
                         <div class="well" id="segession_box" style="margin-left: 65%;position: absolute; width: 30%;display: none;">
                             <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">                                                     
@@ -229,7 +218,7 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                         </div>
                         <div id="notes_info" class="form-group pull-right">
                             <label for="inputPassword">Notes</label>
-                            <input autocomplete="off" id="eventNotes" class="form-control" id="notes" type="text">
+                            <input autocomplete="off" placeholder="Notes (Optional)" id="eventNotes" class="form-control" id="notes" type="text">
                         </div>
                         <br><br>                        
                         <label>Repeat</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -249,15 +238,17 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                         <!-- <legend>Customer Information</legend> -->
                         <div class="form-group">
                             <label>Mobile</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <input maxlength="10" autocomplete="off" class="form-control" id="cust_mobile" type="text">
+                            <input maxlength="10" autocomplete="off" class="form-control" placeholder="Customer Mobile" id="cust_mobile" type="text">
                         </div>
-                         <div class="well" id="segession_cust" style="margin-left: 52px; position: absolute; width: 30%;display: none;">
+
+                         <div class="well" id="segession_cust" style="position: absolute; width: 60%;display: none;">
                             <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">                                                     
                             </ul>  
                         </div>
+
                         <div class="form-group pull-right">
                             <label for="inputPassword">Name</label>
-                            <input autocomplete="off" class="form-control" name="cust_name" id="cust_name" type="text">
+                            <input autocomplete="off" class="form-control" placeholder="Customer Name" name="cust_name" id="cust_name" type="text">
                         </div> 
                     </fieldset>
                 </form>
@@ -323,9 +314,9 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             selectable: true,
             eventLimit: true,
             allDaySlot:false,
-              eventOverlap :false,
+            eventOverlap :true,
             minTime: '08:00:00',
-              maxTime:'22:00:00',
+            maxTime:'22:00:00',
             slotDuration: '00:15:00',
             aspectRatio: 2,            
             header: {
@@ -333,8 +324,8 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
               center: 'title',
               right: 'next'
             },            
-              titleFormat : 'ddd, MMM DD',            
-              scrollTime: ''+n+':00:00',                        
+            titleFormat : 'ddd, MMM DD',            
+            scrollTime: ''+n+':00:00',                        
             resources: 'http://'+base_url+'/calendar/getStaffResources?access_token='+access_token,
             events: 'http://'+base_url+'/calendar/getStaffEvents?access_token='+access_token+'',
             eventRender: function(event, element) {
@@ -344,25 +335,31 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                     }
                     element.find('.fc-title').append("<br/><div class='e_cust'>"+event.description+"</div>");
                     element.find('.fc-title').append("<br/><div class='e_note'>" + event.notes+"</div>");
-                    $(element).addTouch();                 
-                        element.bind( 'click', function( event ) {
-                            var doubleClickOpportunity = 300, 
-                              $elem = $( event.target ),
-                              clicker = $elem.data( 'clicker' );
-                            if ( clicker ) {                          
-                              clearTimeout( clicker );
-                              $elem.data( 'clicker', '' );
-                              $elem.trigger( 'doubleclick' );
-                            } else {                         
-                              $elem.data( 'clicker', setTimeout(function() {
-                                  $elem.data( 'clicker', '' );
-                                  $elem.trigger( 'singleclick' );
-                              }, doubleClickOpportunity ));
-                            }
-                        });
+                    $(element).addTouch(); 
+
+                        if(event.is_billing == 'false'){
+                          element.bind( 'click', function( event ) {
+                              var doubleClickOpportunity = 300, 
+                                $elem = $( event.target ),
+                                clicker = $elem.data( 'clicker' );
+                              if ( clicker ) {                          
+                                clearTimeout( clicker );
+                                $elem.data( 'clicker', '' );
+                                $elem.trigger( 'doubleclick' );
+                              } else {                         
+                                $elem.data( 'clicker', setTimeout(function() {
+                                    $elem.data( 'clicker', '' );
+                                    $elem.trigger( 'singleclick' );
+                                }, doubleClickOpportunity ));
+                              }
+                          });
+                        }
+
                         element.bind( 'singleclick', function(){
+                          //console.log(event);
+
                             billing_data = [];
-                            billing_data.push({event_id:event.id,access_token:access_token});                     
+                            billing_data.push({event_id:event.id,access_token:access_token,customer_id:event.customer_id});                     
                             if(event.editable == true){
                                 swal({
                                     title: "Choose your option",
@@ -439,7 +436,7 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                                   }); 
                                 } 
                         });
-                        element.bind( 'doubleclick', function() {                        
+                        element.bind( 'doubleclick', function(){                        
                                 if(event.editable == true){
                                   var btn = '<button id="noShowBtn" data-event_id="'+event.id+'" data-editable="false" data-color="#FF7145">No Show</button>';
                                 }else if(event.editable == false && event.color == '#A1A2A3'){
@@ -520,7 +517,7 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                           text: "Appointment is closed for this day",
                           animation: false                          
                         });
-                    }else if(check < current_time || check >= day_end_time || check < day_start_time){                        
+                    }else if(check >= day_end_time || check < day_start_time){                        
                         swal({
                           title: "Failed!",
                           text: "Appointment is not allowed for this time",
@@ -547,13 +544,25 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
                         $("#calendar").addClass("blur");                       
                         $('#myModal').modal('show');
                     }                                
-                },               
+                },      
+
                 eventDurationEditable:false,
-                eventStartEditable : false,                      
+                eventStartEditable : true,                      
                 eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
-                    
-                    revertFunc(); 
-                }        
+                    current_time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                    var start = event.start.format("YYYY-MM-DD HH:mm:ss");
+                    var end = event.end.format("YYYY-MM-DD HH:mm:ss");
+                    $.ajax({
+                      url: 'http://'+base_url+'/calendar/updateEvent',
+                      data: 'access_token='+access_token+'&id='+ event.id+'&start='+ start +'&end='+ end +'&staff_id='+ event.resourceId ,
+                      type: "GET",
+                      success: function(json){
+                          if(json.data == 'busy'){
+                              revertFunc();
+                          }
+                       }
+                    });
+                }            
         });
 
       function getDate(){
@@ -584,12 +593,10 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             $('#stylist').css({'display':'block'}); 
             $('#selectStaff').css({'display':'none'});           
         });
-
         // $('#myModal').on('shown.bs.modal', function() { 
         //     $("#calendar").addClass("blur");
         // });
-
-    $("#datepicker" ).datepicker({ 
+        $("#datepicker" ).datepicker({ 
             dateFormat: 'dd-mm-yy',
             minDate:0,
             onSelect: function(){              
@@ -674,16 +681,20 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
 
         $(document).on('keyup', '#cust_mobile',function(){
             var key = $(this).val();
+            var type = 'mobile';
             if(key.length > 2  && key.length <= 6){
                 $.ajax({
                     type: "GET",
                     url: 'http://'+base_url+'/calendar/searchCustomer',
-                    data:'access_token='+access_token+'&keyword='+$(this).val(),       
+                    data:'access_token='+access_token+'&keyword='+key+'&type='+type,
                     success: function(data){  
                         $('#segession_cust').show();
                         $('#segession_cust ul').empty();                                  
                         $.each(data, function(key,val){                        
-                            $("#segession_cust ul").append('<li><a class="customer" data-mobile="'+val.mobile+'" data-id="'+val.id+'" data-name="'+val.name+'" href="javascript:void(0);">'+val.mobile+'</a></li>');
+                            $("#segession_cust ul").append('<li><a class="customer" data-mobile="'+val.mobile+'" data-id="'+val.id+'" data-name="'+val.name+'" href="javascript:void(0);">'+
+                              '<span>'+val.name+'</span>'+
+                              '<span class="pull-right">'+val.mobile+'</span>'+
+                              '</a></li>');
                         });
                     }
                 });
@@ -692,9 +703,37 @@ background: linear-gradient(top, #f8f8f8, #f2f2f2);
             }
         });
 
+        $(document).on('keyup', '#cust_name',function(){
+            var key = $(this).val();
+            var type = 'name';
+            if(key.length > 2){
+                $.ajax({
+                    type: "GET",
+                    url: 'http://'+base_url+'/calendar/searchCustomer',
+                    data:'access_token='+access_token+'&keyword='+key+'&type='+type,
+                    success: function(data){  
+                        $('#segession_cust').show();
+                        $('#segession_cust ul').empty();                                  
+                        $.each(data, function(key,val){                        
+                            $("#segession_cust ul").append('<li><a class="customer" data-mobile="'+val.mobile+'" data-id="'+val.id+'" data-name="'+val.name+'" href="javascript:void(0);">'+
+                              '<span>'+val.name+'</span>'+
+                              '<span class="pull-right">'+val.mobile+'</span>'+
+                              '</a></li>');
+                        });
+                    }
+                });
+            }else{
+                $('#segession_cust').hide();
+            }
+        });
+
+        
+
         $(document).on('click','#billBtn', function(){
             event_id = billing_data[0].event_id;
-            moveToScreenTwo(event_id);
+            customer_id = billing_data[0].customer_id;
+            //moveToScreenTwo(event_id);
+            $(location).attr('href', 'billing.html?customer_id='+customer_id+'');
         });
         $(document).on('click','.service', function(){
             var category_name = $(this).data('name');

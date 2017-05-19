@@ -90,11 +90,39 @@ select{
 	padding-right: 0px;
 }
 
+.hidden-xs{
+	font-size: 13px;
+}
 
 </style>
 
-<div class="col-md-2 well">
-	Hold Bill
+<div class="col-md-2 well custome-padding" style="height: 88vh;">
+
+	<ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Bills On hold</a></li>
+        <li ng-repeat="hold in holdList">
+        	<a href="javascript:void(0)">
+        	<span>{{hold.customer_name}}</span>
+        	<span ng-click="getHoldBillByCustomer(hold.customer_mobile)" class="pull-right">
+        		<button>Add</button>
+        	</span>
+        	</a>
+        </li>
+    </ul>
+    <br><br>
+
+    <ul class="nav nav-pills nav-stacked" ng-show="appointmentList">
+        <li class="active"><a href="#">{{apnt_cust}}</a></li>
+        <li ng-repeat="row in serviceList">
+        	<a href="javascript:void(0)">
+        	<span>{{row.service}}</span>
+        	<span class="pull-right">
+        		<button ng-click="addServiceToBill({event_id:row.event_id,staff_id:row.staff_id,service_id:row.service_id,service:row.service})">Add</button>
+        	</span>
+        	</a>
+        </li>
+    </ul>
+
 </div>
 
 <div class="col-md-10">
@@ -121,17 +149,17 @@ select{
 	        </div>
 
 	        <div class="form-group">
-	          <input type="text" ng-model="mobile" ng-change="searchCustomerByMobile({str:mobile,type:'mobile'})" class="form-control" placeholder="Customer Mobile">
+	          <input type="text" ng-model="mobile" ng-change="searchCustomerByMobile({str:mobile,type:'mobile'})" class="form-control num-valid" placeholder="Customer Mobile">
 	        </div>
 
 	      </form> 
 
 	     <ul class="nav navbar-nav" style="margin-top: 9px;">        
 	      	<div class="btn-group" data-toggle="buttons">
-			  <label class="btn btn-primary" ng-class="{active: gender=='male'}">
+			  <label ng-click="selectGender('male')" class="btn btn-primary" ng-class="{active: gender=='male'}">
 			    <input type="radio" autocomplete="off">Male
 			  </label>
-			  <label class="btn btn-primary" ng-class="{active: gender=='female'}">
+			  <label ng-click="selectGender('female')" class="btn btn-primary" ng-class="{active: gender=='female'}">
 			    <input type="radio" autocomplete="off">Female
 			  </label>
 			</div>
@@ -232,7 +260,7 @@ select{
 
 	      </div>
 	    	
-	    	<div class="well" style="position: absolute; width: 92%;z-index: 100;" ng-show="searchItemBox">
+	    	<div class="well" style="position: absolute; width: 92%;z-index: 100;height: 300px; overflow-y: auto;" ng-show="searchItemBox">
 	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
 	             <li ng-repeat="list in itemList">
 	             		<a ng-click="getStaffByService({id:list.id,type:list.type,name:list.name})" href="javascript:void(0)">
@@ -244,7 +272,6 @@ select{
 
 	      	<div class="col-md-12 custome-padding">
 	      		<div class="col-md-4 pull-left custome-padding">
-	        		<!-- <span>Staff</span> -->
 			        <select class="select" ng-model="stylist" ng-change="getPrice(stylist)" ng-options="staff.id as staff.category for staff in staffList">
 			        </select>
 	        	</div>
@@ -264,15 +291,14 @@ select{
 	        </div>
 	        <br><br><br>
 	        <div class="col-md-12 custome-padding">
-	        	<div class="col-md-6 custome-padding">
+	        	<div class="col-md-6 custome-padding" style="padding-top: 6px;">
 					<span>Price :</span>
 					<span>{{price}}</span>
 	        	</div>
-	        	<!-- <div class="col-md-6 custome-padding">
-					 <div class="form-group">
-			          <input type="text" class="form-control" placeholder="Custome Price">
-			        </div>
-	        	</div> -->
+	        	<div class="col-md-6 custome-padding" style="display: flex;">
+	        		<span class="col-md-6 custome-padding" style="padding-top: 6px;">Custom Price :</span>
+					<span class="col-md-6 custome-padding"><input type="text" ng-model="custom_price" class="form-control num-valid" placeholder="Custome Price"></span> 
+	        	</div>
 	        </div>
 	        <br><br><br>
 	        <div class="col-md-12 custome-padding" ng-show="packageInfoBox">
@@ -290,7 +316,7 @@ select{
 	</div>
 
 	<div class="col-md-7 well" style="height: 80vh; position: relative;">
-		<div style="height: 335px;">
+		<div style="height: 250px;overflow-y: auto;">
 			<table class="table">
 				  <thead>
 				    <tr>
@@ -318,9 +344,9 @@ select{
 			</table>
 		</div>
 
-		<hr>
+		<!-- <hr> -->
 		<div>
-			<button class="btn btn-primary pull-left">Hold Bill</button>
+			<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
 			<button ng-click="generateBill()" class="btn btn-primary pull-right">Calculate Bill</button>
 		</div>
 		<br><br>
@@ -351,18 +377,37 @@ select{
 				  </tbody>
 			</table>
 		</div>
-		<br>
+		
+		<div class="col-md-12 custome-padding">
 
-		<!-- <div style="position: absolute;bottom: 10px;"> -->
-			<div class="pull-left custome-padding">
-			    <select class="select" ng-model="pay_id" ng-change="getPrice(pay_id)" ng-options="pay.id as pay.payment_method for pay in payMethod">
+			<div class="col-md-4 custome-padding">
+			    <select class="select" ng-model="pay_id" ng-change="testChange(pay_id)" ng-options="pay.id as pay.payment_method for pay in payMethod">
 			    </select>
 	        </div>
+
+	        <div class="col-md-4 custome-padding" ng-show="prepaidCards">
+			    <select class="select" ng-model="prepaid_card_id" ng-options="prp.card_id as prp.card_name for prp in prepaidCardList">
+			    </select>
+	        </div>
+
+	        <div class="col-md-2 custome-padding">
+			    <input type="text" ng-model="amt" class="form-control" placeholder="Amount">
+	        </div>
+
+
+	        <div class="col-md-2 pull-right">
+	        	<button ng-click="add()" class="btn btn-default num-valid">Add</button>	
+	        </div>
+		</div>
+		
+
+
+	        
+		<div style="position: absolute;bottom: 15px;">
 	        <div class="pull-right">
 	        	<button ng-click="checkout()" class="btn btn-primary">Checkout</button>	
 	        </div>
-	        
-		<!-- </div> -->
+		</div>
 		
 
 
@@ -380,4 +425,15 @@ select{
 		    $(this).removeClass("btn-default").addClass("btn-primary");   
 		});
 	});
+
+	$(".num-valid").keydown(function (e) {       
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||             
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||              
+            (e.keyCode >= 35 && e.keyCode <= 40)) {                 
+                 return;
+        }        
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
 </script>
