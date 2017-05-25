@@ -347,7 +347,7 @@ select{
 		<!-- <hr> -->
 		<div>
 			<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
-			<button ng-click="generateBill()" class="btn btn-primary pull-right">Calculate Bill</button>
+			<!-- <button ng-click="generateBill()" class="btn btn-primary pull-right">Calculate Bill</button> -->
 		</div>
 		<br><br>
 		<div>
@@ -356,22 +356,22 @@ select{
 				    <tr>
 				      <th>Sub Total</th>
 				      <th>Discount</th>
-				      <th>Service Tax</th>
-				      <th>Luxury Tax</th>
+				      <th>Taxable Amount</th>
+				      <th>ST</th>
+				      <th>LT</th>
 				      <th>Vat</th>
 				      <th>Total</th>
-				      <th>Action</th>
 				    </tr>
 				  </thead>
 				  <tbody>
 				    <tr>
 				      <td>{{sum.sub_total}}</td>
 				      <td>{{sum.discount}}</td>
+				      <td>{{sum.taxableAmt}}</td>
 				      <td>{{sum.service_tax}}</td>
 				      <td>{{sum.luxury_tax}}</td>
 				      <td>{{sum.vat}}</td>
-				      <td>{{total}}</td>
-				      <td><a ng-click="cancelOrder()" href="javascript:void(0)">Cancel</a></td>
+				      <td>{{sum.total}}</td>
 				    </tr>
 				    
 				  </tbody>
@@ -380,24 +380,35 @@ select{
 		
 		<div class="col-md-12 custome-padding">
 
-			<div class="col-md-4 custome-padding">
+			<div class="col-md-3 custome-padding">
 			    <select class="select" ng-model="pay_id" ng-change="testChange(pay_id)" ng-options="pay.id as pay.payment_method for pay in payMethod">
 			    </select>
 	        </div>
 
-	        <div class="col-md-4 custome-padding" ng-show="prepaidCards">
-			    <select class="select" ng-model="prepaid_card_id" ng-options="prp.card_id as prp.card_name for prp in prepaidCardList">
+	        <div class="col-md-5 custome-padding" ng-show="prepaidCards">
+			    <select class="select" ng-model="prepaid_card_id" ng-change="getPrepaidCardValue(prepaid_card_id)" ng-options="prp.card_id as prp.card_name for prp in prepaidCardList">
 			    </select>
+			    <span>{{cardValue}}</span>
 	        </div>
 
 	        <div class="col-md-2 custome-padding">
-			    <input type="text" ng-model="amt" class="form-control" placeholder="Amount">
+			    <input type="text" ng-model="amt" class="form-control num-valid" placeholder="Amount">
 	        </div>
-
 
 	        <div class="col-md-2 pull-right">
-	        	<button ng-click="add()" class="btn btn-default num-valid">Add</button>	
+	        	<button ng-click="addPartialMethod()" class="btn btn-default num-valid">Add</button>	
 	        </div>
+
+		</div>
+		<br><hr style="border-top-width:2px;border-top-color: #ccc;">
+		<div class="col-md-12 custome-padding" style="height: 75px;overflow-y: auto;">
+			<ul>
+				<li ng-repeat="par in partialLog">
+					<span class="col-md-6">{{par.name}}</span>
+					<span class="col-md-4">{{par.value}}</span>
+					<span class="col-md-2"><a ng-click="removePartial(par.id)" href="javascript:void(0)">Delete</a></span>
+				</li>
+			</ul>
 		</div>
 		
 
@@ -418,7 +429,7 @@ select{
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function() {	
 		$(".btn-pref .btn").click(function () {
 		    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
 		    // $(".tab").addClass("active"); // instead of this do the below 

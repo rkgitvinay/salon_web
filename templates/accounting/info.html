@@ -1,11 +1,22 @@
-
 <style type="text/css">
-  .
+  .modal-backdrop {
+    z-index: -1;
+  }
+  .modal-dialog{
+    padding-top: 41px;
+  }
 </style>
+
 <div class="container" style="width: 100% !important;">
     <div class="row">
         <div class="col-sm-3 nopadding" style="background-color: #fafbfb;height: 765px;">
-          
+           <div class="menu-head" style="background-color: #ffffff;border-right: 1px solid antiquewhite">
+                <!-- <span data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus icon" aria-hidden="true"></i></span> -->
+                  <span>
+                     <!--  <a href="javascript:void(0)" ng-click="showInactive()">show</a> -->
+                  </span>
+            </div>
+
             <div class="cards">
 
               <div class="nav-side-menu">
@@ -51,7 +62,7 @@
         </div>
 
 
-        <div class="col-sm-9 nopadding" style="background-color: #ffffff;height: 765px;">   
+        <div class="col-sm-9 nopadding" style="background-color: #ffffff;height: 456px;">   
             <div class="menu-head">
                 <span class="dropdown">
                     <i class="fa fa-calendar dropbtn icon" aria-hidden="true"></i>
@@ -62,8 +73,8 @@
                 </span>
 
                 <b><span style="margin-left: 40%;">{{transaction_type}}</span></b>
-                <button style="padding: 2px 12px !important;" data-toggle="modal" data-target="#addExpenseModal" class="btn btn-default pull-right">
-                    <i class="fa fa-plus icon" aria-hidden="true"></i> Add Transaction
+                <button style="padding: 2px 12px !important;" data-toggle="modal" data-target="#addExpenseModal" class="btn btn-default iosBtn pull-right">
+                     Add Transaction
                 <!-- </span> -->
                 </button>
             </div>
@@ -81,17 +92,38 @@
                     </thead>
                     <tbody id="tbody">
 
-                        <tr ng-repeat="log in payment_log | orderBy:'-created_at'" id="tr">
-                            <td>{{log.date}}</td>
-                            <td>{{log.payee}}</td>
-                            <td>{{log.description}}</td>
+                        <tr ng-repeat="log in payment_log | orderBy:'-payee'" id="tr">
+                            <td ng-if="transaction_type == 'Billing'" style="padding: 4px !important;">
+                              <span class="pull-left" style="width: 50px;">
+                                <a ng-click="resendSms(log.payee)" href="javascript:void(0)" style="color: green;font-size: 13px;">Resend SMS</a>
+                              </span>
+                              <span class="pull-right">{{log.date}}</span>
+                            </td>
+                            <td ng-if="transaction_type != 'Billing'">{{log.date}}</td>
+
+                            <td ng-if="transaction_type == 'Billing'" ng-class="{payee:transaction_type=='Billing'}">
+                                <a ng-click="getBillInfo(log.payee)" data-toggle="modal" data-target="#billDetailModel" href="javascript:void(0)">
+                                  {{log.payee}}
+                                </a>
+                            </td>
+                            <td ng-if="transaction_type != 'Billing'">{{log.payee}}</td>
+
+
+                            <td ng-if="log.description=='pending' && log.total != 0">
+                                <a data-toggle="modal" ng-class="{pending:log.description=='pending'}" data-target="#applyPayMethod" ng-click="setInvoiceNum({invoice_original:log.invoice_original,payee:log.payee})" href="javascript:void(0)">
+                                  {{log.description}}
+                                </a>
+                            </td>
+                            <td ng-if="log.description != 'pending' ">{{log.description}}</td>
+                            <td ng-if="log.description == 'pending' && log.total == 0">NA</td>
+
+                           <!--  <td ng-if="transaction_type != 'Billing'">{{log.payee}}</td> -->
 
                             <td ng-if="log.addition == 0 && log.substraction == 0">{{log.total}}</td>
                             <td class="credit" ng-if="log.substraction == 0 && log.addition != 0">{{log.addition}}</td>
                             <td class="debit" ng-if="log.substraction != 0 && log.addition == 0">{{log.substraction}}</td>
 
-                            <!-- <td ng-if="transaction_type != 'Billing'">{{log.total}}</td> -->
-                            <!-- <td ng-if="transaction_type == 'Billing'">N/A</td>                          -->
+                            
                         </tr>
                        
                                                                  
@@ -139,9 +171,13 @@
                     <input ng-model="accFormInfo.type" name="type" value="bank" type="radio">
                         Bank
                     </label> 
-                    <label class="radio-inline pull-right" for="radios-1">
+                    <label style="margin-left: 9%;" class="radio-inline pull-right" for="radios-1">
                         <input ng-model="accFormInfo.type" name="type" value="wallet" type="radio">
                         Wallet
+                    </label> 
+                    <label class="radio-inline pull-right" for="radios-1">
+                        <input ng-model="accFormInfo.type" name="type" value="other" type="radio">
+                        Other
                     </label> 
                 </div>
                 <div class="ios-input input-cc" style="display: none;">
@@ -171,11 +207,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <a href="#" data-dismiss="modal">Close</a>
-        <span style="margin-left: 35%;font-size: 15px;"><b>New Transaction</b></span>
+        <span style="margin-left: 26%;font-size: 15px;"><b>New Transaction</b></span>
         <a href="javascript:void(0);" data-dismiss="modal" ng-click="addTransaction()" class="pull-right addTransaction">Save</a>
       </div>
       <div class="modal-body" style="padding: 0 !important;">
-          <div class="btn-group selector"  data-toggle="buttons" style="padding-left: 25%;">
+          <div class="btn-group selector"  data-toggle="buttons" style="padding-left: 28%;">
               <label class="btn btn-primary blue active">
                 <input type="radio" class="toggle" value="1">Pay
               </label>
@@ -191,7 +227,8 @@
                <form id="payForm">
                   <fieldset>                                            
                       <div class="form-group">                        
-                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">                        
+                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">
+                            <option value=''>Select Category</option>                         
                             <option ng-repeat="cat in category" value="{{cat.category_name}}">{{cat.category_name}}</option>                          
                         </select>                       
                       </div>
@@ -203,7 +240,8 @@
                       </div>
 
                       <div class="form-group">                        
-                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">                        
+                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">      
+                          <option value=''>Select Payment Method</option>                  
                           <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
                         </select>
                       </div>
@@ -223,12 +261,22 @@
                <form id="receiveForm">
                   <fieldset>                      
                       <div class="form-group">                        
-                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">                        
+                        <select ng-model="cat_id" ng-change="getSubCategory(cat_id)" class="form-control" id="exampleSelect1">  
+                            <option value=''>Select Category</option>                      
                             <option ng-repeat="cat in category" value="{{cat.category_name}}">{{cat.category_name}}</option>                          
                         </select>                       
-                      </div>                      
+                      </div> 
+
+                      <div class="form-group" ng-show='subCat'>                        
+                        <select ng-model="subCat_id" class="form-control">
+                          <option value="">{{testOpt}}</option>
+                          <option ng-repeat="scat in subCategory" value="{{scat.id}}">{{scat.name}}</option>                          
+                        </select>
+                      </div>
+
                       <div class="form-group">                        
-                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">                         
+                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">
+                          <option value=''>Select Payment Method</option>                         
                           <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
                         </select>
                       </div>
@@ -248,12 +296,14 @@
                   <fieldset>                                            
                       <div class="form-group">                        
                         <select ng-model="payment_id_from" ng-init="acc_name" class="form-control">
+                          <option value=''>Transfer From Account</option> 
                           <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
                         </select>
                       </div>
 
                       <div class="form-group">                        
                         <select ng-model="payment_id_to" ng-init="acc_name" class="form-control">
+                          <option value=''>Transfer To Account</option> 
                           <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
                         </select>
                       </div>
@@ -296,6 +346,112 @@
   </div>
 </div>
 
+
+<div class="modal fade bd-example-modal-sm" id="applyPayMethod" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 35%;font-size: 15px;"><b>Add Account</b></span>
+        <a href="javascript:void(0);" data-dismiss="modal" ng-click="applyPayMethod()" class="pull-right">Save</a>
+      </div>
+        <div class="modal-body">
+            <form id="receiveForm">
+                  <fieldset>
+                      <div class="form-group">                        
+                        <select ng-model="payment_id" ng-init="acc_name" class="form-control">
+                          <option value=''>Select Payment Method</option>                         
+                          <option ng-repeat="account in accounts" value="{{account.id}}">{{account.account_name}}</option>                          
+                        </select>
+                      </div>
+                </fieldset>
+              </form>
+        </div>     
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="billDetailModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span style="margin-left: 35%;font-size: 15px;"><b>Invoice Detail</b></span>
+        <a href="javascript:void(0);" data-dismiss="modal" class="pull-right">Close</a>
+      </div>
+        <div class="modal-body" style="height: 300px; overflow-y: auto;">
+           <!-- <div class="well"> -->
+
+                  <table class="table" style="margin-bottom: 0px !important;">
+                    <tbody>
+                      <tr>
+                        <td style="text-align: left;padding: 4px;border-top: 1px solid #fff;">{{result.customer_name}}</td>
+                        <td style="text-align: right;padding: 4px;border-top: 1px solid #fff;">Invoice- {{result.invoice_number}}</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: left;padding: 4px;border-top: 1px solid #fff;">{{result.customer_mobile}}</td>
+                        <td style="text-align: right;padding: 4px;border-top: 1px solid #fff;">{{result.date}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <table class="table" style="margin-bottom: 0px !important;">
+                    <thead>
+                      <tr>
+                        <th style="text-align: left;">Item</th>
+                        <th>Stylist</th>
+                        <th style="text-align: right;">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="item in items">
+                        <td style="text-align: left;">{{item.service_used}}</td>
+                        <td>{{item.stylist}}</td>
+                        <td style="text-align: right;">{{item.amount_spent}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <table class="table" style="margin-bottom: 0px !important;">
+                    <thead>
+                      <tr>
+                        <th style="text-align: left;">Billing Details</th>
+                        <th style="text-align: right;">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="text-align: left;">Sub Total</td>
+                        <td style="text-align: right;">{{result.sub_total}}</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: left;">Vat</td>
+                        <td style="text-align: right;">{{result.vat}}</td>
+                      </tr>
+                     <tr>
+                        <td style="text-align: left;">Service Tax</td>
+                        <td style="text-align: right;">{{result.service_tax}}</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: left;">Discount</td>
+                        <td style="text-align: right;">{{result.discount}}</td>
+                      </tr>
+                     
+                    </tbody>
+                  </table>
+
+                  <table class="table" style="margin-bottom: 0px !important;">
+                    <thead>
+                      <tr>
+                        <th style="text-align: left;">Total</th>
+                        <th style="text-align: right;">{{result.total}}</th>
+                      </tr>
+                    </thead>
+                  </table>
+              <!-- </div> -->
+        </div>     
+    </div>
+  </div>
+</div>
 
 
 

@@ -32,7 +32,7 @@ if(localStorage.getItem("access_token") == null){
 }
 
 var base_url = 'zalonstyle.in:8080';
-//var base_url = 'localhost:3000';
+// var base_url = 'localhost:3000';
 
 
 phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){  
@@ -248,6 +248,36 @@ phpro.controller('InfoCtrl', function($scope,$http,$window,$rootScope) {
         }
     }
 
+    var invoice_original = 0;
+    var invoice_number = 0;
+    $scope.setInvoiceNum = function(invoice){
+        invoice_original = invoice.invoice_original;
+        invoice_number = invoice.payee;
+    }
+
+    $scope.applyPayMethod = function(){
+        var method = {
+            access_token:access_token,
+            type:'service',
+            payment_method:parseInt($scope.payment_id),
+            invoice_new:invoice_number,
+            invoice:invoice_original,
+            mobile:1234567890,
+            is_partial:0,
+            prepaid_card:'false',
+            narration:'billing'
+        };
+        var url = 'http://'+base_url+'/accounting/applyPaymentMethod';
+        var data =  JSON.stringify(method);
+        $http({
+            method  : 'POST',
+            url     : url,
+            data    : {payload:data}
+        }).then(function(response){
+            $scope.payment_log = response.data.log;         
+        }); 
+    }
+
      $scope.addTransaction = function(){        
         if($scope.payment_id == undefined){
             var payment_type_id = $scope.selected;
@@ -293,6 +323,30 @@ phpro.controller('InfoCtrl', function($scope,$http,$window,$rootScope) {
         };
         var stats = {receive:get,pay:pay,balance:pay-get};
         return stats;
+    }
+
+    $scope.getBillInfo = function(invoice){
+        var url = 'http://'+base_url+'/accounting/getBillInfo';
+        $http({
+            method  : 'GET',
+            url     : url ,
+            params  :{access_token:access_token,invoice:invoice}          
+        }).then(function(response){               
+            $scope.items = response.data.items;
+            $scope.result = response.data.result;          
+        });
+
+    }
+
+    $scope.resendSms = function(invoice){
+        var url = 'http://'+base_url+'/accounting/resendSms';
+        $http({
+            method  : 'GET',
+            url     : url ,
+            params  :{access_token:access_token,invoice:invoice}          
+        }).then(function(response){ 
+            swal("Sent", "message has been sent!", "success")   
+        });
     }
 
     $scope.getCategoryStats = function(cat){
