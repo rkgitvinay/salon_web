@@ -31,8 +31,8 @@ if(localStorage.getItem("access_token") == null){
     var access_token = localStorage.getItem("access_token");  
 }
 
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 
 phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){  
@@ -333,7 +333,8 @@ phpro.controller('InfoCtrl', function($scope,$http,$window,$rootScope) {
             params  :{access_token:access_token,invoice:invoice}          
         }).then(function(response){               
             $scope.items = response.data.items;
-            $scope.result = response.data.result;          
+            $scope.result = response.data.result; 
+            $scope.paymentMethod = response.data.paymentMethod;         
         });
 
     }

@@ -93,13 +93,18 @@ select{
 .hidden-xs{
 	font-size: 13px;
 }
+.canceled{
+	color: red;
+}
+.canceledBlock{
+	display: none;
+}
 
 </style>
 
 <div class="col-md-2 well custome-padding" style="height: 88vh;">
-
 	<ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#">Bills On hold</a></li>
+        <li class="active"><a href="javascript:void(0)">Bills On hold</a></li>
         <li ng-repeat="hold in holdList">
         	<a href="javascript:void(0)">
         	<span>{{hold.customer_name}}</span>
@@ -111,8 +116,54 @@ select{
     </ul>
     <br><br>
 
+   <!--  <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Job Cards</a></li>
+        <li ng-repeat="job in jobCards">
+        	<a href="javascript:void(0)">
+        	<span>{{job.customer_name}}</span>
+        	<span ng-click="getJobCardDetail(job.customer_mobile)" class="pull-right">
+        		<button>Add</button>
+        	</span>
+        	</a>
+        </li>
+    </ul>
+    <br><br>
+ -->
+
+
+	<ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="javascript:void(0)">Job Cards</a></li>
+        
+		  <accordion>
+		    <accordion-group ng-repeat="group in jobCards" heading="{{group.customer_name}}" is-open="group.open">
+		      <accordion-heading>
+		        <span ng-class="{canceled: group.status=='canceled'}" style="cursor: pointer;">{{group.customer_name}}</span>         
+		        <span class="pull-right" ng-class="{canceled: group.status=='canceled'}">{{group.job_card_number}}</span>         
+		      </accordion-heading>
+
+		      	<span><button class="btn btn-default pull-left" ng-click="printJobCardDetails(group.id)">Print</button></span>
+		      
+		      	<span style="margin-left: 10px;" ng-class="{canceledBlock: group.status!='canceled'}">Reason : {{group.comment}}</span>
+		      	
+		      	<div ng-class="{canceledBlock: group.status=='canceled'}">
+			      	<span style="margin-left: 20px;"><button class="btn btn-default" ng-click="getJobCardDetail(group.id)">Bill</button></span>
+			      	
+			      	<span><button class="btn btn-default pull-right" ng-click="cancelJobCard(group.id)">Cancel</button></span>
+
+			      	<div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
+			          <input type="text" ng-model="comment" ng-change="changeComment(comment)" class="form-control" placeholder="Reason for cancellation">
+			        </div>
+		        </div>
+
+		    </accordion-group>    
+		  </accordion>
+		
+    </ul>
+
+
+
     <ul class="nav nav-pills nav-stacked" ng-show="appointmentList">
-        <li class="active"><a href="#">{{apnt_cust}}</a></li>
+        <li class="active"><a href="javascript:void(0)">{{apnt_cust}}</a></li>
         <li ng-repeat="row in serviceList">
         	<a href="javascript:void(0)">
         	<span>{{row.service}}</span>
@@ -347,7 +398,7 @@ select{
 		<!-- <hr> -->
 		<div>
 			<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
-			<!-- <button ng-click="generateBill()" class="btn btn-primary pull-right">Calculate Bill</button> -->
+			<button ng-click="addToJobCard()" class="btn btn-primary pull-right">Create Jobcard</button>
 		</div>
 		<br><br>
 		<div>

@@ -36,31 +36,49 @@
 
 
 
-<div class="login-form" ng-controller="loginCtrl">
-  <div class="top-login">
-    <span><img src="images/logo.png" alt=""/></span>
-  </div>
-  <h1>Login</h1>
-  <div class="login-top">
-  <!-- <div ng-show="error" class="alert alert-danger">{{error}}</div> -->
-    <form name="form" ng-submit="login()" role="form">
+<div class="login-form" ng-controller="loginCtrl" style="height: 100%;">
+  <div class="login-top" style="margin-top: 14% !important;">
+ 
+   <!--  <form name="form" ng-submit="login()" role="form">
       <div class="login-ic">
         <i ></i>
-        <input type="text" ng-model='formData.username' value="User name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'User name';}"/>
+        <input type="text" ng-model='formData.username' placeholder="Username"/>
         <div class="clear"> </div>          
       </div>
       <div class="login-ic">
         <i class="icon"></i>
-        <input type="password" ng-model='formData.password' value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'password';}"/>
+        <input type="password" ng-model='formData.password' placeholder="Passw" />
         <div class="clear"> </div>
       </div>
     
       <div class="log-bwn">
-        <input type="button" ng-click="login(formData)" value="Login" >
+        <input type="button"  ng-click="login(formData)" class="btn btn-lg btn-success btn-block" value="Login" >
       </div>
-    </form>
+    </form> -->
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Please sign in</h3>
+        </div>
+          <div class="panel-body">
+            <form accept-charset="UTF-8" role="form">
+              <fieldset>
+                <div class="form-group">
+                  <input class="form-control" ng-model='formData.username' placeholder="Username" type="text">
+              </div>
+              <div class="form-group">
+                <input class="form-control" ng-model='formData.password' placeholder="Password" type="password">
+              </div>
+              
+              <input style="text-align: center;" ng-click="login(formData)" class="btn btn-lg btn-success btn-block" type="button" value="Login">
+            </fieldset>
+              </form>
+            <span style="color: red;">{{errorMsg}}</span>
+          </div>
+        </div>
   </div>      
 </div>
+
 
 
 

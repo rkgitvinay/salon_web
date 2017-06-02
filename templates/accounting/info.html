@@ -423,29 +423,53 @@
                         <td style="text-align: left;">Sub Total</td>
                         <td style="text-align: right;">{{result.sub_total}}</td>
                       </tr>
-                      <tr>
-                        <td style="text-align: left;">Vat</td>
-                        <td style="text-align: right;">{{result.vat}}</td>
-                      </tr>
-                     <tr>
-                        <td style="text-align: left;">Service Tax</td>
-                        <td style="text-align: right;">{{result.service_tax}}</td>
-                      </tr>
-                      <tr>
+
+                      <tr ng-show="result.discount != 0">
                         <td style="text-align: left;">Discount</td>
                         <td style="text-align: right;">{{result.discount}}</td>
                       </tr>
-                     
+
+                      <tr ng-show="result.discount != 0">
+                        <td style="text-align: left;">Net Amount</td>
+                        <td style="text-align: right;">{{result.sub_total-result.discount}}</td>
+                      </tr>
+
+                      <tr ng-show="result.service_tax !=0 ">
+                        <td style="text-align: left;">Service Tax</td>
+                        <td style="text-align: right;">{{result.service_tax}}</td>
+                      </tr>
+                      <tr ng-show="result.luxury_tax !=0 ">
+                        <td style="text-align: left;">Luxury Tax</td>
+                        <td style="text-align: right;">{{result.luxury_tax}}</td>
+                      </tr>
+                           
+                     <tr ng-show="result.vat != 0">
+                        <td style="text-align: left;">Vat</td>
+                        <td style="text-align: right;">{{result.vat}}</td>
+                      </tr>
+
+                      <tr>
+                        <td style="text-align: left;">Total</td>
+                        <td style="text-align: right;">{{result.total}}</td>
+                      </tr>
+
                     </tbody>
                   </table>
 
+                 
                   <table class="table" style="margin-bottom: 0px !important;">
                     <thead>
                       <tr>
-                        <th style="text-align: left;">Total</th>
-                        <th style="text-align: right;">{{result.total}}</th>
+                        <th style="text-align: left;">Payment Details</th>
+                        <th style="text-align: right;">Price</th>
                       </tr>
                     </thead>
+                    <tbody>
+                      <tr ng-repeat="row in paymentMethod">
+                        <td style="text-align: left;">{{row.name}}</td>
+                        <td style="text-align: right;">{{row.value}}</td>
+                      </tr>
+                    </tbody>
                   </table>
               <!-- </div> -->
         </div>     

@@ -35,7 +35,8 @@ phpro.factory('Session', function($http) {
 
 phpro.controller('loginCtrl', function($scope,$http,$window,Session){
 
-     $scope.login = function (formData){        
+     $scope.login = function (formData){     
+        $scope.errorMsg = '';   
         var url = 'http://'+local_url+'/admin/login';
         var data =  JSON.stringify(formData);
         $http({
@@ -46,6 +47,8 @@ phpro.controller('loginCtrl', function($scope,$http,$window,Session){
             if(response.data.status=='success'){
                 Session.saveSession(response.data.user);
                 window.location.href= "index.html";    
+            }else{
+                $scope.errorMsg = response.data.message;
             }
             // console.log(response);                                                
         });

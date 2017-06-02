@@ -1,4 +1,4 @@
-var phpro = angular.module('billing', ['ngRoute']);
+var phpro = angular.module('billing', ['ngRoute','ui.bootstrap']);
 
 phpro.config(function($routeProvider) {
 
@@ -30,7 +30,23 @@ if(localStorage.getItem("access_token") == null){
 var base_url = 'zalonstyle.in:8080';
 // var base_url = 'localhost:3000';
 
-phpro.controller('mainCtrl', function($scope,$http,$window) {
+phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
+
+
+  //   $scope.groups = [
+  //   {
+  //     title: "Dynamic Group Header - 1",
+  //     content: "Dynamic Group Body - 1",
+  //     open: false
+  //   },
+  //   {
+  //     title: "Dynamic Group Header - 2",
+  //     content: "Dynamic Group Body - 2",
+  //     open: false
+  //   }
+  // ];
+   
+
     $scope.invoice = 0;
     $scope.invoice_new = 0;
     $scope.custom_price = 0;
@@ -145,6 +161,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
         }).then(function(response){
             //console.log(response);
             $scope.holdList = response.data.list;
+            $scope.jobCards = response.data.jobCard;
         });
     }
 
@@ -267,9 +284,6 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
         }); 
     }
 
-    $scope.checkStuff =  function(){
-        console.log('test');
-    }
 
 
     var getPrice = {};
@@ -460,6 +474,27 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
         });
     }
 
+    $scope.addToJobCard = function(){
+        hold_list['access_token']    = access_token;
+        hold_list['customer_name']   = $scope.name;
+        hold_list['mobile']          = $scope.mobile;
+        hold_list['gender']          = $scope.gender;
+        hold_list['orders']          = $scope.info;
+
+        var data =  JSON.stringify(hold_list);
+        $http({
+            method  : 'POST',
+            url     : 'http://'+base_url+'/billing/addToJobCard',
+            data  : {payload:data}
+        }).then(function(response){
+            if(response.data.status == 'success'){
+                //get_bill_info();
+                refreshScreen();
+                getHoldCustomers();
+            }
+        });
+    }
+
     var chek_out = {};
     $scope.checkout = function(){
 
@@ -502,31 +537,62 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
         chek_out['narration']       = '';
         chek_out['event_id']        = billing_events;
         chek_out['info']            = $scope.info;
+
         chek_out['invoice_details'] = $scope.sum;
+
         chek_out['is_prepaid']      = is_prepaid;
         chek_out['prepaid']         = prepaid;
 
         if(myArray.length > 0 || prepaidCards.length > 0){
-            var data =  JSON.stringify(chek_out);
-            $http({
-                method  : 'POST',
-                url     : 'http://'+base_url+'/billing/applyPaymentMethod',
-                data  : {payload:data}
-            }).then(function(response){
-                if(response.data.status == 'success'){
-                    refreshScreen();
-                    get_bill_info();
-                    getHoldCustomers();
-                } 
-            });
+
+            if( ($scope.sum.total - fullAmt) == 0 || ($scope.sum.total - fullAmt) < 10 ){
+
+                    var data =  JSON.stringify(chek_out);
+                    $http({
+                        method  : 'POST',
+                        url     : 'http://'+base_url+'/billing/applyPaymentMethod',
+                        data  : {payload:data}
+                    }).then(function(response){
+                        if(response.data.status == 'success'){
+                            var invoice = $scope.invoice;
+
+                            var url = 'http://localhost:3000/billing/getBill?invoice='+invoice+'&salon_id=22';
+                            
+                            popupCenter(url,'myPop1',450,450);
+                            refreshScreen();
+                            get_bill_info();
+                            getHoldCustomers();
+                        } 
+                    });
+            }else{
+                alert('Please check your amount');
+            }
+
         }else{
             alert('Add payment method');
         }
-        
-
-        
+       
     }
     
+    function popupCenter(url, title, w, h) {
+        var left = (screen.width/2)-(w/2);
+        var top = (screen.height/2)-(h/2);
+        return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+    } 
+
+    var getBillInfo = function(invoice){
+        var url = 'http://'+base_url+'/accounting/getBillInfo';
+        $http({
+            method  : 'GET',
+            url     : url ,
+            params  :{access_token:access_token,invoice:invoice}          
+        }).then(function(response){               
+            $scope.items = response.data.items;
+            $scope.result = response.data.result; 
+            $scope.paymentMethod = response.data.paymentMethod;         
+        });
+
+    }
 
     var cancel = {};
     $scope.cancelOrder = function(){
@@ -601,6 +667,78 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
             });
 
         });
+    }
+
+    var index = 1;
+    $scope.getJobCardDetail = function(jobCardId){
+        
+        $scope.info = [];
+        var get_list = {};
+        get_list['access_token']    = access_token;
+        get_list['jobCardId']       = jobCardId;
+        var data =  JSON.stringify(get_list);
+        $http({
+            method  : 'POST',
+            url     : 'http://'+base_url+'/billing/getJobCardDetail',
+            data  : {payload:data}
+        }).then(function(response){
+
+            $scope.name = response.data.info.customer_name;
+            $scope.mobile= response.data.info.customer_mobile;
+            $scope.gender= response.data.info.gender;
+
+            response.data.list.forEach(function(list){
+                list.index = index;
+                list.is_stylist = list.stylist;
+                list.stylist    = list.staff_id;
+
+                if(list.discounts == 0){  
+                    list.discounts = 'No Discount';
+                }else{
+                    var disc = list.discounts.toString();
+                    list.discounts = disc+'%';
+                }
+                $scope.info.push(list);
+                index++;
+            });
+
+            //console.log($scope.info);
+
+        });
+    }
+
+    $scope.printJobCardDetails = function(jobCardId){
+        var url = 'http://'+base_url+'/billing/printJobCard?access_token='+access_token+'&jobCardId='+jobCardId;
+        popupCenter(url,'myPop1',450,450);
+    }
+
+    $scope.comment = '';
+    $scope.changeComment = function(val){
+        commentValue = val;
+        $scope.comment = val;
+    }
+
+    $scope.cancelJobCard = function(jobCardId){
+        var get_list = {};
+        get_list['access_token']    = access_token;
+        get_list['jobCardId']       = jobCardId;
+        get_list['comment']         = $scope.comment;
+        var data =  JSON.stringify(get_list);
+
+        if($scope.comment.length != 0 || $scope.comment != ''){
+           $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/billing/cancelJobCard',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success'){
+                    $scope.comment = '';
+                    getHoldCustomers();
+                }
+            }); 
+        }else{
+            swal('Please enter the reason');
+        }
     }
 
     function search(nameKey, myArray){
@@ -685,18 +823,21 @@ phpro.controller('mainCtrl', function($scope,$http,$window) {
         $scope.prepaid_card_id = card_id;
     }
 
+    var fullAmt = 0;
     $scope.$watchCollection('partialLog', function(array){
          var total = 0;
          if (array) {
 
              angular.forEach(array, function(item,i) {
-                console.log(item);
+                //console.log(item);
 
                 if(item.name != 'Prepaid Card'){
                     total += item.value;   
                 }
                 if(array.length == i+1){
                     $scope.amt = $scope.sum.total - total;
+                    //console.log(total);
+                    fullAmt = total;
                 }
 
              });
