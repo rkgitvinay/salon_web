@@ -32,11 +32,13 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-// var base_url = 'zalonstyle.in:8080';
-var base_url = 'localhost:3000';
+var base_url = 'zalonstyle.in:8080';
+// var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http){
-
+    $scope.hideRules = false;
+    $scope.rules = [];
+    $scope.segment_id = 0;
     $scope.categories = [
         {cat:'Gender'},
         {cat:'Membership'},
@@ -48,16 +50,47 @@ phpro.controller('mainCtrl', function($scope,$http){
         {cat: 'Last Visit'},
     ]
 
+    $scope.lastId = 0;
+    var data =  JSON.stringify($scope.rules);
     $http({
         method  : 'GET',
         url     : 'http://'+base_url+'/customer/testFilter',
-        params  :{access_token:access_token} 
+        params  :{access_token:access_token,lastId:$scope.lastId,rules:data} 
     }).then(function(response){
         $scope.segession_box = false;
         $scope.searchList = response.data.result;
         $scope.segmentList = response.data.segments;
         $scope.count = $scope.searchList.length;
     }); 
+
+    $scope.loadMore = function(){
+        var last = $scope.searchList[$scope.searchList.length-1].customer_id;
+        if($scope.hideRules == false){
+            var data =  JSON.stringify($scope.rules);
+            $http({
+                method  : 'GET',
+                url     : 'http://'+base_url+'/customer/testFilter',
+                params  :{access_token:access_token,lastId:last,rules:data} 
+            }).then(function(response){
+                $scope.segession_box = false;
+                $scope.searchList = $scope.searchList.concat(response.data.result);
+                $scope.segmentList = response.data.segments;
+                $scope.count = $scope.searchList.length;
+            });
+
+        }else{
+            $http({
+                method  : 'GET',
+                url     : 'http://'+base_url+'/customer/getSegmentData',
+                params  :{access_token:access_token,segment_id:$scope.segment_id,lastId:last} 
+            }).then(function(response){
+                $scope.segession_box = false;
+                $scope.searchList = $scope.searchList.concat(response.data.result);
+                $scope.count = $scope.searchList.length;
+                $scope.segmentRules = response.data.rules;
+            }); 
+        }
+    };
 
     var clearServiceFilter = function(){
         $scope.serviceBox = false;
@@ -154,12 +187,12 @@ phpro.controller('mainCtrl', function($scope,$http){
     }
 
     var index = 1;
-    $scope.rules = [];
     $scope.getSubCategoryStats = function(param){
         $scope.selectedSubCategory = param.id;
         $scope.subCat = param.value;
-
+        var last = 0;
         if(param.category == 'Gender' || param.value == 'Expired'){
+            $scope.limit = 50;
             $scope.childCategory = false;
             $scope.rules = removeByAttr($scope.rules,'category','Gender');
             $scope.rules.push({index:index,category:param.category,subCategory:0,value:param.value,subValue:$scope.subCat,type:''});
@@ -168,7 +201,7 @@ phpro.controller('mainCtrl', function($scope,$http){
             $http({
                 method  : 'GET',
                 url     : 'http://'+base_url+'/customer/testFilter',
-                params  :{access_token:access_token,rules:data} 
+                params  :{access_token:access_token,rules:data,lastId:last} 
             }).then(function(response){
                 $scope.searchList = response.data.result;
                 $scope.count = $scope.searchList.length;
@@ -184,11 +217,13 @@ phpro.controller('mainCtrl', function($scope,$http){
 
     
     $scope.getChildCategoryStats = function(param){
+        $scope.limit = 50;
         if(param.type == 'category'){
             $scope.str = '';
         }else{
             $scope.str = param.value;
         }
+        var last = 0;
         $scope.serviceCat = param.value;
         $scope.childCat = param.value;
         $scope.rules = removeByAttr($scope.rules,'category',param.category);
@@ -198,7 +233,7 @@ phpro.controller('mainCtrl', function($scope,$http){
         $http({
             method  : 'GET',
             url     : 'http://'+base_url+'/customer/testFilter',
-            params  :{access_token:access_token,rules:data} 
+            params  :{access_token:access_token,rules:data,lastId:last} 
         }).then(function(response){
             $scope.segession_box = false;
             $scope.searchList = response.data.result;
@@ -212,6 +247,8 @@ phpro.controller('mainCtrl', function($scope,$http){
     }
 
     $scope.removeRule = function(index){
+        var last = 0;
+        $scope.limit = 50;
         if(index == 'all'){
             $scope.rules  = [];   
         }else{
@@ -221,7 +258,7 @@ phpro.controller('mainCtrl', function($scope,$http){
         $http({
             method  : 'GET',
             url     : 'http://'+base_url+'/customer/testFilter',
-            params  :{access_token:access_token,rules:data} 
+            params  :{access_token:access_token,rules:data,lastId:last} 
         }).then(function(response){
             $scope.searchList = response.data.result;
             $scope.count = $scope.searchList.length;
@@ -263,14 +300,16 @@ phpro.controller('mainCtrl', function($scope,$http){
     }
 
     $scope.getSegmentData = function(segment_id){
+        $scope.limit = 50;
+        var last = 0;
         $scope.hideRules = true;
         $scope.showSegmentRules = true;
-
+        $scope.segment_id = segment_id;
         $scope.rules = [];
         $http({
             method  : 'GET',
             url     : 'http://'+base_url+'/customer/getSegmentData',
-            params  :{access_token:access_token,segment_id:segment_id} 
+            params  :{access_token:access_token,segment_id:segment_id,lastId:last} 
         }).then(function(response){
             $scope.segession_box = false;
             $scope.searchList = response.data.result;

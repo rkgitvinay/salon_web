@@ -132,20 +132,24 @@
                 <!-- <th>Prepaid Value</th> -->
               </tr>
           </thead>
-          <tbody id="tbody">
+          <tbody id="tbody" style="height: 472px;">
 
               <tr ng-repeat="log in searchList | orderBy:'-created_at'" id="tr">
-                  
                   <td>{{log.customer_id}}</td>
                   <td>{{log.name}}</td>
                   <td>{{log.mobile}}</td>
                   <td>{{log.gender}}</td>
-                  <!-- <td>{{log.points}}</td> -->
-                  
               </tr>
-             
-                                                       
+              <tr>
+                <td>
+                  <button ng-click="loadMore()" class="btn btn-success">Load More...</button>
+                </td>
+              </tr>
+              <!-- <tr>
+                <button ng-click="loadMore()">load</button>
+              </tr>   -->                                    
           </tbody>
+          
       </table>               
 
   </div>

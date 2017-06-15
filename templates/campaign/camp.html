@@ -1,0 +1,97 @@
+<!-- <div class="col-md-3">
+    <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="javascript:void(0)">Saved Segments</a></li>
+        <li ng-repeat="seg in segmentList">
+          <a href="javascript:void(0)" ng-click="getSegmentData({id:seg.id,name:seg.segment_name})" style="padding-left: 0px;padding-right: 0px;">
+              {{seg.segment_name}}
+          </a>
+        </li>
+    </ul>
+</div> -->
+
+<div class="well">
+        <form class="form-horizontal" ng-submit="createCampaign()">
+          <fieldset>
+            <legend>
+               <button type="button" class="btn btn-primary pull-left">SMS Credits Left<span style="padding-left: 5px;" class="badge">{{sms_left}}</span></button> 
+             <button type="button" class="btn btn-success pull-right">No. Of Customers <span class="badge">{{count}}</span></button> 
+            </legend>
+            <!-- <legend class="pull-right">{{count}}</legend> -->
+    
+            <!-- Name input-->
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="name">Campaign Name</label>
+              <div class="col-md-9">
+                <input ng-model="campaign" type="text" placeholder="campaign name" class="form-control">
+              </div>
+            </div>
+    
+            <!-- Email input-->
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="email">Target Segment</label>
+              <div class="col-md-9">
+                <select class="select" ng-model="segment" ng-change="getSegmentData(segment)" ng-options="seg.id as seg.segment_name for seg in segmentList">  
+              </select>
+              </div>
+            </div>
+    
+            <!-- Message body -->
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="message">Your message</label>
+              <div class="col-md-9">
+                <textarea class="form-control" ng-model="message" ng-trim="false" maxlength="800" ng-keydown="removeTagOnBackspace($event)" placeholder="Please enter your message here..." rows="5"></textarea>
+                <span>{{message.length}} characters/{{credit}} credits</span>
+              </div>
+            </div>
+
+            <label class="col-md-3 control-label" for="message">Offer Type</label>
+            <div class="inline-group col-md-2">
+                <select ng-model="offer_type" class="form-control inline-item">
+                    <option>Select Offer Type</option>
+                    <option>% discount</option><label class="col-md-3 control-label" for="message">Offer Type</label>
+                </select>
+            </div>
+            <div class="inline-group col-md-2 col-md-offset-3">
+                <input ng-model="offer_value" type="text" class="form-control inline-item" placeholder="value"/>
+            </div>
+            <br><br>
+
+            <label class="col-md-3 control-label" for="message">Expiry Date</label>
+            <div class="inline-group col-md-2">
+                <input type="text" class="form-control inline-item" id="datepicker" ng-model="expiry" placeholder="expiry date"/>
+            </div>
+
+            <label class="col-md-3 control-label" for="message">SMSs Schedule Date</label>
+            <div class="inline-group col-md-2">
+                <input type="text" class="form-control inline-item" id="datepicker1" ng-model="schedule" placeholder="schedule date"/>
+            </div>
+
+            <br><br>
+            <label class="col-md-3 control-label" for="message">SMS Credits Required</label>
+            <div class="inline-group col-md-2" style="margin-top:6px;">
+                <label ng-model="credits">{{count*credit}}</label>
+            </div>
+
+
+
+           
+            <div class="form-group">
+              <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-primary">Confirm</button>
+              </div>
+            </div>
+
+          </fieldset>
+          </form>
+</div>
+
+<script type="text/javascript">
+    $("#datepicker" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        minDate:0,
+    });
+     $("#datepicker1" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        minDate:0,
+    });
+</script>
