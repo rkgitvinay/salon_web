@@ -1,4 +1,4 @@
-<style type="text/css">
+<!-- <style type="text/css">
     .notice {
     padding: 15px;
     background-color: #fafafa;
@@ -31,4 +31,47 @@
     <div class="notice notice-lg notice-info" ng-repeat="row in promo">
         <strong>{{row.campaign_name}}</strong>
     </div>
+</div> -->
+
+<style type="text/css">
+  .custom{
+    padding-bottom: 10px !important;
+    padding-top:  10px !important;
+    
+  }
+</style>
+
+<div class="col-md-3">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Campaigns</h3>
+        </div>
+        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+            <li class="list-group-item custom" ng-repeat="row in promo">
+              <span style="cursor: pointer;" ng-click="getCampaignData({id:row.id,name:row.campaign_name})">{{row.campaign_name}}</span>
+              <span style="cursor: pointer;" class="pull-right"><i class="fa fa-trash" aria-hidden="true"></i></span>
+            </li>
+            
+        </ul>
+    </div>
+
+
 </div>
+
+<div class="col-md-9">
+
+   <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+               {{segment}} Result</h3>
+        </div>
+        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+            <li class="list-group-item">
+             No Results
+            </li>
+            
+        </ul>
+    </div>
+</div>
+

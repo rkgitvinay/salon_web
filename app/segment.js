@@ -204,9 +204,15 @@ phpro.controller('mainCtrl', function($scope,$http){
                     url     : 'http://'+base_url+'/customer/testFilter',
                     params  :{access_token:access_token,rules:data,lastId:last} 
                 }).then(function(response){
+                    // $scope.category == 'SELECT CATEGORY';
+                    // $scope.subCat   == 'SELECT OPTION';
+                    // $scope.childCat == 'SELECT MONTH';
+
                     $scope.searchList = response.data.result;
                     $scope.count = $scope.searchList.length;
                 }); 
+            }else{
+                $scope.searchList = [];
             }  
 
         }else if(param.category == 'Total Amount Spent' || param.category == 'Service'){
@@ -242,6 +248,8 @@ phpro.controller('mainCtrl', function($scope,$http){
                 $scope.searchList = response.data.result;
                 $scope.count = $scope.searchList.length;
             });
+        }else{
+            $scope.searchList = [];
         }
        
     }
@@ -269,6 +277,8 @@ phpro.controller('mainCtrl', function($scope,$http){
                 $scope.searchList = response.data.result;
                 $scope.count = $scope.searchList.length;
             });
+        }else{
+            $scope.searchList = [];
         }
     }
 
@@ -323,6 +333,27 @@ phpro.controller('mainCtrl', function($scope,$http){
             $scope.count = $scope.searchList.length;
             $scope.segmentRules = response.data.rules;
         }); 
+    }
+
+    $scope.deleteSegment = function(segment_id){
+        swal({
+          title: "Are you sure?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Yes, Delete it!",
+          closeOnConfirm: false
+        },
+        function(){
+            $http({
+                method  : 'GET',
+                url     : 'http://'+base_url+'/customer/deleteSegment',
+                params  :{access_token:access_token,segment_id:segment_id} 
+            }).then(function(response){
+                 swal("Deleted", "segment has been deleted!", "success")   
+                $scope.segmentList = response.data.segments;
+            }); 
+        });
     }
 
 });

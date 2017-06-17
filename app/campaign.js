@@ -39,6 +39,11 @@ phpro.controller('mainCtrl', function($scope,$http){
         $scope.promo = response.data.promo;
     });
 
+    $scope.getCampaignData = function(value){
+        $scope.segment = value.name;
+        console.log(value.id);
+    }
+
 });
 
 phpro.controller('createCtrl', function($scope,$http){

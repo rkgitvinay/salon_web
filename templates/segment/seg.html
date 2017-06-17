@@ -1,3 +1,11 @@
+<style type="text/css">
+  .custom{
+    padding-bottom: 10px !important;
+    padding-top:  10px !important;
+    
+  }
+</style>
+
 <nav class="navbar navbar-default" style="margin-bottom: 8px;">
   <div class="container-fluid"> 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -37,7 +45,7 @@
 
        <form class="navbar-form navbar-left" role="search" ng-show="searchServiceBox">
         <div class="form-group">
-          <input type="text" ng-model="str" ng-change="serachService(str)"  class="form-control" placeholder="serach service">
+          <input type="text" ng-model="str" ng-change="serachService(str)"  class="form-control" placeholder="Search Service">
         </div>
         <div class="well" style="position: absolute; width: 25%;z-index: 1;" ng-show="segession_box">
           <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
@@ -87,7 +95,8 @@
 </nav>
 
 <div class="col-md-3">
-    <ul class="nav nav-pills nav-stacked" ng-hide="hideRules">
+
+    <!-- <ul class="nav nav-pills nav-stacked" ng-hide="hideRules">
         <li class="active"><a href="javascript:void(0)">Rules Applied</a></li>
         <li ng-repeat="rule in rules">
           <a href="javascript:void(0)" style="padding-left: 0px;padding-right: 0px;">
@@ -97,9 +106,27 @@
           <span class="pull-right" ng-click="removeRule(rule.index)"><i class="fa fa-trash" aria-hidden="true"></i></span>
           </a>
         </li>
-    </ul>
+    </ul> -->
 
-    <ul class="nav nav-pills nav-stacked" ng-show="showSegmentRules">
+    <div class="panel panel-primary" ng-hide="hideRules">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Rules Applied</h3>
+        </div>
+        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+            <li class="list-group-item custom" ng-repeat="rule in rules">
+              <span class="pull-left">{{rule.category}}</span>
+              <span style="margin-left: 10%;">{{rule.subCat}}</span>
+              <span  style="margin-left: 10%;">{{rule.subValue}}</span>
+              <span style="cursor: pointer;" class="pull-right" ng-click="removeRule(rule.index)"><i class="fa fa-trash" aria-hidden="true"></i></span>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+    <!-- <ul class="nav nav-pills nav-stacked" ng-show="showSegmentRules">
         <li class="active"><a href="javascript:void(0)">Rules Applied</a></li>
         <li ng-repeat="rule in segmentRules">
           <a href="javascript:void(0)" style="padding-left: 0px;padding-right: 0px;">
@@ -108,16 +135,39 @@
           <span  style="margin-left: 10%;">{{rule.subValue}}</span>
           </a>
         </li>
-    </ul>
+    </ul> -->
 
-    <ul class="nav nav-pills nav-stacked" style="margin-top: 50%;">
-        <li class="active"><a href="javascript:void(0)">Saved Segments</a></li>
-        <li ng-repeat="seg in segmentList">
-          <a href="javascript:void(0)" ng-click="getSegmentData(seg.id)" style="padding-left: 0px;padding-right: 0px;">
-              {{seg.segment_name}}
-          </a>
-        </li>
-    </ul>
+    <div class="panel panel-primary" ng-show="showSegmentRules">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Segment Rules</h3>
+        </div>
+        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+            <li class="list-group-item custom" ng-repeat="rule in segmentRules">
+              <span class="pull-left">{{rule.category}}</span>
+              <span style="margin-left: 10%;">{{rule.subCat}}</span>
+              <span  style="margin-left: 10%;">{{rule.subValue}}</span>
+            </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="panel panel-primary" style="margin-top: 5%;">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Saved Segments</h3>
+        </div>
+        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+            <li class="list-group-item custom" ng-repeat="seg in segmentList">
+              <span style="cursor: pointer;" ng-click="getSegmentData(seg.id)">{{seg.segment_name}}</span>
+              <span style="cursor: pointer;" ng-click="deleteSegment(seg.id)" class="pull-right"><i class="fa fa-trash" aria-hidden="true"></i></span>
+            </li>
+            
+        </ul>
+    </div>
+
+
 </div>
 
 <div class="col-md-9">
