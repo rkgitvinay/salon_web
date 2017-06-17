@@ -3,39 +3,46 @@
 var phpro = angular.module('campaign', ['ngRoute']);
 
 // configure our routes
-phpro.config(function($routeProvider) {
-
+phpro.config(function($routeProvider,$locationProvider) {
+$locationProvider.hashPrefix('');
 $routeProvider
-        // route for the index page
+        
         .when('/', {
                 templateUrl : 'templates/campaign/camp.html',
                 controller  : 'mainCtrl'
         })
 
-        // route for the FAQ page
-        .when('/sales', {
-        templateUrl : 'templates/sales.html',
-        controller  : 'faqCtrl'
-        })
-
-        // route for the contact page
-        .when('/customers', {
-                templateUrl : 'templates/customer.html',
-                controller  : 'contactCtrl'
+        .when('/createCampaign', {
+            templateUrl : 'templates/campaign/create_camp.html',
+            controller  : 'createCtrl'
         });
+        
 });
 
 // var access_token = localStorage.getItem("access_token");
 if(localStorage.getItem("access_token") == null){
     window.location = 'login.html';
 }else{
-    // window.location = 'index.html';
     var access_token = localStorage.getItem("access_token");  
 }
 var base_url = 'zalonstyle.in:8080';
 // var base_url = 'localhost:3000';
 
+
 phpro.controller('mainCtrl', function($scope,$http){
+
+    var url = 'http://'+base_url+'/campaign/getAllCampaigns?access_token='+access_token;
+    $http({
+        method  : 'GET',
+        url     : url,
+    }).then(function(response){
+        $scope.promo = response.data.promo;
+    });
+
+});
+
+phpro.controller('createCtrl', function($scope,$http){
+
     var url = 'http://'+base_url+'/customer/segments?access_token='+access_token;
     $http({
         method  : 'GET',

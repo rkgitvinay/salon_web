@@ -1,0 +1,157 @@
+<nav class="navbar navbar-default" style="margin-bottom: 8px;">
+  <div class="container-fluid"> 
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">        
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{category}}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="val in categories">
+              <a ng-click="getSubCategory(val.cat)" href="javascript:void(0)">{{val.cat}}</a>
+              <!-- <a ng-click="getSubCategory(Gen)" href="javascript:void(0)">Gender</a> -->
+            </li>            
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav">        
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{subCat}}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="val in subCategory">
+              <a ng-click="getSubCategoryStats({category:category,id:val.id,value:val.value})" href="javascript:void(0)">{{val.value}}</a>
+            </li>            
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav" ng-show="serviceBox">        
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{serviceCat}}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="val in serviceCategory">
+              <a ng-click="getChildCategoryStats({category:category,id:val.id,value:val.value,type:'category'})" href="javascript:void(0)">{{val.value}}</a>
+            </li>            
+          </ul>
+        </li>
+      </ul>
+
+       <form class="navbar-form navbar-left" role="search" ng-show="searchServiceBox">
+        <div class="form-group">
+          <input type="text" ng-model="str" ng-change="serachService(str)"  class="form-control" placeholder="serach service">
+        </div>
+        <div class="well" style="position: absolute; width: 25%;z-index: 1;" ng-show="segession_box">
+          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+             <li ng-repeat="list in serviceList"><a ng-click="getChildCategoryStats({category:category,id:list.salon_service_id,value:list.category_name,type:'service'})" href="javascript:void(0);">{{list.category_name}}</a></li>
+          </ul>  
+        </div>
+        
+      </form> 
+
+
+      <ul class="nav navbar-nav" ng-show="childCategory">        
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{childCat}}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="val in childValues">
+              <a ng-click="getChildCategoryStats({category:category,id:val.id,value:val.value,type:''})" href="javascript:void(0)">{{val.value}}</a>
+            </li>            
+          </ul>
+        </li>
+      </ul>
+
+      <form class="navbar-form navbar-left" role="search" ng-submit="getChildCategoryStats({category:category,id:value,value:value,type:''})" ng-show="inputValue">
+        <div class="form-group">
+          <input type="text" ng-model="value" class="form-control" placeholder="Value">
+          <!-- <input type="submit" value="Submit"> -->
+        </div>
+         <div class="form-group">
+          <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
+      </form>
+
+      <button type="button" ng-click="removeRule('all')" class="btn btn-danger" style="margin-top: 9px;">Reset Filter</button> 
+
+      <form class="navbar-form navbar-left" role="search" ng-submit="saveCustomerSegment(segment)">
+        <div class="form-group">
+          <input type="text" ng-model="segment" class="form-control" placeholder="Segment Name">
+        </div>
+         <div class="form-group">
+          <input class="btn btn-info" type="submit" value="Save Segment">
+        </div>
+      </form>
+
+      <button type="button" class="btn btn-success navbar-right" style="margin-top: 9px;">No. Of Customers <span class="badge">{{count}}</span></button> 
+
+    </div>
+  </div>
+</nav>
+
+<div class="col-md-3">
+    <ul class="nav nav-pills nav-stacked" ng-hide="hideRules">
+        <li class="active"><a href="javascript:void(0)">Rules Applied</a></li>
+        <li ng-repeat="rule in rules">
+          <a href="javascript:void(0)" style="padding-left: 0px;padding-right: 0px;">
+          <span class="pull-left">{{rule.category}}</span>
+          <span style="margin-left: 10%;">{{rule.subCat}}</span>
+          <span  style="margin-left: 10%;">{{rule.subValue}}</span>
+          <span class="pull-right" ng-click="removeRule(rule.index)"><i class="fa fa-trash" aria-hidden="true"></i></span>
+          </a>
+        </li>
+    </ul>
+
+    <ul class="nav nav-pills nav-stacked" ng-show="showSegmentRules">
+        <li class="active"><a href="javascript:void(0)">Rules Applied</a></li>
+        <li ng-repeat="rule in segmentRules">
+          <a href="javascript:void(0)" style="padding-left: 0px;padding-right: 0px;">
+          <span class="pull-left">{{rule.category}}</span>
+          <span style="margin-left: 10%;">{{rule.subCat}}</span>
+          <span  style="margin-left: 10%;">{{rule.subValue}}</span>
+          </a>
+        </li>
+    </ul>
+
+    <ul class="nav nav-pills nav-stacked" style="margin-top: 50%;">
+        <li class="active"><a href="javascript:void(0)">Saved Segments</a></li>
+        <li ng-repeat="seg in segmentList">
+          <a href="javascript:void(0)" ng-click="getSegmentData(seg.id)" style="padding-left: 0px;padding-right: 0px;">
+              {{seg.segment_name}}
+          </a>
+        </li>
+    </ul>
+</div>
+
+<div class="col-md-9">
+  <div class="content nopadding">
+      <table class="table table-bordered">
+          <thead id="thead">
+              <tr id="tr">
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Gender</th>
+                <!-- <th>Prepaid Value</th> -->
+              </tr>
+          </thead>
+          <tbody id="tbody" style="height: 472px;">
+
+              <tr ng-repeat="log in searchList | orderBy:'-created_at'" id="tr">
+                  <td>{{log.customer_id}}</td>
+                  <td>{{log.name}}</td>
+                  <td>{{log.mobile}}</td>
+                  <td>{{log.gender}}</td>
+              </tr>
+              <tr ng-if="count >= 50">
+                <td>
+                  <button ng-click="loadMore()" class="btn btn-success">Load More...</button>
+                </td>
+              </tr>
+              <!-- <tr>
+                <button ng-click="loadMore()">load</button>
+              </tr>   -->                                    
+          </tbody>
+          
+      </table>               
+
+  </div>
+</div>
+

@@ -399,9 +399,8 @@ select{
 		<div>
 			<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
 			<button ng-click="addToJobCard()" style="margin-left: 30%;" class="btn btn-primary">Create Jobcard</button>
-			<select class="pull-right">
-				<option>Select Offer</option>
-			</select>
+			<select class="select pull-right" ng-model="promo_id" ng-change="validateOffer({promo:promo_id,mobile:mobile})" ng-options="pro.id as pro.campaign_name for pro in promo">
+			    </select>
 		</div>
 		<br><br>
 		<div>

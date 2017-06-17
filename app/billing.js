@@ -122,10 +122,13 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             $scope.invoice_new = response.data.invoice_new;
             $scope.invoice =  response.data.invoice_number;
             $scope.tax = response.data.tax;
-            console.log(response);
+            //console.log(response);
             $scope.payMethod    = response.data.pay_methods;
             $scope.pay_id       = response.data.pay_methods[0].id;
             $scope.date = new Date();
+            response.data.promo.unshift({id:0,campaign_name:'Select Offer'});
+            $scope.promo = response.data.promo;
+            $scope.promo_id = 0;
         }); 
     }
 
@@ -1074,5 +1077,10 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         $scope.custom_price = 0;
     }
 
+    $scope.validateOffer = function(value){
+        if(value.promo != 0){
+            
+        }
+    }
 
 });
