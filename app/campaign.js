@@ -15,6 +15,11 @@ $routeProvider
         .when('/createCampaign', {
             templateUrl : 'templates/campaign/create_camp.html',
             controller  : 'createCtrl'
+        })
+
+        .when('/editCampaign/:myParam', {
+            templateUrl : 'templates/campaign/create_camp.html',
+            controller  : 'editCtrl'
         });
         
 });
@@ -25,11 +30,11 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 
-phpro.controller('mainCtrl', function($scope,$http){
+phpro.controller('mainCtrl', function($scope,$http,$location){
 
     var url = 'http://'+base_url+'/campaign/getAllCampaigns?access_token='+access_token;
     $http({
@@ -41,12 +46,54 @@ phpro.controller('mainCtrl', function($scope,$http){
 
     $scope.getCampaignData = function(value){
         $scope.segment = value.name;
-        console.log(value.id);
+        $scope.campaign_detail = true;
+
+        var url = 'http://'+base_url+'/campaign/getCampaignData?access_token='+access_token+'&id='+parseInt(value.id);
+        $http({
+            method  : 'GET',
+            url     : url,
+        }).then(function(response){
+            $scope.data = response.data.campaign;
+        }); 
     }
 
+    $scope.getClass = function(status){
+        if(status == 'Pending'){
+            return 'badge-pending';    
+        }else if(status == 'Active'){
+            return 'badge-active';
+        }else{
+            return 'badge-expired';
+        }
+    }
+
+    $scope.editCampaignData = function(id){
+        $location.path('/editCampaign/'+id+' ');
+    }
+
+    $scope.deleteCampaign = function(id){
+        swal({
+          title: "Are you sure?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Yes, Delete it!",
+          closeOnConfirm: false
+        },
+        function(){
+            $http({
+                method  : 'GET',
+                url     : 'http://'+base_url+'/campaign/deleteCampaign',
+                params  :{access_token:access_token,id:id} 
+            }).then(function(response){
+                swal("Deleted", "Campaign has been deleted!", "success");
+                $scope.promo = response.data.promo;
+            }); 
+        });
+    }
 });
 
-phpro.controller('createCtrl', function($scope,$http){
+phpro.controller('createCtrl', function($scope,$http,$location){
 
     var url = 'http://'+base_url+'/customer/segments?access_token='+access_token;
     $http({
@@ -62,11 +109,10 @@ phpro.controller('createCtrl', function($scope,$http){
 
     });  
 
+    $scope.offer_type = 'Select Offer Type';
     $scope.message = 'Hi [customer name] ';
     $scope.count = 0;
     $scope.getSegmentData = function(val){
-
-        //$scope.campaign = val.name;
         $http({
             method  : 'GET',
             url     : 'http://'+base_url+'/customer/getSegmentCustomers',
@@ -107,15 +153,16 @@ phpro.controller('createCtrl', function($scope,$http){
                 url     : url,
                 data    : {payload:data}
             }).then(function(response){
-                if(response.data.status == 'success'){
-                    $scope.campaign = '';
-                    $scope.segment = 0;
-                    $scope.message = 'Hi [customer name] ';
-                    $scope.offer_type = 0;
-                    $scope.offer_value = '';
-                    $scope.expiry = '';
-                    $scope.schedule = '';
-                }                                          
+                // if(response.data.status == 'success'){
+                //     $scope.campaign = '';
+                //     $scope.segment = 0;
+                //     $scope.message = 'Hi [customer name] ';
+                //     $scope.offer_type = 0;
+                //     $scope.offer_value = '';
+                //     $scope.expiry = '';
+                //     $scope.schedule = '';
+                // } 
+                $location.path('/');                                         
             }); 
         }else{
             swal("You don't have enough credits");
@@ -125,3 +172,62 @@ phpro.controller('createCtrl', function($scope,$http){
    
 });
 
+phpro.controller('editCtrl', function($scope,$http,$routeParams,$filter,$location){
+    $scope.createCampBtn = true;
+    $scope.updateCampBtn = true;
+    var url = 'http://'+base_url+'/campaign/getCampaignData?access_token='+access_token+'&id='+parseInt($routeParams.myParam);
+    $http({
+        method  : 'GET',
+        url     : url,
+    }).then(function(response){
+        $scope.segmentList = response.data.segment;
+        $scope.segment = response.data.campaign.segment_id;
+        var data = response.data.campaign;
+        $scope.campaign = data.campaign_name;
+        $scope.message = data.message;
+        $scope.offer_type = data.offer_type;
+        $scope.offer_value = data.offer_value;
+        $scope.expiry = $filter('date')(data.expiry_date, "yyyy-MM-dd");
+        $scope.schedule = $filter('date')(data.schedule_date, "yyyy-MM-dd");
+    }); 
+
+    $scope.count = 0;
+    $scope.getSegmentData = function(val){
+        $http({
+            method  : 'GET',
+            url     : 'http://'+base_url+'/customer/getSegmentCustomers',
+            params  :{access_token:access_token,segment_id:val,lastId:0} 
+        }).then(function(response){
+            $scope.count = response.data.length;
+        }); 
+    } 
+
+    $scope.info = {};
+    $scope.updateCampaign = function(){
+        var url = 'http://'+base_url+'/campaign/updateCampaign';
+        $scope.info['id']               = parseInt($routeParams.myParam)
+        $scope.info['access_token']     = access_token;
+        $scope.info['campaign']         = $scope.campaign;
+        $scope.info['segment']          = $scope.segment;
+        $scope.info['message']          = $scope.message;
+        $scope.info['offer_type']       = $scope.offer_type;
+        $scope.info['offer_value']      = $scope.offer_value;
+        $scope.info['expiry']           = $scope.expiry;
+        $scope.info['schedule']         = $scope.schedule;
+
+        
+            var data =  JSON.stringify($scope.info);
+            $http({
+                method  : 'POST',
+                url     : url,
+                data    : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success'){
+                    $location.path('/');    
+                }
+                                                     
+            }); 
+       
+    }
+
+});

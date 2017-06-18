@@ -75,7 +75,7 @@ phpro.controller('mainCtrl', function($scope,$http){
                 $scope.segession_box = false;
                 $scope.searchList = $scope.searchList.concat(response.data.result);
                 //$scope.segmentList = response.data.segments;
-                $scope.count = $scope.searchList.length;
+                //$scope.count = $scope.searchList.length;
             });
 
         }else{
@@ -86,8 +86,8 @@ phpro.controller('mainCtrl', function($scope,$http){
             }).then(function(response){
                 $scope.segession_box = false;
                 $scope.searchList = $scope.searchList.concat(response.data.result);
-                $scope.count = $scope.searchList.length;
-                $scope.segmentRules = response.data.rules;
+                //$scope.count = $scope.searchList.length;
+                //$scope.segmentRules = response.data.rules;
             }); 
         }
     };
@@ -194,7 +194,7 @@ phpro.controller('mainCtrl', function($scope,$http){
         if(param.category == 'Gender' || param.value == 'Expired'){
             $scope.limit = 50;
             $scope.childCategory = false;
-            $scope.rules = removeByAttr($scope.rules,'category','Gender');
+            //$scope.rules = removeByAttr($scope.rules,'category','Gender');
             $scope.rules.push({index:index,category:param.category,subCategory:0,value:param.value,subValue:$scope.subCat,type:''});
             index++;
             var data =  JSON.stringify($scope.rules);
@@ -204,12 +204,10 @@ phpro.controller('mainCtrl', function($scope,$http){
                     url     : 'http://'+base_url+'/customer/testFilter',
                     params  :{access_token:access_token,rules:data,lastId:last} 
                 }).then(function(response){
-                    // $scope.category == 'SELECT CATEGORY';
-                    // $scope.subCat   == 'SELECT OPTION';
-                    // $scope.childCat == 'SELECT MONTH';
-
                     $scope.searchList = response.data.result;
-                    $scope.count = $scope.searchList.length;
+                    if(last == 0){
+                        $scope.count = response.data.count;    
+                    }
                 }); 
             }else{
                 $scope.searchList = [];
@@ -246,7 +244,9 @@ phpro.controller('mainCtrl', function($scope,$http){
             }).then(function(response){
                 $scope.segession_box = false;
                 $scope.searchList = response.data.result;
-                $scope.count = $scope.searchList.length;
+                if(last == 0){
+                    $scope.count = response.data.count;    
+                }
             });
         }else{
             $scope.searchList = [];
@@ -275,7 +275,9 @@ phpro.controller('mainCtrl', function($scope,$http){
                 params  :{access_token:access_token,rules:data,lastId:last} 
             }).then(function(response){
                 $scope.searchList = response.data.result;
-                $scope.count = $scope.searchList.length;
+                if(last == 0){
+                    $scope.count = response.data.count;    
+                }
             });
         }else{
             $scope.searchList = [];
@@ -330,7 +332,9 @@ phpro.controller('mainCtrl', function($scope,$http){
         }).then(function(response){
             $scope.segession_box = false;
             $scope.searchList = response.data.result;
-            $scope.count = $scope.searchList.length;
+            if(last ==0){
+                $scope.count = response.data.count;
+            }
             $scope.segmentRules = response.data.rules;
         }); 
     }

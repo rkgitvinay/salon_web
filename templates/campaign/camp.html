@@ -1,24 +1,44 @@
-<!-- <style type="text/css">
-    .notice {
-    padding: 15px;
-    background-color: #fafafa;
-    border-left: 6px solid #7f7f84;
-    margin-bottom: 10px;
-    -webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
-       -moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
-            box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+<style type="text/css">
+  .custom{
+    padding-bottom: 10px !important;
+    padding-top:  10px !important;
+    
+  }
+  .custom_badge{
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 10px;
+  }
+  .badge-expired{
+    background-color: #ec1313;
+  }
+  .badge-active{
+    background-color: #05a71e;
+  }
+  .badge-pending{
+   background-color: #939286; 
+  }
+.glyphicon { margin-right:5px;}
+.rating .glyphicon {font-size: 22px;}
+.rating-num { margin-top:0px;font-size: 54px; }
+.progress { margin-bottom: 5px;}
+.progress-bar { text-align: left; }
+.rating-desc .col-md-3 {padding-right: 0px;}
+.sr-only { margin-left: 5px;overflow: visible;clip: auto; }
+.custom_list{
+  padding: 10px;
 }
-.notice-lg {
-    padding: 25px;
-    font-size: large;
-}
-.notice-info {
-    border-color: #45ABCD;
-}
-.notice-info>strong {
-    color: #45ABCD;
-}
+.card-head{box-shadow: 5px 0px 15px 0px rgba(46,61,73,0.15); padding-left: 0px; padding-right: 0px;}
+.card-body{background-color:rgba(51, 105, 232, 0.1);padding: 0px;}
 </style>
+
 <nav class="navbar navbar-default" style="margin-bottom: 8px;">
   <div class="container-fluid"> 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -27,44 +47,103 @@
   </div>
 </nav>
 
-<div class="container">
-    <div class="notice notice-lg notice-info" ng-repeat="row in promo">
-        <strong>{{row.campaign_name}}</strong>
-    </div>
-</div> -->
-
-<style type="text/css">
-  .custom{
-    padding-bottom: 10px !important;
-    padding-top:  10px !important;
-    
-  }
-</style>
-
-<div class="col-md-3">
+<div class="col-md-4">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
                 Campaigns</h3>
         </div>
-        <ul class="list-group" style="height: 200px;overflow-y: auto;">
+        <ul class="list-group" style="height: 70vh;overflow-y: auto;">
             <li class="list-group-item custom" ng-repeat="row in promo">
-              <span style="cursor: pointer;" ng-click="getCampaignData({id:row.id,name:row.campaign_name})">{{row.campaign_name}}</span>
-              <span style="cursor: pointer;" class="pull-right"><i class="fa fa-trash" aria-hidden="true"></i></span>
+              <span style="cursor: pointer; color: #555F61; font-weight: bold;" ng-click="getCampaignData({id:row.id,name:row.campaign_name})">{{row.campaign_name}}</span>
+
+              <span class="custom_badge" ng-class="getClass(row.status)" >{{row.status}}</span>
+
+              <div class="pull-right">
+                <span style="padding: 50px;color: #8C979A;">{{row.date}}</span>
+                <span style="cursor: pointer; padding: 6px;" ng-click="editCampaignData(row.id)"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+                <span style="cursor: pointer;" ng-click="deleteCampaign(row.id)"><i class="fa fa-trash" aria-hidden="true"></i></span>
+              </div>
+
             </li>
             
         </ul>
     </div>
 
-
 </div>
 
-<div class="col-md-9">
+<div class="col-md-8">
 
    <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
-               {{segment}} Result</h3>
+               Camapign Details</h3>
+        </div>
+        <ul class="list-group">
+            
+
+           <div style="margin-bottom: 0px !important; height: 200px;padding: 20px;">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6 text-center">
+                        <h4 class="rating-num" style="color: #555F61;">
+                            {{segment}}</h4>
+                        <div class="rating">
+                            {{data.message}}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6" ng-show="campaign_detail">
+
+                         <div class=" wrimagecard-topimage col-md-5 card-head">
+                              <div class="wrimagecard-topimage_header card-body">
+                                <span><i class="fa fa-{{gen.icon}}" style="color: #0cacf7"></i></span>
+                                <span style="font-size: 15px;margin-left: 10px;">Offer Type</span>
+                              </div>
+                              <div class="wrimagecard-topimage_title" style="padding: 0px 15px;">
+                                <h4>{{data.offer_type}}
+                              </div>
+                        </div>
+                        <div class="wrimagecard wrimagecard-topimage col-md-5 col-md-offset-2 card-head">
+                            <div class="wrimagecard-topimage_header card-body">
+                                <span><i class="fa fa-{{gen.icon}}" style="color: #0cacf7"></i></span>
+                                <span style="font-size: 15px;margin-left: 10px;">Offer Value</span>
+                              </div>
+                              <div class="wrimagecard-topimage_title" style="padding: 0px 15px;">
+                                <h4>{{data.offer_value}}
+                              </div>
+                        </div>
+                        <div class=" wrimagecard-topimage col-md-5 card-head">
+                              <div class="wrimagecard-topimage_header card-body">
+                                <span><i class="fa fa-{{gen.icon}}" style="color: #0cacf7"></i></span>
+                                <span style="font-size: 15px;margin-left: 10px;">Schedule Date</span>
+                              </div>
+                              <div class="wrimagecard-topimage_title" style="padding: 0px 15px;">
+                                <h4>{{data.schedule_date | date:'dd MMM yyyy'}}
+                              </div>
+                        </div>
+                        <div class="wrimagecard wrimagecard-topimage col-md-5 col-md-offset-2 card-head">
+                            <div class="wrimagecard-topimage_header card-body">
+                                <span><i class="fa fa-{{gen.icon}}" style="color: #0cacf7"></i></span>
+                                <span style="font-size: 15px;margin-left: 10px;">Expiry Date</span>
+                              </div>
+                              <div class="wrimagecard-topimage_title" style="padding: 0px 15px;">
+                                <h4>{{data.expiry_date | date:'dd MMM yyyy'}}
+                              </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            
+        </ul>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+               Campaign Result</h3>
         </div>
         <ul class="list-group" style="height: 200px;overflow-y: auto;">
             <li class="list-group-item">
@@ -73,5 +152,9 @@
             
         </ul>
     </div>
+
 </div>
+
+
+
 
