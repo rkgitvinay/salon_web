@@ -8,6 +8,9 @@
   .custom_list li{
     width: 24% !important;
   }
+  .modal-backdrop{
+    z-index: -1;
+  }
 </style>
 <nav class="navbar navbar-default" style="margin-bottom: 8px;">
   <div class="container-fluid"> 
@@ -32,6 +35,11 @@
           </div>
         
       </form> 
+      <div style="margin-top: 7px;">
+        <a class="btn btn-primary" href="javascript:void(0);" data-toggle="modal" data-target="#editModal">Edit</a>
+
+        <a class="btn btn-primary" href="javascript:void(0);" data-toggle="modal" data-target="#createModel">Create Customer</a>
+      </div>
 
     </div>
   </div>
@@ -248,8 +256,148 @@
     </div>
 </div>
 
+<div class="modal fade" style="margin-top: 50px;" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Customer</h4>
+      </div>
+      <div class="modal-body" style="padding-bottom: 0px !important;">
+         
+      <form class="form-horizontal" role="form">
+        <fieldset>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Name</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="name" placeholder="Customer Name" class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Mobile</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="mobile" placeholder="Customer Mobile" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Email</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="email" placeholder="Customer Email" class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Gender</label>
+            <div class="col-sm-10">
+              <select ng-model="gender">
+                  <option>male</option>
+                  <option>female</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">DOB</label>
+            <div class="col-sm-10">
+              <input type="text" id="datepicker" ng-model="dob" placeholder="Date of Birth" class="form-control">
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+  
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="updateCustomer()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" style="margin-top: 50px;" id="createModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Create Customer</h4>
+      </div>
+      <div class="modal-body" style="padding-bottom: 0px !important;">
+         
+      <form class="form-horizontal" role="form">
+        <fieldset>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Name</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="new_name" placeholder="Customer Name" class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Mobile</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="new_mobile" placeholder="Customer Mobile" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Email</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="new_email" placeholder="Customer Email" class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Gender</label>
+            <div class="col-sm-10">
+              <select ng-model="new_gender">
+                  <option>male</option>
+                  <option>female</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">DOB</label>
+            <div class="col-sm-10">
+              <input type="text" id="datepicker" ng-model="new_dob" placeholder="Date of Birth" class="form-control">
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+  
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="createCustomer()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script type="text/javascript">
 $(document).ready(function() {
+
+    $("#datepicker" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true
+    });
+
     $(".btn-pref .btn").click(function () {
         $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
         // $(".tab").addClass("active"); // instead of this do the below 

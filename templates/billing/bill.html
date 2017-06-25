@@ -240,7 +240,7 @@ select{
 	    </ul>
 
 	    <div style="padding-top: 15px;" class="pull-right">
-	    	<span>Invoice - {{invoice_new}}</span>
+	    	<span>Invoice - {{invoice}}</span>
 	    	<span>Date - {{date | date:'dd-MM-yyyy'}}</span>
 	    </div>
 
@@ -253,7 +253,7 @@ select{
 
 		 <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
 	        <div class="btn-group" role="group">
-	            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab">
+	            <button style="padding-left: 6px !important;" type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab">
 	                <div class="hidden-xs">Service/Product</div>
 	            </button>
 	        </div>
@@ -323,7 +323,7 @@ select{
 
 	      	<div class="col-md-12 custome-padding">
 	      		<div class="col-md-4 pull-left custome-padding">
-			        <select class="select" ng-model="stylist" ng-change="getPrice(stylist)" ng-options="staff.id as staff.category for staff in staffList">
+			        <select class="select" ng-model="stylist" ng-change="getPrice(stylist)" ng-options="staff.category for staff in staffList track by staff.id">
 			        </select>
 	        	</div>
 
@@ -366,7 +366,7 @@ select{
 
 	</div>
 
-	<div class="col-md-7 well" style="height: 80vh; position: relative;">
+	<div class="col-md-7 well" style="height: 80vh; position: relative; padding: 0px !important;">
 		<div style="height: 250px;overflow-y: auto;">
 			<table class="table">
 				  <thead>
@@ -375,7 +375,8 @@ select{
 				      <th>Description</th>
 				      <th>Stylist</th>
 				      <th>Quantity</th>
-				      <th>Rate</th>
+				      <th>Discount</th>
+				      <th>Price</th>
 				      <th>Amount</th>
 				      <th>Action</th>
 				    </tr>
@@ -383,11 +384,12 @@ select{
 				  <tbody>
 				    <tr ng-repeat="item in info">
 				      <td>{{$index + 1}}</td>
-				      <td>{{item.description}}</td>
-				      <td>{{item.is_stylist}}</td>
+				      <td>{{item.Service}}</td>
+				      <td>{{item.stylist_name}}</td>
 				      <td>{{item.quantity}}</td>
-				      <td>{{item.rate}}</td>
-				      <td>{{item.amount}}</td>
+				      <td>{{item.discounts}}</td>
+				      <td>{{item.price}}</td>
+				      <td>{{item.taxable_amount}}</td>
 				      <td><a ng-click="removeItem(item.index)" href="javascript:void(0)">Delete</a></td>
 				    </tr>
 				    
@@ -396,11 +398,21 @@ select{
 		</div>
 
 		<!-- <hr> -->
-		<div>
-			<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
-			<button ng-click="addToJobCard()" style="margin-left: 30%;" class="btn btn-primary">Create Jobcard</button>
-			<select class="select pull-right" ng-model="promo_id" ng-change="validateOffer({promo:promo_id,mobile:mobile})" ng-options="pro.id as pro.campaign_name for pro in promo">
-			    </select>
+		<div class="col-md-12">
+			<span class="col-md-3 custome-padding">
+				<button ng-click="holdBill()" class="btn btn-primary pull-left">Hold Bill</button>
+			</span>
+			<span class="col-md-3 custome-padding">
+				<button ng-click="addToJobCard()" class="btn btn-primary">Create Jobcard</button>
+			</span>
+			<span class="col-md-3 custome-padding">
+				<select class="select" ng-model="promo_id" ng-change="applyOffer({promo:promo_id,mobile:mobile})" ng-options="pro.id as pro.campaign_name for pro in promo">
+				</select>
+			</span>
+			<span class="col-md-3 custome-padding" ng-show="referrar_input">
+				<input type="text" ng-model="referrar_mobile" ng-keypress="validateUser($event)" class="form-control num-valid" placeholder="Referrar Mobile">
+			</span>
+
 		</div>
 		<br><br>
 		<div>
@@ -410,9 +422,7 @@ select{
 				      <th>Sub Total</th>
 				      <th>Discount</th>
 				      <th>Taxable Amount</th>
-				      <th>ST</th>
-				      <th>LT</th>
-				      <th>Vat</th>
+				      <th>Tax</th>
 				      <th>Total</th>
 				    </tr>
 				  </thead>
@@ -420,10 +430,8 @@ select{
 				    <tr>
 				      <td>{{sum.sub_total}}</td>
 				      <td>{{sum.discount}}</td>
-				      <td>{{sum.taxableAmt}}</td>
-				      <td>{{sum.service_tax}}</td>
-				      <td>{{sum.luxury_tax}}</td>
-				      <td>{{sum.vat}}</td>
+				      <td>{{sum.taxable_amount}}</td>
+				      <td>{{sum.tax}}</td>
 				      <td>{{sum.total}}</td>
 				    </tr>
 				    

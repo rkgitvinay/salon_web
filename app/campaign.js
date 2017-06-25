@@ -17,6 +17,11 @@ $routeProvider
             controller  : 'createCtrl'
         })
 
+        .when('/createRefferal', {
+            templateUrl : 'templates/campaign/create_refferal.html',
+            controller  : 'createRefferalCtrl'
+        })
+
         .when('/editCampaign/:myParam', {
             templateUrl : 'templates/campaign/create_camp.html',
             controller  : 'editCtrl'
@@ -230,4 +235,38 @@ phpro.controller('editCtrl', function($scope,$http,$routeParams,$filter,$locatio
        
     }
 
+});
+
+phpro.controller('createRefferalCtrl', function($scope,$http,$routeParams,$filter,$location){
+    $scope.message = 'Recieve free 1x month membership on every successful referral';
+    $scope.offer_type_referral = 'Select Offer Type';
+    $scope.offer_type_referee = 'Select Offer Type';
+
+    $scope.info = {};
+    $scope.createRefferal = function(){
+        
+        var url = 'http://'+base_url+'/campaign/createRefferal';
+
+        $scope.info['access_token']             = access_token;
+        $scope.info['message']                  = $scope.message;
+        $scope.info['offer_type_referral']      = $scope.offer_type_referral;
+        $scope.info['offer_value_referral']     = $scope.offer_value_referral;
+        $scope.info['offer_type_referee']       = $scope.offer_type_referee;
+        $scope.info['offer_value_referee']      = $scope.offer_value_referee;
+        $scope.info['expiry']                   = $scope.expiry;
+
+        var data =  JSON.stringify($scope.info);
+        $http({
+            method  : 'POST',
+            url     : url,
+            data    : {payload:data}
+        }).then(function(response){
+           
+            $location.path('/');                                         
+        }); 
+       
+    }
+
+
+    
 });

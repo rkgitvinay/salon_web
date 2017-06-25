@@ -1,0 +1,63 @@
+<div class="well">
+	<form class="form-horizontal" ng-submit="createCampaign()">
+	  <fieldset>
+	  
+	    <div class="form-group">
+	      <label class="col-md-3 control-label" for="message">Your message</label>
+	      <div class="col-md-9">
+	        <textarea class="form-control" ng-model="message" maxlength="800" rows="5"></textarea>
+	        <span>{{message.length}} characters</span>
+	      </div>
+	    </div>
+
+	    <label class="col-md-3 control-label" for="message">Referrer Offer</label>
+	    <div class="inline-group col-md-2">
+	        <select ng-model="offer_type_referral" class="form-control inline-item">
+	            <option>Select Offer Type</option>
+	            <option>% discount</option>
+	        </select>
+	    </div>
+	    <div class="inline-group col-md-2 col-md-offset-3">
+	        <input ng-model="offer_value_referral" type="text" class="form-control inline-item" placeholder="value"/>
+	    </div>
+	    <br><br>
+
+
+	    <label class="col-md-3 control-label" for="message">Referred Offer</label>
+	    <div class="inline-group col-md-2">
+	        <select ng-model="offer_type_referee" class="form-control inline-item">
+	            <option>Select Offer Type</option>
+	            <option>% discount</option>
+	        </select>
+	    </div>
+	    <div class="inline-group col-md-2 col-md-offset-3">
+	        <input ng-model="offer_value_referee" type="text" class="form-control inline-item" placeholder="value"/>
+	    </div>
+	    <br><br>
+
+	    <label class="col-md-3 control-label" for="message">Expiry Date</label>
+	    <div class="inline-group col-md-2">
+	        <input type="text" class="form-control inline-item" id="datepicker" ng-model="expiry" placeholder="expiry date"/>
+	    </div>
+	   
+	    <div class="form-group">
+	      <div class="col-md-12 text-right">
+	        <button type="submit" ng-click="createRefferal()" class="btn btn-primary">Create</button>
+	       
+	      </div>
+	    </div>
+
+	  </fieldset>
+	  </form>
+</div>
+
+<script type="text/javascript">
+    $("#datepicker" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        minDate:0,
+    });
+     $("#datepicker1" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        minDate:0,
+    });
+</script>

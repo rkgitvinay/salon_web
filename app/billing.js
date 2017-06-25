@@ -27,32 +27,16 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
-
-
-  //   $scope.groups = [
-  //   {
-  //     title: "Dynamic Group Header - 1",
-  //     content: "Dynamic Group Body - 1",
-  //     open: false
-  //   },
-  //   {
-  //     title: "Dynamic Group Header - 2",
-  //     content: "Dynamic Group Body - 2",
-  //     open: false
-  //   }
-  // ];
-   
-
     $scope.invoice = 0;
     $scope.invoice_new = 0;
     $scope.custom_price = 0;
     var selectedItem = {};
     var billing_events = [];
-
+    $scope.offer = {};
 
 
     var customer_id = location.search.split('customer_id=')[1];
@@ -127,8 +111,10 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             $scope.pay_id       = response.data.pay_methods[0].id;
             $scope.date = new Date();
             response.data.promo.unshift({id:0,campaign_name:'Select Offer'});
+            response.data.promo.push({id:9999999,campaign_name:'Referral'});
             $scope.promo = response.data.promo;
             $scope.promo_id = 0;
+            $scope.referral = response.data.referral;
         }); 
     }
 
@@ -175,8 +161,13 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     $scope.packageInfoBox = false;
     $scope.price = 0;
     var search_arr = {};
+    var go = true;
     $scope.searchCustomerByMobile = function(value){
-        if(value.str.length > 2){
+        if(value.str.length == 2 || value.str.length == 3){
+            go = true;  
+        }
+        if(value.str.length > 2 && go == true){
+
             search_arr['access_token'] = access_token;
             search_arr['str']  = value.str;
             search_arr['type'] = value.type;
@@ -187,12 +178,26 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                 data  : {payload:data}
             }).then(function(response){
                 if(response.data.customers.length > 0){
+                    go = true;
                     $scope.suggestionBox = true;
                     $scope.customerList = response.data.customers;
                 }else{
+                    go = false;
                     $scope.suggestionBox = false;
+                    var ref = searchReferral(9999999,$scope.promo);
+                    if(ref == undefined){
+                        $scope.promo.push({id:9999999,campaign_name:'Referral'});    
+                    }
                 }
             }); 
+        }
+    }
+
+    function searchReferral(nameKey, myArray){
+        for (var i=0; i < myArray.length; i++) {
+            if (myArray[i].id === nameKey) {
+                return myArray[i];
+            }
         }
     }
 
@@ -216,7 +221,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     }
 
     $scope.staffList = [{id:0,category:'select staff'}];
-    $scope.stylist = 0;
+    $scope.stylist = {id:0,category:'select staff'};
     $scope.getStaffByService = function(item){
         $scope.staffList = [{id:0,category:'Select Staff'}];
         $scope.stylist = 0;
@@ -238,6 +243,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             if(response.data.categories.length >0){
                 $scope.searchItemBox = false;
                 $scope.staffList = response.data.categories;
+                $scope.stylist = {id:0,category:'select staff'};
             }
         }); 
     }
@@ -255,6 +261,9 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     $scope.gender = 'Gender';
 
     $scope.getCustomerDetails = function(customer){
+        
+        $scope.promo = removeByAttr($scope.promo,'id',9999999);
+
         $scope.name = customer.name;
         $scope.mobile = customer.mobile;
         $scope.gender = customer.gender;
@@ -300,7 +309,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         getPrice['access_token'] = access_token;
         getPrice['id']  = selectedItem.id;
         getPrice['category']  = selectedItem.type;
-        getPrice['stylist']  = stylist;
+        getPrice['stylist']  = stylist.id;
         getPrice['customer_mobile']  = $scope.mobile;
         getPrice['gender']  = $scope.gender;
         var data =  JSON.stringify(getPrice);
@@ -310,6 +319,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             data  : {payload:data}
         }).then(function(response){
             if(response.data.status == 'success'){
+                selectedItem.name = response.data.list.name;
                 $scope.price = response.data.list.rate;
                 if(response.data.is_member == 'true'){
                     is_member = 'true';
@@ -335,12 +345,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     var item_list = {};
     var index = 1;
     $scope.calculateBill = function(){
-        if($scope.discount == 0){
-            var disc = 'No Discount';
-        }else{
-            var disc = $scope.discount.toString();
-            disc = disc+'%';
-        }
+        var row = $scope.tax;
         if(selectedItem.type == 'Service'){
             var type = 'service';
         }else if(selectedItem.type == 'package'){
@@ -350,60 +355,158 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }else if(selectedItem.type == 'card'){
             var type = 'card';
         }else{
-            type = 'Product';
+            type = 'product';
         }
-
         if($scope.custom_price == 0){
-            var custom = 0;
+            var final_price = $scope.price;
         }else{
-            var custom = 1;
+            var final_price = $scope.custom_price;
         }
-        item_list['access_token']   = access_token;
-        item_list['stylist']        = $scope.stylist;
-        item_list['discounts']      = disc;
-        item_list['gender']         = $scope.gender;
-        item_list['custom']         = custom;
-        item_list['custom_price']   = $scope.custom_price,
-        item_list['category']       = type;
-        item_list['is_package']     = is_package.toString();   
-        item_list['is_member']      = is_member.toString();
-        item_list['quantity']       = $scope.quantity;
-        item_list['Service']        = selectedItem.name;
-        item_list['id']             = selectedItem.id;
         if(is_package == 'true'){
-            item_list['package_id'] = package_info.package_id;
-            item_list['package_name']= package_info.package_name;
-            item_list['per_unit_st'] = package_info.per_unit_st;   
+            var pkg_id = package_info.package_id;
+            var pkg_name = package_info.package_name;
+        }else{
+            var pkg_id = 0;
+            var pkg_name = '';
         }
         if(is_member == 'true'){
-            item_list['membership_id'] = membership_info.id;
+            var mem_id = membership_info.id;
+        }else{
+            var mem_id = 0;
         }
 
-        var data =  JSON.stringify(item_list);
-        $http({
-            method  : 'POST',
-            url     : 'http://'+base_url+'/billing/calculate_bill',
-            data  : {payload:data}
-        }).then(function(response){
-            if(response.data.status == 'success'){
-                response.data.list.index = index;
-                response.data.list.is_stylist = response.data.list.stylist;
-                response.data.list.stylist = response.data.list.staff_id;
+        var item = {    
+            stylist:$scope.stylist.id,
+            stylist_name:$scope.stylist.category,
+            discounts:$scope.discount,
+            price:final_price,
+            category:type,
+            is_package:is_package.toString(),
+            is_member:is_member.toString(),
+            quantity:$scope.quantity,
+            Service:selectedItem.name,
+            id:selectedItem.id,
+            package_id:pkg_id,
+            package_name:pkg_name,
+            membership_id:mem_id,
+            taxable_amount: 0,
+            discount_value : 0,
+            tax_value : 0,
+            net_amount : 0,
+            price_without_tax:0
+        }
 
-                if(response.data.list.discounts == 0){  
-                    response.data.list.discounts = 'No Discount';
+        if(item.category == 'service' || item.category == 'membership' || item.category == 'package' || item.category == 'card'){
+            if(row.tax_including == 'true'){
+                item.price_without_tax =  Math.round(item.price/1.18);
+                if(item.discounts != 0){
+                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
-                $scope.info.push(response.data.list);
-                index++;
-                $scope.packageInfoBox = false;
-                $scope.price = 0;
-                $scope.custom_price = 0;
-                $scope.service = '';
-                $scope.quantity = 1;
-                $scope.discount = 0;
+                item.taxable_amount = (item.price_without_tax - item.discount_value);
+                item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
+            }else{
+                item.price_without_tax = item.price;
+                if(item.discounts != 0){
+                    item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                }
+                item.taxable_amount = (item.price_without_tax - item.discount_value);
+                item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
+            }
+            item.net_amount = (item.taxable_amount + item.tax_value)*item.quantity;
+
+        }else if(item.category == 'product'){
+
+             if(row.tax_including == 'true'){
+                item.price_without_tax =  Math.round(item.price/1.28);
+                if(item.discounts != 0){
+                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
+                }
+                item.taxable_amount = (item.price_without_tax - item.discount_value);
+                item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+            }else{
+                item.price_without_tax = item.price;
+                if(item.discounts != 0){
+                    item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                }
+                item.taxable_amount = (item.price_without_tax - item.discount_value);
+                item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+            }
+            item.net_amount = (item.taxable_amount + item.tax_value)*item.quantity;
+        }
+
+        console.log(item);
+        item.index = index;
+        $scope.info.push(item);
+        index++;
+
+        $scope.packageInfoBox = false;
+        $scope.price = 0;
+        $scope.custom_price = 0;
+        $scope.service = '';
+        $scope.quantity = 1;
+        $scope.discount = 0;
+        $scope.staffList = [{id:0,category:'select staff'}];
+        $scope.stylist = {id:0,category:'Select Staff'};
+
+    }
+
+    $scope.$watchCollection('info', function(array){
+        var service = {}; 
+        var sub_total = 0;
+        var taxable_amount = 0;
+        var service_sum = 0;
+        var service_disc = 0;
+        var other_sum = 0;
+        var other_disc = 0;
+        var product_sum = 0;
+        var product_disc = 0;
+        var discount = 0;
+        var tax = 0;
+        var total = 0;
+        array.forEach(function(row,i){
+            sub_total = sub_total + (row.price_without_tax);
+            discount = discount + row.discount_value;
+            tax = tax + row.tax_value;
+            taxable_amount = taxable_amount + row.taxable_amount;
+
+            if(row.category == 'service'){
+                service_sum = service_sum + (row.taxable_amount);
+                service_disc = service_disc + row.discount_value;
+
+            }else if(row.category == 'membership' || row.category == 'package' || row.category == 'card'){
+                other_sum = other_sum + (row.taxable_amount);
+                other_disc = other_disc + row.discount_value;
+
+            }else{
+                product_sum = product_sum + (row.taxable_amount);
+                product_disc = product_disc +  row.discount_value;
+            }
+
+            if(row.category == 'membership' || row.category == 'package' || row.category== 'card'){
+                is_prepaid = false;
+            }
+            if(array.length == i+1){
+                 service = {
+                    sub_total : sub_total,
+                    taxable_amount: taxable_amount,
+                    service_sum: service_sum,
+                    service_disc:service_disc,
+                    product_sum:product_sum,
+                    product_disc:product_disc,
+                    other_sum:other_sum,
+                    other_disc:other_disc,
+                    discount:discount,
+                    tax:tax,
+                    total :taxable_amount + tax
+                }
+               
+                $scope.sum = service;
+                $scope.amt = $scope.sum.total;
             }
         });
-    }
+
+    });
+
 
     var removeByAttr = function(arr, attr, value){
         var i = arr.length;
@@ -500,9 +603,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
     var chek_out = {};
     $scope.checkout = function(){
-
         var prepaidCards = [];
-
         myArray = $scope.partialLog.filter(function( obj ){
             if(obj.name === 'Prepaid Card'){
                 prepaidCards.push(obj);
@@ -540,9 +641,8 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         chek_out['narration']       = '';
         chek_out['event_id']        = billing_events;
         chek_out['info']            = $scope.info;
-
+        chek_out['offer']           = $scope.offer;
         chek_out['invoice_details'] = $scope.sum;
-
         chek_out['is_prepaid']      = is_prepaid;
         chek_out['prepaid']         = prepaid;
 
@@ -850,208 +950,60 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
      });
 
     var updateStats = function(){
-
-        var array = $scope.info;
-
-        var service = [];           
-        var sum = 0;
-        var vat = 0;
-        var tax = 0;
-        var luxury_tax = 0;
-        var pro_sum = 0;
+        var service = {}; 
+        var sub_total = 0;
+        var taxable_amount = 0;
+        var service_sum = 0;
         var service_disc = 0;
+        var other_sum = 0;
+        var other_disc = 0;
+        var product_sum = 0;
         var product_disc = 0;
-        var is_prepaid = true;
-        var test =0;
-        var discounts = 0;
+        var discount = 0;
+        var tax = 0;
+        var total = 0;
+        $scope.info.forEach(function(row,i){
+            sub_total = sub_total + (row.price_without_tax);
+            discount = discount + row.discount_value;
+            tax = tax + row.tax_value;
+            taxable_amount = taxable_amount + row.taxable_amount;
 
-        if(array.length > 0){
+            if(row.category == 'service'){
+                service_sum = service_sum + (row.taxable_amount);
+                service_disc = service_disc + row.discount_value;
 
-            var row = $scope.tax;
-            array.forEach(function(order,i){
-                if(order.discounts == 'No Discount'){   
-                    discounts = 0;
-                }else{
-                    discounts = parseInt(order.discounts.replace('%',''));
-                }
+            }else if(row.category == 'membership' || row.category == 'package' || row.category == 'card'){
+                other_sum = other_sum + (row.taxable_amount);
+                other_disc = other_disc + row.discount_value;
 
-                if(order.order_type == 'service' || order.order_type == 'membership' || order.order_type == 'package' || order.order_type== 'card'){
+            }else{
+                product_sum = product_sum + (row.taxable_amount);
+                product_disc = product_disc +  row.discount_value;
+            }
 
-                    if(row.tax_including == 'true'){
-                        if(row.luxury_tax != 0){
-                            test = order.amount/1.18;
-                            sum = sum + order.amount/1.18;
-                        }else{
-                            test = order.amount/1.15;
-                            sum = sum + order.amount/1.15;
-                        }
-                    }else{
-                        test = order.amount;
-                        sum = sum + order.amount; 
-                    }
-                    if(discounts != 0){
-                        service_disc = service_disc + (test*discounts/100);                        
-                    }
-
-                }else if(order.order_type == 'product'){
-                    pro_sum = pro_sum + order.amount;
-                    if(discounts != 0){
-                        product_disc = product_disc + (order.amount*discounts/100);                      
-                    }
-                }
-
-                if(order.order_type == 'membership' || order.order_type == 'package' || order.order_type== 'card'){
-                    is_prepaid = false;
-                }
-
-
-                if(array.length == i+1){
-                    if(row.is_vat_applicable == 'true'){
-                        vat = (pro_sum * 12.50 /100);   
-                    }
-                    if(row.is_tax_applicable == 'true' && sum != 0){
-                        tax = tax + ((sum-service_disc) * row.value/100);
-                            if(row.luxury_value != 0){
-                                luxury_tax = luxury_tax + ((sum-service_disc) * row.luxury_value/100);      
-                            }
-                    }   
-
-                    var discount = service_disc+product_disc;
-                    service.push({
-                        sub_total : Math.round(sum+pro_sum),
-                        service_sum:Math.round(sum),
-                        service_disc : Math.round(service_disc),
-                        taxableAmt  : Math.round(sum-service_disc),
-                        product_sum : Math.round(pro_sum),
-                        product_disc : Math.round(product_disc),
-                        discount:Math.round(discount),
-                        service_tax:Math.round(tax),
-                        luxury_tax:Math.round(luxury_tax),
-                        vat:Math.round(vat),
-                        points:0,
-                        total:Math.round(sum+pro_sum+vat-discount+tax+luxury_tax)
-                    });
-                    //var total = sum+pro_sum+vat-discount+tax+luxury_tax;    
-                    //total = Math.round(total);
-
-                    //$scope.taxableAmt = Math.round(sum-service_disc);
-                    $scope.sum = service[0];
-                    //$scope.total = total;
-                    $scope.amt = $scope.sum.total;
+            if(row.category == 'membership' || row.category == 'package' || row.category== 'card'){
+                is_prepaid = false;
+            }
+            if($scope.info.length == i+1){
+                 service = {
+                    sub_total : sub_total,
+                    taxable_amount: taxable_amount,
+                    service_sum: service_sum,
+                    service_disc:service_disc,
+                    product_sum:product_sum,
+                    product_disc:product_disc,
+                    other_sum:other_sum,
+                    other_disc:other_disc,
+                    discount:discount,
+                    tax:tax,
+                    total :taxable_amount + tax
                 }
                
-
-            });
-
-        }else{
-            $scope.sum = [];
-            $scope.total = '';
-            $scope.amt = '';
-            $scope.taxableAmt = '';
-        }
+                $scope.sum = service;
+                $scope.amt = $scope.sum.total;
+            }
+        });
     }
-
-
-    
-    $scope.$watchCollection('info', function(array){
-        var service = [];           
-        var sum = 0;
-        var vat = 0;
-        var tax = 0;
-        var luxury_tax = 0;
-        var pro_sum = 0;
-        var service_disc = 0;
-        var product_disc = 0;
-        var is_prepaid = true;
-        var test =0;
-        var discounts = 0;
-
-        if(array.length > 0){
-
-            var row = $scope.tax;
-            array.forEach(function(order,i){
-                if(order.discounts == 'No Discount'){   
-                    discounts = 0;
-                }else{
-                    discounts = parseInt(order.discounts.replace('%',''));
-                }
-
-                if(order.order_type == 'service' || order.order_type == 'membership' || order.order_type == 'package' || order.order_type== 'card'){
-
-                    if(row.tax_including == 'true'){
-                        if(row.luxury_tax != 0){
-                            test = order.amount/1.18;
-                            sum = sum + order.amount/1.18;
-                        }else{
-                            test = order.amount/1.15;
-                            sum = sum + order.amount/1.15;
-                        }
-                    }else{
-                        test = order.amount;
-                        sum = sum + order.amount; 
-                    }
-                    if(discounts != 0){
-                        service_disc = service_disc + (test*discounts/100);                        
-                    }
-
-                }else if(order.order_type == 'product'){
-                    pro_sum = pro_sum + order.amount;
-                    if(discounts != 0){
-                        product_disc = product_disc + (order.amount*discounts/100);                      
-                    }
-                }
-
-                if(order.order_type == 'membership' || order.order_type == 'package' || order.order_type== 'card'){
-                    is_prepaid = false;
-                }
-
-
-                if(array.length == i+1){
-                    if(row.is_vat_applicable == 'true'){
-                        vat = (pro_sum * 12.50 /100);   
-                    }
-                    if(row.is_tax_applicable == 'true' && sum != 0){
-                        tax = tax + ((sum-service_disc) * row.value/100);
-                            if(row.luxury_value != 0){
-                                luxury_tax = luxury_tax + ((sum-service_disc) * row.luxury_value/100);      
-                            }
-                    }   
-
-                    var discount = service_disc+product_disc;
-                    service.push({
-                        sub_total : Math.round(sum+pro_sum),
-                        service_sum:Math.round(sum),
-                        service_disc : Math.round(service_disc),
-                        taxableAmt  : Math.round(sum-service_disc),
-                        product_sum : Math.round(pro_sum),
-                        product_disc : Math.round(product_disc),
-                        discount:Math.round(discount),
-                        service_tax:Math.round(tax),
-                        luxury_tax:Math.round(luxury_tax),
-                        vat:Math.round(vat),
-                        points:0,
-                        total:Math.round(sum+pro_sum+vat-discount+tax+luxury_tax)
-                    });
-                    //var total = sum+pro_sum+vat-discount+tax+luxury_tax;    
-                    //total = Math.round(total);
-
-                    //$scope.taxableAmt = Math.round(sum-service_disc);
-                    $scope.sum = service[0];
-                    //$scope.total = total;
-                    $scope.amt = $scope.sum.total;
-                }
-               
-
-            });
-
-        }else{
-            $scope.sum = [];
-            $scope.total = '';
-            $scope.amt = '';
-            $scope.taxableAmt = '';
-        }
-    });
-
 
 
     var refreshScreen = function(){
@@ -1068,7 +1020,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         $scope.price = 0;
         $scope.service = '';
         $scope.staffList = [{id:0,category:'select staff'}];
-        $scope.stylist = 0;
+        $scope.stylist = {id:0,category:'Select Staff'};
         $scope.quantity = 1;
         $scope.discount = 0;
         $scope.payMethod = [{id:0,payment_method:'Select Pay Method'}];
@@ -1077,10 +1029,61 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         $scope.custom_price = 0;
     }
 
-    $scope.validateOffer = function(value){
-        if(value.promo != 0){
-            
+    $scope.applyOffer = function(value){
+        if(value.promo == 9999999){
+            $scope.referrar_input = true;
+        }else{
+            $scope.referrar_input = false;
         }
     }
 
+    var checkUser = {}
+    $scope.validateUser = function(event){
+        if (event.which === 13){
+            checkUser['access_token']    = access_token;
+            checkUser['mobile']          = $scope.referrar_mobile;
+            var data =  JSON.stringify(checkUser);
+            $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/customer/validateUser',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success' && $scope.referral.length > 0){
+                    applyReferralOffer($scope.referral[0],$scope.referrar_mobile);
+                }
+            });
+        }
+    }
+
+    var applyReferralOffer = function(refer,referrar_mobile){
+        var row = $scope.tax;
+        $scope.offer = {offer:'referral',param:referrar_mobile}
+        $scope.info.forEach(function(item,i){
+
+            if(item.category == 'service'){
+                item.discounts = refer.referred_value;
+                if(row.tax_including == 'true'){
+                    item.price_without_tax =  Math.round(item.price/1.18);
+                    if(item.discounts != 0){
+                        item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
+                    }
+                    item.taxable_amount = (item.price_without_tax - item.discount_value);
+                    item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
+                }else{
+                    item.price_without_tax = item.price;
+                    if(item.discounts != 0){
+                        item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                    }
+                    item.taxable_amount = (item.price_without_tax - item.discount_value);
+                    item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
+                }
+                item.net_amount = (item.taxable_amount + item.tax_value)*item.quantity;
+            }
+            if($scope.info.length == i+1){
+                updateStats();
+                console.log($scope.info);
+            }
+            
+        });
+    }
 });
