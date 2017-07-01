@@ -68,4 +68,12 @@ phpro.controller('CustomerCtrl', function($scope,$http,$window,$rootScope){
         }); 
     }
 
+     $scope.exportData = function(heading){
+        var file_name = heading+'.xls';
+        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, file_name);
+    }
+
 });

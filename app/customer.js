@@ -27,8 +27,8 @@ if(localStorage.getItem("access_token") == null){
     var access_token = localStorage.getItem("access_token");  
 }
 
-// var base_url = 'zalonstyle.in:8080';
-var base_url = 'localhost:3000';
+var base_url = 'zalonstyle.in:8080';
+// var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http) {
 

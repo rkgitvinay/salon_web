@@ -202,8 +202,7 @@ phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){
 });
 
 phpro.controller('InfoCtrl', function($scope,$http,$window,$rootScope) {
-    console.log($rootScope.accounts);
-    //$scope.accounts = $rootScope.accounts;
+   
     var seclectCategory ;
     var selectId;
 
@@ -400,6 +399,13 @@ phpro.controller('InfoCtrl', function($scope,$http,$window,$rootScope) {
              //console.log(response);
         });
     } 
+
+    $scope.exportData = function(){
+        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
 });
 
 phpro.controller('OtherCtrl', function($scope,$http,$window) {   

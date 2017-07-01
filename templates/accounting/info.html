@@ -9,7 +9,7 @@
 
 <div class="container" style="width: 100% !important;">
     <div class="row">
-        <div class="col-sm-3 nopadding" style="background-color: #fafbfb;height: 765px;">
+        <div class="col-sm-3 nopadding" style="background-color: #fafbfb;height: 85vh;">
            <div class="menu-head" style="background-color: #ffffff;border-right: 1px solid antiquewhite">
                 <!-- <span data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus icon" aria-hidden="true"></i></span> -->
                   <span>
@@ -73,13 +73,14 @@
                 </span>
 
                 <b><span style="margin-left: 40%;">{{transaction_type}}</span></b>
+                <span style="margin-left: 30%;" ng-click="exportData()"><i class="fa fa-external-link icon" aria-hidden="true"></i></span>
                 <button style="padding: 2px 12px !important;" data-toggle="modal" data-target="#addExpenseModal" class="btn btn-default iosBtn pull-right">
                      Add Transaction
                 <!-- </span> -->
                 </button>
             </div>
 
-            <div class="content nopadding">
+            <div class="content nopadding" id="exportable">
                 <table class="table table-bordered">
                     <thead id="thead">
                         <tr id="tr">

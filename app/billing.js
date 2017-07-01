@@ -27,8 +27,8 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-// var base_url = 'zalonstyle.in:8080';
-var base_url = 'localhost:3000';
+var base_url = 'zalonstyle.in:8080';
+// var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     $scope.invoice = 0;
@@ -407,7 +407,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             }else{
                 item.price_without_tax = item.price;
                 if(item.discounts != 0){
-                    item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
                 item.taxable_amount = (item.price_without_tax - item.discount_value);
                 item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
@@ -426,7 +426,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             }else{
                 item.price_without_tax = item.price;
                 if(item.discounts != 0){
-                    item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
                 item.taxable_amount = (item.price_without_tax - item.discount_value);
                 item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
@@ -508,18 +508,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     });
 
 
-    var removeByAttr = function(arr, attr, value){
-        var i = arr.length;
-        while(i--){
-            if( arr[i] 
-               && arr[i].hasOwnProperty(attr) 
-               && (arguments.length > 2 && arr[i][attr] === value ) ){ 
-               arr.splice(i,1);
-            }
-        }
-        return arr;
-    }
-
+    
     $scope.removeItem = function(index){
         //console.log(index);
         $scope.info = removeByAttr($scope.info,'index',index);
@@ -658,10 +647,10 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                     }).then(function(response){
                         if(response.data.status == 'success'){
                             var invoice = $scope.invoice;
-
-                            var url = 'http://localhost:3000/billing/getBill?invoice='+invoice+'&salon_id=22';
+                            var salon_id = response.data.salon_id;
+                            var url = 'http://'+base_url+'/billing/getBill?invoice='+invoice+'&salon_id='+salon_id+'';
                             
-                            popupCenter(url,'myPop1',450,450);
+                            popupCenter(url,'myPop1',600,600);
                             refreshScreen();
                             get_bill_info();
                             getHoldCustomers();
@@ -756,15 +745,15 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
             response.data.list.forEach(function(list){
                 list.index = index;
-                list.is_stylist = list.stylist;
-                list.stylist    = list.staff_id;
+                // list.is_stylist = list.stylist;
+                // list.stylist    = list.staff_id;
 
-                if(list.discounts == 0){  
-                    list.discounts = 'No Discount';
-                }else{
-                    var disc = list.discounts.toString();
-                    list.discounts = disc+'%';
-                }
+                // if(list.discounts == 0){  
+                //     list.discounts = 'No Discount';
+                // }else{
+                //     var disc = list.discounts.toString();
+                //     list.discounts = disc+'%';
+                // }
                 $scope.info.push(list);
                 index++;
             });
@@ -792,15 +781,15 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
             response.data.list.forEach(function(list){
                 list.index = index;
-                list.is_stylist = list.stylist;
-                list.stylist    = list.staff_id;
+                //list.is_stylist = list.stylist;
+                // list.stylist    = list.staff_id;
 
-                if(list.discounts == 0){  
-                    list.discounts = 'No Discount';
-                }else{
-                    var disc = list.discounts.toString();
-                    list.discounts = disc+'%';
-                }
+                // if(list.discounts == 0){  
+                //     list.discounts = 'No Discount';
+                // }else{
+                //     var disc = list.discounts.toString();
+                //     list.discounts = disc+'%';
+                // }
                 $scope.info.push(list);
                 index++;
             });
@@ -1072,7 +1061,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                 }else{
                     item.price_without_tax = item.price;
                     if(item.discounts != 0){
-                        item.discount_value = Math.round((item.taxable_amount*item.discounts/100));                        
+                        item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                     }
                     item.taxable_amount = (item.price_without_tax - item.discount_value);
                     item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
@@ -1086,4 +1075,17 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             
         });
     }
+
+    var removeByAttr = function(arr, attr, value){
+        var i = arr.length;
+        while(i--){
+            if( arr[i] 
+               && arr[i].hasOwnProperty(attr) 
+               && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+               arr.splice(i,1);
+            }
+        }
+        return arr;
+    }
+
 });
