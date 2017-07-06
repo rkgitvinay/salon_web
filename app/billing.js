@@ -398,14 +398,14 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         if(item.category == 'service' || item.category == 'membership' || item.category == 'package' || item.category == 'card'){
             if(row.tax_including == 'true'){
-                item.price_without_tax =  Math.round(item.price/1.18);
+                item.price_without_tax =  (Math.round(item.price/1.18))*item.quantity;
                 if(item.discounts != 0){
                     item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
                 item.taxable_amount = (item.price_without_tax - item.discount_value);
                 item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
             }else{
-                item.price_without_tax = item.price;
+                item.price_without_tax = (parseInt(item.price))*item.quantity;
                 if(item.discounts != 0){
                     item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
@@ -417,14 +417,14 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }else if(item.category == 'product'){
 
              if(row.tax_including == 'true'){
-                item.price_without_tax =  Math.round(item.price/1.28);
+                item.price_without_tax =  (Math.round(item.price/1.28))*item.quantity;
                 if(item.discounts != 0){
                     item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
                 item.taxable_amount = (item.price_without_tax - item.discount_value);
                 item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
             }else{
-                item.price_without_tax = item.price;
+                item.price_without_tax = (parseInt(item.price))*item.quantity;
                 if(item.discounts != 0){
                     item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                 }
@@ -502,6 +502,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                
                 $scope.sum = service;
                 $scope.amt = $scope.sum.total;
+                console.log($scope.sum);
             }
         });
 
@@ -637,7 +638,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         if(myArray.length > 0 || prepaidCards.length > 0){
 
-            if( ($scope.sum.total - fullAmt) == 0 || ($scope.sum.total - fullAmt) < 10 ){
+            //if( ($scope.sum.total - fullAmt) == 0 || ($scope.sum.total - fullAmt) < 10 ){
 
                     var data =  JSON.stringify(chek_out);
                     $http({
@@ -656,9 +657,10 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                             getHoldCustomers();
                         } 
                     });
-            }else{
-                alert('Please check your amount');
-            }
+                    
+            // }else{
+            //     alert('Please check your amount');
+            // }
 
         }else{
             alert('Add payment method');
@@ -861,27 +863,27 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         if(result.payment_method == 'Prepaid Card'){
             $scope.partialLog.push({id:result.id,name:result.payment_method, value: parseInt($scope.amt),prepaid_card_id:$scope.prepaid_card_id});
 
-            $scope.sum.taxableAmt = $scope.sum.taxableAmt - parseInt($scope.amt);
+            // $scope.sum.taxableAmt = $scope.sum.taxableAmt - parseInt($scope.amt);
 
-            if(row.is_tax_applicable == 'true' && $scope.sum.taxableAmt != 0){
+            // if(row.is_tax_applicable == 'true' && $scope.sum.taxableAmt != 0){
 
-                tax = tax + ($scope.sum.taxableAmt * row.value/100);
-                if(row.luxury_value != 0){
-                    luxury_tax = luxury_tax + ($scope.sum.taxableAmt * row.luxury_value/100);      
-                }
+            //     tax = tax + ($scope.sum.taxableAmt * row.value/100);
+            //     if(row.luxury_value != 0){
+            //         luxury_tax = luxury_tax + ($scope.sum.taxableAmt * row.luxury_value/100);      
+            //     }
 
-                $scope.sum.service_tax = Math.round(tax);
-                $scope.sum.luxury_tax = Math.round(luxury_tax);
-                $scope.sum.total = $scope.sum.taxableAmt + $scope.sum.service_tax+$scope.sum.luxury_tax + $scope.sum.product_sum + $scope.sum.vat - $scope.sum.product_disc;
-                $scope.amt = $scope.sum.total;
+            //     $scope.sum.service_tax = Math.round(tax);
+            //     $scope.sum.luxury_tax = Math.round(luxury_tax);
+            //     $scope.sum.total = $scope.sum.taxableAmt + $scope.sum.service_tax+$scope.sum.luxury_tax + $scope.sum.product_sum + $scope.sum.vat - $scope.sum.product_disc;
+            //     $scope.amt = $scope.sum.total;
 
-            }else{
-                $scope.sum.service_tax = 0;
-                $scope.sum.luxury_tax = 0;
-                $scope.sum.total = $scope.sum.taxableAmt+$scope.sum.service_tax+$scope.sum.luxury_tax + $scope.sum.product_sum + $scope.sum.vat  - $scope.sum.product_disc;
-                $scope.amt = $scope.sum.total;
+            // }else{
+            //     $scope.sum.service_tax = 0;
+            //     $scope.sum.luxury_tax = 0;
+            //     $scope.sum.total = $scope.sum.taxableAmt+$scope.sum.service_tax+$scope.sum.luxury_tax + $scope.sum.product_sum + $scope.sum.vat  - $scope.sum.product_disc;
+            //     $scope.amt = $scope.sum.total;
 
-            }
+            // }
 
         }else{
             $scope.payMethod = $scope.payMethod.filter(function( obj ){
@@ -891,7 +893,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
             $scope.partialLog.push({id:result.id,name:result.payment_method, value: parseInt($scope.amt)});
         }
-
+        console.log($scope.sum);
     }
 
     $scope.removePartial = function(id){
@@ -1052,14 +1054,14 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             if(item.category == 'service'){
                 item.discounts = refer.referred_value;
                 if(row.tax_including == 'true'){
-                    item.price_without_tax =  Math.round(item.price/1.18);
+                    item.price_without_tax =  (Math.round(item.price/1.18))*item.quantity;
                     if(item.discounts != 0){
                         item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                     }
                     item.taxable_amount = (item.price_without_tax - item.discount_value);
                     item.tax_value = Math.round(((item.taxable_amount)*row.service_value/100));
                 }else{
-                    item.price_without_tax = item.price;
+                    item.price_without_tax = (parseInt(item.price))*item.quantity;
                     if(item.discounts != 0){
                         item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
                     }
