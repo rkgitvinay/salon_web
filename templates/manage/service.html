@@ -58,9 +58,11 @@ label{
                           <div class="info">
                             <h2 class="title">{{line.category_name}}</h2>
                             <p class="desc">{{line.description}}</p>
-                            <ul>
-                              <li style="width:15%;">Price: $49.99 <span class="fa fa-male"></span></li>
-                              <li style="width:35%;">Duration: $29.99 <span class="fa fa-child"></span></li>
+                            <ul style="left: 20%;">
+                              <a style="margin-right: 2%;cursor: pointer;" href="javascript:void(0)" data-toggle="modal" data-target="#myModal1">
+                                  <span class="fa fa-pencil"></span> 
+                              </a>
+                              <span class="fa fa-trash" style="cursor: pointer;"></span>
                             </ul>
                           </div>
                         </li>
@@ -118,7 +120,7 @@ label{
                 </div>
                  <label class="col-md-2" for="country">Description</label>
                 <div class="col-md-3">
-                   <input type="text" placeholder="Description" class="form-control input-md">
+                   <input type="text" ng-model="description" placeholder="Description" class="form-control input-md">
                 </div>
               </div>
 
@@ -151,26 +153,26 @@ label{
               <div class="form-group" ng-hide="initialScreen">
                   <label class="col-md-1 col-md-offset-3" for="country">Price</label>
                   <div class="col-md-2">
-                     <input type="text" ng-model="formData.price" placeholder="Price" class="form-control input-md" required="">
+                     <input type="text" ng-model="common_price" placeholder="Price" class="form-control input-md" required="">
                   </div>
                    <label class="col-md-1" for="country">Duration</label>
                   <div class="col-md-2">
-                     <input type="text" ng-model="formData.duration" placeholder="Duration" class="form-control input-md" required="">
+                     <input type="text" ng-model="duration" placeholder="Duration" class="form-control input-md" required="">
                   </div>
               </div>
 
-               <div class="form-group" ng-show="genderBased">
+              <div class="form-group" ng-show="genderBased">
                   <label class="col-md-1 col-md-offset-3" for="country">Male</label>
                   <div class="col-md-2">
-                     <input type="text" ng-model="formData.malePrice" placeholder="male price" class="form-control input-md" required="">
+                     <input type="text" ng-model="male_price" placeholder="male price" class="form-control input-md" required="">
                   </div>
                   <label class="col-md-1" for="country">Female</label>
                   <div class="col-md-2">
-                     <input type="text" ng-model="formData.femalePrice" placeholder="female price" class="form-control input-md" required="">
+                     <input type="text" ng-model="female_price" placeholder="female price" class="form-control input-md" required="">
                   </div>
                   <label class="col-md-1" for="country">Duration</label>
                   <div class="col-md-2">
-                     <input type="text" ng-model="formData.duration" placeholder="Duration" class="form-control input-md" required="">
+                     <input type="text" ng-model="duration" placeholder="Duration" class="form-control input-md" required="">
                   </div>
               </div>
 

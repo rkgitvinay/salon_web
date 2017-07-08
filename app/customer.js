@@ -88,7 +88,7 @@ phpro.controller('mainCtrl', function($scope,$http) {
     $scope.updateCustomer = function(){
         arr['access_token']     = access_token;
         arr['id']               = $scope.customer_id;
-        arr['name']             =  $scope.name;
+        arr['name']             = $scope.name;
         arr['phone_number']     = $scope.mobile;
         arr['gender']           = $scope.gender;
         arr['dob']              = $scope.dob;
@@ -100,7 +100,7 @@ phpro.controller('mainCtrl', function($scope,$http) {
             data  : {payload:data}
         }).then(function(response){
             console.log(response);
-            angular.element('#modal').modal('hide');
+            angular.element('#editModal').modal('hide');
         }); 
     }
 
@@ -120,7 +120,7 @@ phpro.controller('mainCtrl', function($scope,$http) {
             data  : {payload:data}
         }).then(function(response){
             console.log(response);
-            angular.element('#modal').modal('hide');
+            angular.element('#createModel').modal('hide');
         }); 
     }
 

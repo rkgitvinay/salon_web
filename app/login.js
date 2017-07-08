@@ -19,6 +19,9 @@ phpro.factory('Session', function($http) {
             console.log(sessData);
             localStorage.setItem("name", sessData.name);
             localStorage.setItem("access_token", sessData.access_token);
+            localStorage.setItem("user_type", sessData.user_type);
+            localStorage.setItem("is_marketing", sessData.is_marketing);
+            localStorage.setItem("username", sessData.username);
         },
         updateSession: function() { 
                   

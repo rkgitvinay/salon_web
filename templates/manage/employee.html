@@ -1,0 +1,161 @@
+<style type="text/css">
+  .modal-backdrop {
+  position: relative !important;
+}
+.modal-dialog{
+  margin-top: 70px !important;
+}
+label{
+  margin-top: 5px;
+}
+</style>
+<div class="container" style="width: 100% !important;">
+    <div class="row">
+        <div class="col-sm-3 nopadding" style="height: 582px;">
+            <div class="cards" style="height: 597px;">          
+            <!-- active_card                  -->
+                <div ng-repeat="staff in staffList"> 
+                    <div class="cad-group">
+                        <span>
+                          <a href="javascript:void(0)" ng-click="getStaffDetail({id:staff.staff_id,name:staff.name})" class="button btn btn-primary btn-lg btn-block">
+                              <span class="card-name">{{staff.name}}</span>
+                          </a>
+                        </span>
+                    </div>
+                </div>                            
+            </div>
+
+          <!--  <div class="bottom-menu">
+                hello
+            </div> -->
+
+        </div>
+
+        <div class="col-sm-9 nopadding" style="background-color: #ffffff;height: 582px;">   
+            <div class="menu-head" style="border-bottom: solid; border-width: 2px;">
+                {{selected}}
+                <b><span style="margin-left: 40%;color: black;">{{acc_name}}</span></b>
+                 <button style="padding: 0px 12px !important;" ng-click="addNewServiceLineup()" class="btn btn-success iosBtn pull-right">
+                    <!-- <i class="fa fa-exchange icon" aria-hidden="true"></i>  -->
+                    Save
+                <!-- </span> -->
+                </button>
+            </div>
+            <div class="content nopadding">
+              <div class="col-md-6 well" style="height: 83vh;">
+                <form class="form-horizontal  pull-left col-md-10 custome-padding">
+                <fieldset>
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="textinput">Name</label>  
+                  <div class="col-md-8">
+                  <input id="textinput" ng-model = "emp_name" name="textinput" type="text" placeholder="" class="form-control input-md" required="">
+                  </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="textinput">Job Title</label>  
+                  <div class="col-md-8">
+                  <input id="textinput" ng-model = "emp_jobtitle" name="textinput" type="text" placeholder="" class="form-control input-md" required="">
+                  </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="3">Mobile</label>  
+                  <div class="col-md-8">
+                  <input id="3" name="3" ng-model = "emp_mobile" type="text" placeholder="" class="form-control input-md" required="">
+                  </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="4">Email</label>  
+                  <div class="col-md-8">
+                  <input id="4" name="4" ng-model = "emp_email" type="text" placeholder="" class="form-control input-md">
+                  </div>
+                </div>
+
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="6">Staff Level</label>  
+                  <div class="col-md-8">
+                     <!--  <select ng-model="title">
+                          <option ng-repeat="x in emp_category" value="{{x.id}}" ng-click="getid(x.category)">{{x.category}}</option>
+                      </select> -->
+                      <select ng-model="title" ng-change="test(title)" ng-options="cat.category for cat in emp_category" class="form-control">
+                      </select>
+                  </div>
+                </div>
+
+                <!-- Multiple Checkboxes -->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="checkboxes">Gender</label>
+                  <div class="col-md-8">
+                  <div class="checkbox">
+                    <label for="checkboxes-0">
+                      <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1">
+                      Male
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label for="checkboxes-1">
+                      <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2">
+                      Female
+                    </label>
+                  </div>
+                  </div>
+                </div>
+                </fieldset>
+                </form>
+              </div>
+
+                <div class="col-md-6 well" style="height: 83vh;">
+                   <button ng-click="uncheckAll();" style="margin-right: 10px">Uncheck all</button>
+                   <button ng-click="checkAll()">Check all</button>  
+                    <ul class="nav nav-pills nav-stacked" style="height: 75vh;overflow-y: auto;">
+                        <li ng-repeat="role in emp_services">
+                          <a href="javascript:void(0)">
+                            <input type="checkbox" ng-model="role.is_select"  ng-change="toggleUserRole(role)"> {{role.category_name}}
+                          </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    function assignmentInfo(){
+        $('#myModal').modal();
+    }
+
+    
+
+    $(".num-valid").keydown(function (e) {       
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||             
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||              
+            (e.keyCode >= 35 && e.keyCode <= 40)) {                 
+                 return;
+        }        
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    
+   
+</script>
+
