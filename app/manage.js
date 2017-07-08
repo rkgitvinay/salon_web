@@ -261,11 +261,16 @@ phpro.controller('serviceCtrl', function($scope,$http) {
 });
 
 phpro.controller('employeeCtrl', function($scope,$http) {
+
+    $scope.gender = '';
+    var is_new = 1;
+    $scope.emp_category = [{id:0,category:'Select Category'}];
+
     $scope.title = {id:0,category:'Select Category'};
+
     var lineup = {};
     lineup['access_token']  = access_token;
     lineup['staff_id']      = 0;
-    
     var data =  JSON.stringify(lineup);
     $http({
         method  : 'POST',
@@ -276,6 +281,8 @@ phpro.controller('employeeCtrl', function($scope,$http) {
     });  
 
     $scope.getStaffDetail = function(val){
+        is_new = 0;
+        $scope.staff_name = val.name;
         var get_list = {};
         get_list['access_token']    = access_token;
         get_list['staff_id']          = val.id;
@@ -292,14 +299,17 @@ phpro.controller('employeeCtrl', function($scope,$http) {
             $scope.emp_email = response.data.staff.email;
             $scope.emp_services = response.data.staff.services;
             $scope.emp_category = response.data.staff.categories;
+            $scope.emp_category.unshift({id:0,category:'Select Category'});
             $scope.emp_gender = response.data.staff.gender;
-            // $scope.title = {id:54,category: $scope.emp_jobtitle};
-            // console.log($scope.title);
+            $scope.title = {id:0,category:'Select Category'};
+            //console.log($scope.title);
+            $scope.deleteStaffBtn = true;
         });
     }
 
     $scope.test = function(test){
         console.log(test);
+        $scope.emp_jobtitle = test.category;
     }
 
     $scope.user = {
@@ -309,32 +319,141 @@ phpro.controller('employeeCtrl', function($scope,$http) {
     $scope.toggleUserRole = function(role){
         if($scope.user.emp_services.indexOf(role) == -1){
             $scope.user.emp_services.push(role);
-            console.log($scope.user.emp_services);
+            ///console.log($scope.user.emp_services);
         }else{
             $scope.user.emp_services.splice($scope.user.emp_services.indexOf(role),1);
-            console.log($scope.user.emp_services);
+            //console.log($scope.user.emp_services);
         }
     };
 
-    $scope.checkAll = function() {
-        for (i = 0; i < $scope.emp_services.length; i++)
-            $scope.checkNth(i);
-            if($scope.user.emp_services.indexOf($scope.emp_services[i]) == -1){
-                $scope.user.emp_services.push($scope.emp_services[i]);
-                console.log($scope.user.emp_services);
-            } 
-    }; 
-
-    $scope.checkNth = function(i) {
-        $scope.emp_services[i].is_select = !$scope.emp_services[i].is_select;
-        $scope.toggleUserRole($scope.emp_services[i]);
+    $scope.setGender = function(gen){
+        $scope.gender = gen.gender;
     }
+
+    $scope.savestaff = function(){
+        var arremp = {};
+        arremp['access_token'] =  access_token;
+        arremp['staff_id']     =  $scope.id;
+        arremp['category']     =  $scope.user.emp_services;
+        arremp['name']         = $scope.emp_name;
+        arremp['email']        = $scope.emp_email;
+        arremp['mobile']       =   $scope.emp_mobile;
+        arremp['title']        =  $scope.emp_jobtitle;
+        arremp['category_name'] =  $scope.emp_jobtitle;
+        arremp['gender']        =   $scope.gender;
+        var data =  JSON.stringify(arremp);
+        if(is_new == 0){
+            $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/set_staff_details',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'ok'){
+                    $scope.createStaff();
+                    $scope.getList();
+                }
+            });
+
+        }else{
+            $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/add_new_staff',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success'){
+                    $scope.createStaff();
+                    $scope.getList();
+                }
+            });
+        }
+       
+    }
+
+    $scope.deleteStaff = function(){
+        var del = {};
+        del['access_token'] =  access_token;
+        del['staff_id']     =  $scope.id;
+        var data =  JSON.stringify(del);
+        swal({
+          title: "Are you sure?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Yes, Delete it!",
+          closeOnConfirm: false
+        },
+        function(){
+            $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/delete_staff',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success'){
+                    swal("Deleted", "Employee has been deleted!", "success");   
+                    $scope.createStaff();
+                    $scope.getList();
+                }
+            });
+        });
+    }
+
+    $scope.createStaff = function(){
+        $scope.deleteStaffBtn = false;
+        is_new = 1;
+        $scope.staff_name = '';
+        $scope.emp_name = '';
+        $scope.emp_mobile = '';
+        $scope.emp_jobtitle = '';
+        $scope.emp_email = '';
+        var accFormInfo = {};
+        var url = 'http://'+base_url+'/get_salon_categories';
+        accFormInfo['access_token']  = access_token;
+        var data =  JSON.stringify(accFormInfo);
+        $http({
+            method  : 'POST',
+            url     : url,
+            data    : {payload:data}
+        }).then(function(response){
+            if(response.data.status == 'success'){
+                $scope.emp_services = response.data.staff.services;
+                $scope.emp_category = response.data.staff.categories;
+                console.log(response);     
+            }                                                  
+        }); 
+    }
+
+    $scope.getList = function(){
+        var lineup = {};
+        lineup['access_token']  = access_token;
+        lineup['staff_id']      = 0;
+        var data =  JSON.stringify(lineup);
+        $http({
+            method  : 'POST',
+            url     : 'http://'+base_url+'/get_all_staff',
+            data  : {payload:data}
+        }).then(function(response){
+            $scope.staffList = response.data.staff;
+        });  
+    }
+    // $scope.checkAll = function() {
+    //     for (i = 0; i < $scope.emp_services.length; i++)
+    //         $scope.checkNth(i);
+    //         if($scope.user.emp_services.indexOf($scope.emp_services[i]) == -1){
+    //             $scope.user.emp_services.push($scope.emp_services[i]);
+    //             console.log($scope.user.emp_services);
+    //         } 
+    // }; 
+
+    // $scope.checkNth = function(i) {
+    //     $scope.emp_services[i].is_select = !$scope.emp_services[i].is_select;
+    //     $scope.toggleUserRole($scope.emp_services[i]);
+    // }
       
-    $scope.uncheckAll = function() {
-        for (i = 0; i < $scope.emp_services.length; i++)
-            $scope.emp_services[i].is_select = false;
-            $scope.user.is_select = [];
-    };
+    // $scope.uncheckAll = function() {
+    //     for (i = 0; i < $scope.emp_services.length; i++)
+    //         $scope.emp_services[i].is_select = false;
+    //         $scope.user.is_select = [];
+    // };
     //  console.log($scope.user.emp_services);
       
 });

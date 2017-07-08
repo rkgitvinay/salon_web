@@ -34,12 +34,10 @@ label{
         <div class="col-sm-9 nopadding" style="background-color: #ffffff;height: 582px;">   
             <div class="menu-head" style="border-bottom: solid; border-width: 2px;">
                 {{selected}}
-                <b><span style="margin-left: 40%;color: black;">{{acc_name}}</span></b>
-                 <button style="padding: 0px 12px !important;" ng-click="addNewServiceLineup()" class="btn btn-success iosBtn pull-right">
-                    <!-- <i class="fa fa-exchange icon" aria-hidden="true"></i>  -->
-                    Save
-                <!-- </span> -->
-                </button>
+                <b>
+                <button style="padding: 0px 12px !important;" ng-click="createStaff()" class="btn btn-success iosBtn pull-left">Create Staff</button>
+                <span style="margin-left: 40%;color: black;">{{staff_name}}</span></b>
+                 <button style="padding: 0px 12px !important;" ng-click="savestaff()" class="btn btn-success iosBtn pull-right">Save Data</button>
             </div>
             <div class="content nopadding">
               <div class="col-md-6 well" style="height: 83vh;">
@@ -52,13 +50,7 @@ label{
                   </div>
                 </div>
 
-                <!-- Text input-->
-                <div class="form-group">
-                  <label class="col-md-4 control-label" for="textinput">Job Title</label>  
-                  <div class="col-md-8">
-                  <input id="textinput" ng-model = "emp_jobtitle" name="textinput" type="text" placeholder="" class="form-control input-md" required="">
-                  </div>
-                </div>
+               
 
                 <!-- Text input-->
                 <div class="form-group">
@@ -81,39 +73,45 @@ label{
                 <div class="form-group">
                   <label class="col-md-4 control-label" for="6">Staff Level</label>  
                   <div class="col-md-8">
-                     <!--  <select ng-model="title">
-                          <option ng-repeat="x in emp_category" value="{{x.id}}" ng-click="getid(x.category)">{{x.category}}</option>
-                      </select> -->
-                      <select ng-model="title" ng-change="test(title)" ng-options="cat.category for cat in emp_category" class="form-control">
+                      <select ng-model="title" ng-change="test(title)" ng-options="cat.category for cat in emp_category track by cat.id" class="form-control">
                       </select>
+                  </div>
+                </div>
+
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="textinput">Job Title</label>  
+                  <div class="col-md-8">
+                  <input id="textinput" ng-model = "emp_jobtitle" name="textinput" type="text" placeholder="" class="form-control input-md" readonly="readonly">
                   </div>
                 </div>
 
                 <!-- Multiple Checkboxes -->
                 <div class="form-group">
                   <label class="col-md-4 control-label" for="checkboxes">Gender</label>
-                  <div class="col-md-8">
-                  <div class="checkbox">
-                    <label for="checkboxes-0">
-                      <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1">
-                      Male
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label for="checkboxes-1">
-                      <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2">
-                      Female
-                    </label>
-                  </div>
-                  </div>
+                  <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-primary" ng-click="setGender({gender:'male'})">
+                        <input type="radio" autocomplete="off">Male
+                      </label>
+                      <label class="btn btn-primary" ng-click="setGender({gender:'female'})">
+                        <input type="radio" autocomplete="off">Female
+                      </label>
+                    </div>
                 </div>
+
+                <div ng-show='deleteStaffBtn'>
+                  <button class="btn btn-danger" ng-click="deleteStaff()">Delete</button>
+                </div>
+                  
+
                 </fieldset>
                 </form>
+
               </div>
 
                 <div class="col-md-6 well" style="height: 83vh;">
-                   <button ng-click="uncheckAll();" style="margin-right: 10px">Uncheck all</button>
-                   <button ng-click="checkAll()">Check all</button>  
+                  <!--  <button ng-click="uncheckAll();" style="margin-right: 10px">Uncheck all</button>
+                   <button ng-click="checkAll()">Check all</button>   -->
                     <ul class="nav nav-pills nav-stacked" style="height: 75vh;overflow-y: auto;">
                         <li ng-repeat="role in emp_services">
                           <a href="javascript:void(0)">
@@ -122,7 +120,6 @@ label{
                         </li>
                     </ul>
                 </div>
-
             </div>
         </div>
   </div>
