@@ -190,7 +190,7 @@
                   <td>{{log.mobile}}</td>
                   <td>{{log.gender}}</td>
               </tr>
-              <tr ng-if="count >= 50">
+              <tr ng-if="count >= 50" ng-hide="loadMoreBtn">
                 <td>
                   <button ng-click="loadMore()" class="btn btn-success">Load More...</button>
                 </td>

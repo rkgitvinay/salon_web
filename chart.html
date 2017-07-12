@@ -70,7 +70,7 @@
     padding-bottom: 32px;
   }
 </style>
-<div style="padding: 0px;margin-top: 50px;" class="col-sm-12 bhoechie-tab-container">
+<div style="padding: 0px;" class="col-sm-12 bhoechie-tab-container">
     <div style="padding: 15px 0 0;width: 10%;" class="col-sm-2 bhoechie-tab-menu">
       <div class="list-group">
         <a href="#" class="list-group-item active text-center">
@@ -103,9 +103,9 @@
         $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
     });
 
-    $(document).on('click','#btnLogout', function(){
-            localStorage.removeItem("access_token");
-        });
+    // $(document).on('click','#btnLogout', function(){
+    //         localStorage.removeItem("access_token");
+    //     });
 });
 </script>
 

@@ -16,15 +16,16 @@ var local_url = 'zalonstyle.in:8080';
 phpro.factory('Session', function($http) {
     var Session = {
         saveSession: function(sessData){
-            console.log(sessData);
+            //console.log(sessData);
+            localStorage.setItem("id", sessData.id);
             localStorage.setItem("name", sessData.name);
             localStorage.setItem("access_token", sessData.access_token);
             localStorage.setItem("user_type", sessData.user_type);
             localStorage.setItem("is_marketing", sessData.is_marketing);
             localStorage.setItem("username", sessData.username);
         },
-        updateSession: function() { 
-                  
+        saveList: function(list) { 
+           localStorage.setItem('list', JSON.stringify(list));
         },
         clearSession: function(){
 
@@ -49,7 +50,9 @@ phpro.controller('loginCtrl', function($scope,$http,$window,Session){
         }).then(function(response){
             if(response.data.status=='success'){
                 Session.saveSession(response.data.user);
+                Session.saveList(response.data.list);
                 window.location.href= "index.html";    
+                
             }else{
                 $scope.errorMsg = response.data.message;
             }

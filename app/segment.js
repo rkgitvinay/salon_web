@@ -267,6 +267,10 @@ phpro.controller('mainCtrl', function($scope,$http){
         }else{
             $scope.rules = removeByAttr($scope.rules,'index',index);    
         }
+        if($scope.rules.length ==0){
+            $scope.loadMoreBtn = true;
+            $scope.count = 0;
+        }
         var data =  JSON.stringify($scope.rules);
         if($scope.rules.length != 0){
             $http({
