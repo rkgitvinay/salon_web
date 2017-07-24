@@ -35,8 +35,8 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 
 phpro.controller('mainCtrl', function($scope,$http,$location){
@@ -59,7 +59,31 @@ phpro.controller('mainCtrl', function($scope,$http,$location){
             url     : url,
         }).then(function(response){
             $scope.data = response.data.campaign;
+            $scope.showRunBtn = true;
         }); 
+    }
+
+    $scope.sendCampaign = function(campaign_id){
+        //console.log(campaign_id);
+        var url = 'http://'+base_url+'/campaign/sendCampaign';
+        swal({
+          title: "Are you sure?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Yes, Run it!",
+          closeOnConfirm: false
+        },
+        function(){
+            $http({
+                method  : 'GET',
+                url     : url,
+                params  :{access_token:access_token,campaign_id:campaign_id} 
+            }).then(function(response){
+                swal("Sent", "Campaign has been sent!", "success");
+                //$scope.promo = response.data.promo;
+            }); 
+        });
     }
 
     $scope.getClass = function(status){
@@ -173,8 +197,6 @@ phpro.controller('createCtrl', function($scope,$http,$location){
             swal("You don't have enough credits");
         }
     }
-
-   
 });
 
 phpro.controller('editCtrl', function($scope,$http,$routeParams,$filter,$location){

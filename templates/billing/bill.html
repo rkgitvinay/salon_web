@@ -102,37 +102,53 @@ select{
 
 </style>
 
-<div class="col-md-2 well custome-padding" style="height: 88vh;">
-	<ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="javascript:void(0)">Bills On hold</a></li>
+<div class="col-md-2 well custome-padding" style="height: 88vh;padding: 0px;">
+
+	<ul class="nav nav-pills nav-stacked" ng-show="holdListBox">
+        <li class="active">
+        	<a href="javascript:void(0)">
+        		<i class="fa fa-hand-paper-o" aria-hidden="true"></i>
+        		Bills On hold
+        	</a>
+        </li>
         <li ng-repeat="hold in holdList">
         	<a href="javascript:void(0)">
         	<span>{{hold.customer_name}}</span>
         	<span ng-click="getHoldBillByCustomer(hold.customer_mobile)" class="pull-right">
-        		<button>Add</button>
+        		<i class="fa fa-plus" aria-hidden="true"></i>
         	</span>
         	</a>
         </li>
+        <br>
     </ul>
-    <br><br>
-
-   <!--  <ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#">Job Cards</a></li>
-        <li ng-repeat="job in jobCards">
+    
+    <ul class="nav nav-pills nav-stacked" ng-show="favouritesBox">
+        <li class="active">
         	<a href="javascript:void(0)">
-        	<span>{{job.customer_name}}</span>
-        	<span ng-click="getJobCardDetail(job.customer_mobile)" class="pull-right">
-        		<button>Add</button>
+        		<i class="fa fa-star-o" aria-hidden="true"></i>
+				Recommended Services
+			</a>
+		</li>
+        <li ng-repeat="fav in favouritesList">
+        	<a ng-click="getStaffByService({id:fav.service_id,type:'Service',name:fav.service_used})" href="javascript:void(0)">
+        	<span>
+        		{{fav.service_used}}
+        	</span>
+        	<span class="pull-right">
+        		<i class="fa fa-plus" aria-hidden="true"></i>
         	</span>
         	</a>
         </li>
+        <br>
     </ul>
-    <br><br>
- -->
+  
 
-
-	<ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="javascript:void(0)">Job Cards</a></li>
+	<ul class="nav nav-pills nav-stacked" ng-show="jobCardBox">
+        <li class="active">
+        	<a href="javascript:void(0)">
+        		Job Cards
+        	</a>
+        </li>
         
 		  <accordion>
 		    <accordion-group ng-repeat="group in jobCards" heading="{{group.customer_name}}" is-open="group.open">
@@ -157,13 +173,48 @@ select{
 
 		    </accordion-group>    
 		  </accordion>
-		
+
+		<br>
+    </ul>
+
+    
+    <ul class="nav nav-pills nav-stacked" ng-show="pendingBox">
+        <li class="active">
+        	<a style="background-color: #d45236;" href="javascript:void(0)">
+        		Previous Pending
+        	</a>
+        </li>
+        
+		  <accordion>
+		    <accordion-group ng-repeat="group in pendingList" heading="{{group.invoice_number}}" is-open="group.open">
+		      <accordion-heading>
+		        <span style="cursor: pointer;">Invoice- {{group.invoice_number}}</span>         
+		        <span class="pull-right">Due- {{group.total_due}}</span>         
+		      </accordion-heading>
+
+	      	<div>
+		      	<select class="select" style="width: 100%;" ng-model="pay_id" ng-change="testChange(pay_id)" ng-options="pay.id as pay.payment_method for pay in pendingPayMethod">
+			    </select>
+		      	<div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
+		          <input type="text" ng-model="settleAmount" ng-change="changeSettleAmount(settleAmount)" class="form-control" placeholder="Amount">
+		        </div>
+		        <div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
+		          <button style="width: 100%;" class="btn btn-success" ng-click="settleInvoicePending(group)">Settle</button>
+		        </div>
+		        <!-- <span><button class="btn btn-default pull-right" ng-click="cancelJobCard(group.id)">Cancel</button></span> -->
+	        </div>
+
+		    </accordion-group>    
+		  </accordion>
     </ul>
 
 
-
     <ul class="nav nav-pills nav-stacked" ng-show="appointmentList">
-        <li class="active"><a href="javascript:void(0)">{{apnt_cust}}</a></li>
+        <li class="active">
+        	<a href="javascript:void(0)">
+        		{{apnt_cust}}
+        	</a>
+        </li>
         <li ng-repeat="row in serviceList">
         	<a href="javascript:void(0)">
         	<span>{{row.service}}</span>
@@ -249,14 +300,21 @@ select{
 	</nav>
 
 	
-	<div class="col-md-5 well" style="height: 80vh;position: relative;">
+	<div class="col-md-5 well" style="height: 80vh;position: relative;padding: 0px;">
 
 		 <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
 	        <div class="btn-group" role="group">
 	            <button style="padding-left: 6px !important;" type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab">
-	                <div class="hidden-xs">Service/Product</div>
+	                <div class="hidden-xs">Service</div>
 	            </button>
 	        </div>
+
+	        <div class="btn-group" role="group">
+	            <button type="button" id="favorites" class="btn btn-default" href="#tab5" data-toggle="tab">
+	                <div class="hidden-xs">Product</div>
+	            </button>
+	        </div>
+
 	        <div class="btn-group" role="group">
 	            <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab">
 	                <div class="hidden-xs">Packages</div>
@@ -281,7 +339,14 @@ select{
 	        <div class="tab-pane fade in active" id="tab1">
 	        	<br>
 		        <div class="form-group">
-		          <input type="text" ng-model="service" ng-change="searchItem({query:service,type:'service'})" class="form-control" placeholder="Search Service or Product">
+		          <input type="text" ng-model="service" ng-change="searchItem({query:service,type:'service'})" class="form-control" placeholder="Search Service">
+		        </div>
+	        </div>
+
+	        <div class="tab-pane fade in" id="tab5">
+	        	<br>
+		        <div class="form-group">
+		          <input type="text" ng-model="product" ng-change="searchItem({query:product,type:'product'})" class="form-control" placeholder="Search  Product">
 		        </div>
 	        </div>
 
@@ -311,9 +376,19 @@ select{
 
 	      </div>
 	    	
-	    	<div class="well" style="position: absolute; width: 92%;z-index: 100;height: 300px; overflow-y: auto;" ng-show="searchItemBox">
+	    	<div class="well" style="position: absolute; width: 100%;z-index: 100;height: 300px; overflow-y: auto;" ng-show="searchItemBox">
 	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
-	             <li ng-repeat="list in itemList">
+	             <li ng-repeat="list in itemList | filter: service">
+	             		<a ng-click="getStaffByService({id:list.id,type:list.type,name:list.name})" href="javascript:void(0)">
+	             			<span>{{list.name}}</span>
+	             		</a>
+	             </li>
+	          </ul>  
+	        </div>
+
+	        <div class="well" style="position: absolute; width: 100%;z-index: 100;height: 300px; overflow-y: auto;" ng-show="searchProductBox">
+	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+	             <li ng-repeat="list in productList | filter: product">
 	             		<a ng-click="getStaffByService({id:list.id,type:list.type,name:list.name})" href="javascript:void(0)">
 	             			<span>{{list.name}}</span>
 	             		</a>
@@ -322,24 +397,27 @@ select{
 	        </div>
 
 	      	<div class="col-md-12 custome-padding">
-	      		<div class="col-md-4 pull-left custome-padding">
+	      		<div class="col-md-3 custome-padding">
 			        <select class="select" ng-model="stylist" ng-change="getPrice(stylist)" ng-options="staff.category for staff in staffList track by staff.id">
 			        </select>
 	        	</div>
 
-	        	<div class="col-md-4 custome-padding">
-	        		<span>Quantity</span>
-			        <select class="select" ng-model="quantity" ng-options="qty as qty for qty in quantityList">
-			        	
+	        	<div class="col-md-3 col-md-offset-1 custome-padding">
+			        <select class="select col-md-6 custome-padding" ng-model="quantity" ng-options="qty as qty for qty in quantityList">
 			        </select>
 	        	</div>
-	        	<div class="col-md-4 custome-padding">
-	        		<span>Discount</span>
-			        <select class="select" ng-model="discount" ng-options="disc as disc for disc in discountList">
+
+	        	<div class="col-md-3 custome-padding">
+			        <select class="select" ng-model="discountType" ng-options="disc as disc for disc in discountTypeList">
 			        </select>
-			        <span>%</span>
 	        	</div>
+
+	        	<div class="col-md-2 custome-padding">
+	        		<input type="text" ng-model="discount" class="form-control num-valid" placeholder="Custome Price">
+	        	</div> 
+	        	
 	        </div>
+	      
 	        <br><br><br>
 	        <div class="col-md-12 custome-padding">
 	        	<div class="col-md-6 custome-padding" style="padding-top: 6px;">
@@ -351,13 +429,13 @@ select{
 					<span class="col-md-6 custome-padding"><input type="text" ng-model="custom_price" class="form-control num-valid" placeholder="Custome Price"></span> 
 	        	</div>
 	        </div>
+	      
 	        <br><br><br>
 	        <div class="col-md-12 custome-padding" ng-show="packageInfoBox">
 	        	<div class="col-md-12 custome-padding">
 					<span>Package :</span>
 					<span>{{package}}</span>
 	        	</div>
-	        	
 	        </div>
 
 	   	 <div style="position: absolute;bottom: 15px;">

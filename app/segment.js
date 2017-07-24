@@ -230,7 +230,7 @@ phpro.controller('mainCtrl', function($scope,$http){
             $scope.str = param.value;
         }
         var last = 0;
-        $scope.serviceCat = param.value;
+        $scope.serviceCat = param.value; 
         $scope.childCat = param.value;
         //$scope.rules = removeByAttr($scope.rules,'category',param.category);
         $scope.rules.push({index:index,category:param.category,subCategory:$scope.selectedSubCategory,value:param.id,subCat:$scope.subCat,subValue:param.value,type:param.type});

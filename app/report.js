@@ -3,15 +3,16 @@ var phpro = angular.module('report', ['ngRoute']);
 phpro.config(function($routeProvider) {
 
 $routeProvider
+
+        // .when('/', {
+        //         templateUrl : 'templates/report/test.html',
+        //         controller  : 'CustomerCtrl'
+        // })
+
         .when('/', {
-                templateUrl : 'templates/report/test.html',
-                controller  : 'CustomerCtrl'
-        })
-        .when('/customer', {
                 templateUrl : 'templates/report/customer.html',
                 controller  : 'CustomerCtrl'
         })
-
 
         .when('/staff', {
             templateUrl : 'templates/report/staff.html',
@@ -95,26 +96,61 @@ phpro.controller('CustomerCtrl', function($scope,$http,$window,$rootScope){
 
 });
 
-phpro.controller('staffCtrl', function($scope,$http,$window,$rootScope){  
-    // $scope.subList = [
-    //     {id:2,text:'Clients Served Wise (This Month)',subText:''},
-    //     {id:3,text:'Clients Served Wise (Last Month)',subText:''},
-    //     {id:6,text:'Clients Served Wise (This Year)',subText:''},
-    //     {id:1,text:'Sale wise (This Month)',subText:'Clients life time spending (high to low)'},
-    //     {id:4,text:'Sale wise (Last Month)',subText:''},
-    //     {id:5,text:'Sale wise (This Year)',subText:''},
+phpro.controller('staffCtrl', function($scope,$http,$window,$rootScope){
+    $scope.staffStats;
+
+    $scope.subList = [
         
-    // ];
-    
+        {id:1,text:'Today Stats',subText:''},
+        {id:2,text:'Yesterday Stats',subText:''},
+        {id:3,text:'This Week Stats',subText:''},
+        {id:4,text:'This Month Stats',subText:''},
+        {id:5,text:'Last Month Stats',subText:''},
+        {id:6,text:'This Year Stats',subText:''},
+        // {id:1,text:'Sale wise (This Month)',subText:'Clients life time spending (high to low)'},
+        // {id:4,text:'Sale wise (Last Month)',subText:''},
+        // {id:5,text:'Sale wise (This Year)',subText:''},
+        
+    ];
+            
+
         $http({
             method  : 'GET',
             url     : 'http://'+base_url+'/stats/staffReport',
             params  :{access_token:access_token} 
         }).then(function(response){
             if(response.data.status=='success'){
-                $scope.subList = response.data.result;
+                $scope.staffStats = response.data; 
+                $scope.result = $scope.staffStats.today;
+                $scope.heading = 'Today Stats';
             }
         }); 
+
+        $scope.getStaffData = function(row){
+            $scope.heading = row.text;
+            if(row.id == 1){
+                $scope.result = $scope.staffStats.today;
+            }else if(row.id == 2){
+                $scope.result = $scope.staffStats.yesterday;
+            }else if(row.id == 3){
+                 $scope.result = $scope.staffStats.thisWeek;
+            }else if(row.id == 4){
+                $scope.result = $scope.staffStats.thisMonth;
+            }else if(row.id == 5){
+                 $scope.result = $scope.staffStats.lastMonth;
+            }else if(row.id == 6){
+                 $scope.result = $scope.staffStats.thisYear;
+            }
+            //console.log($scope.staffStats);
+        }
+
+        $scope.exportData = function(heading){
+            var file_name = heading+'.xls';
+            var blob = new Blob([document.getElementById('exportable').innerHTML], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+            });
+            saveAs(blob, file_name);
+        }
 });
 
 

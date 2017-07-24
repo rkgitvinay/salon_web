@@ -68,7 +68,7 @@
                 <div ng-repeat="account in accounts"> 
                     <div class="cad-group" ng-class='{active_card: account.id==selected}'>
                         <span>
-                          <a href="javascript:void(0)" ng-click="getAccountStats({id:account.id,name:account.account_name})" class="button btn btn-primary btn-lg btn-block">
+                          <a href="javascript:void(0)" ng-click="getAccountStats({id:account.id,name:account.account_name,opening_balance:account.opening_balance,balance:account.balance})" class="button btn btn-primary btn-lg btn-block">
                               <span class="pull-left card-icon">
                                 <i class="fa fa-money icon" aria-hidden="true"></i>
                               </span>
@@ -101,10 +101,11 @@
                 </span>
                 <!-- {{selected}}/{{acc_name}} -->
                 <b><span style="margin-left: 40%;color: black;">{{acc_name}}</span></b>
+                  <button style="padding: 0px 12px !important; margin-left: 20%;" data-toggle="modal" data-target="#settleModel" class="btn btn-default iosBtn">
+                    Settle Account
+                  </button>
                  <button style="padding: 0px 12px !important;" data-toggle="modal" data-target="#addExpenseModal" class="btn btn-default iosBtn pull-right">
-                    <!-- <i class="fa fa-exchange icon" aria-hidden="true"></i>  -->
                     Add Transaction
-                <!-- </span> -->
                 </button>
             </div>
 
@@ -135,7 +136,13 @@
 
                             <!-- <td>{{log.total}}</td> -->
                         </tr>
-                       
+                        <tr id="tr">
+                          <td style="font-weight:bold;">Opening Balance</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td style="font-weight:bold;">{{opening_balance}}</td>
+                        </tr>
                                                                  
                     </tbody>
                 </table>               
@@ -334,7 +341,25 @@
 </div>
 
 
-
+<div class="modal fade bd-example-modal-sm" id="settleModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 25%;font-size: 15px;"><b>Authentication Required</b></span>
+        <a href="javascript:void(0);" ng-click="authenticateAdmin()" class="pull-right">Save</a>
+      </div>
+        <div class="modal-body">
+            <div class="form-group">            
+                <input autocomplete="off" ng-model="masterPassword" placeholder="Admin Password" class="form-control" type="password">
+            </div>
+            <div class="form-group" ng-show="authError">            
+                <label style="color: #da4f4f;">{{authErrorMsg}}</label>
+            </div>
+        </div>     
+    </div>
+  </div>
+</div>
 
 
 <script type="text/javascript">

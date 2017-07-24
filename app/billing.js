@@ -27,8 +27,9 @@ if(localStorage.getItem("access_token") == null){
 }else{
     var access_token = localStorage.getItem("access_token");  
 }
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     $scope.invoice = 0;
@@ -38,6 +39,8 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     var billing_events = [];
     $scope.offer = {};
 
+    $scope.discountTypeList = ['Discount','%','Rupee'];
+    $scope.discountType = 'Discount';
 
     var customer_id = location.search.split('customer_id=')[1];
     if(customer_id != undefined){
@@ -115,7 +118,48 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             $scope.promo = response.data.promo;
             $scope.promo_id = 0;
             $scope.referral = response.data.referral;
+
+            $scope.serviceListAll = response.data.services;
+            $scope.productListAll = response.data.products;
+
+            //$scope.searchItemBox = true;
+            $scope.itemList = response.data.services;
+            $scope.productList = response.data.products;
         }); 
+    }
+
+    onDocumentClick = function(event) {
+        $scope.searchItemBox = false;
+        $scope.searchProductBox = false;
+        return;
+    }
+
+    $scope.searchItem = function(item){
+        search_arr['access_token'] = access_token;
+        search_arr['query']  = item.query;
+        search_arr['type'] = item.type;
+        //console.log(item);
+
+        if(item.type == 'service'){
+            $scope.searchItemBox = true;
+            $scope.searchProductBox = false;
+        }else{
+            $scope.searchItemBox = false;
+            $scope.searchProductBox = true;
+        }
+        //var data =  JSON.stringify(search_arr);
+        // $http({
+        //     method  : 'POST',
+        //     url     : 'http://'+base_url+'/customer/searchServiceProduct',
+        //     data  : {payload:data}
+        // }).then(function(response){
+        //     if(response.data.result.length >0){
+        //         $scope.searchItemBox = true;
+        //         $scope.itemList = response.data.result;
+        //     }else{
+        //         $scope.searchItemBox = false;
+        //     }
+        // }); 
     }
 
     var getAllOtherItem = function(){
@@ -148,9 +192,15 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             url     : 'http://'+base_url+'/billing/getHoldCustomers',
             data  : {payload:data}
         }).then(function(response){
-            //console.log(response);
-            $scope.holdList = response.data.list;
-            $scope.jobCards = response.data.jobCard;
+            if(response.data.list.length > 0){
+                $scope.holdList = response.data.list;
+                $scope.holdListBox = true;
+            }
+            if(response.data.jobCard.length > 0){
+                $scope.jobCards = response.data.jobCard;
+                $scope.jobCardBox = true;
+            }
+            
         });
     }
 
@@ -201,24 +251,6 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }
     }
 
-    $scope.searchItem = function(item){
-        search_arr['access_token'] = access_token;
-        search_arr['query']  = item.query;
-        search_arr['type'] = item.type;
-        var data =  JSON.stringify(search_arr);
-        $http({
-            method  : 'POST',
-            url     : 'http://'+base_url+'/customer/searchServiceProduct',
-            data  : {payload:data}
-        }).then(function(response){
-            if(response.data.result.length >0){
-                $scope.searchItemBox = true;
-                $scope.itemList = response.data.result;
-            }else{
-                $scope.searchItemBox = false;
-            }
-        }); 
-    }
 
     $scope.staffList = [{id:0,category:'select staff'}];
     $scope.stylist = {id:0,category:'select staff'};
@@ -239,8 +271,13 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             url     : 'http://'+base_url+'/billing/getStaffByService',
             data  : {payload:data}
         }).then(function(response){
-            $scope.service = item.name;
+            if(item.type == 'Product'){
+                $scope.product = item.name;
+            }else{
+                $scope.service = item.name;
+            }
             if(response.data.categories.length >0){
+                $scope.searchProductBox = false;
                 $scope.searchItemBox = false;
                 $scope.staffList = response.data.categories;
                 $scope.stylist = {id:0,category:'select staff'};
@@ -251,7 +288,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
     $scope.payMethod = [{id:0,payment_method:'Select Pay Method'}];
     $scope.pay_id = 0;
 
-    $scope.quantityList = [1,2,3,4,5];
+    $scope.quantityList = ['Qty',1,2,3,4,5];
     $scope.quantity = 1;
 
     $scope.discountList = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
@@ -259,7 +296,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
     var cust_arr = {};
     $scope.gender = 'Gender';
-
+    $scope.pendingAmt = 0;
     $scope.getCustomerDetails = function(customer){
         
         $scope.promo = removeByAttr($scope.promo,'id',9999999);
@@ -293,6 +330,28 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                 $scope.prepaidCardList.unshift({card_id:999999,card_name:'Select Card'});
                 $scope.prepaid_card_id = 999999;
             }
+            if(response.data.pending.length > 0){
+                $scope.pendingList = response.data.pending;
+                $scope.pendingAmt = 0;
+                $scope.pendingList.forEach(function(pen){
+                    $scope.pendingAmt =  $scope.pendingAmt  + pen.total_due;
+                });
+                $scope.pendingBox = true;
+            }
+
+            $scope.pendingPayMethod = [];
+            $scope.payMethod.forEach(function(row){
+                if(row.payment_method !== 'Prepaid Card' && row.payment_method !== 'Pending'){
+                    $scope.pendingPayMethod.push(row);
+                }
+            });
+
+            if(response.data.favourites.length > 0){
+                $scope.favouritesList = response.data.favourites;
+                $scope.favouritesBox  = true;
+            }
+            
+            
         }); 
     }
 
@@ -375,10 +434,21 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             var mem_id = 0;
         }
 
+        if($scope.discountType == 'Rupee'){
+            var disc_value = parseInt($scope.discount);
+            var disc_percentage = ((disc_value * 100)/final_price).toFixed(2);
+
+        }else if($scope.discountType == '%'){
+            var disc_percentage = parseInt($scope.discount);
+        }else{
+            var disc_percentage = 0;
+        }
+
+
         var item = {    
             stylist:$scope.stylist.id,
             stylist_name:$scope.stylist.category,
-            discounts:$scope.discount,
+            discounts:disc_percentage,
             price:final_price,
             category:type,
             is_package:is_package.toString(),
@@ -416,37 +486,56 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         }else if(item.category == 'product'){
 
-             if(row.tax_including == 'true'){
-                item.price_without_tax =  (Math.round(item.price/1.28))*item.quantity;
-                if(item.discounts != 0){
-                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
-                }
-                item.taxable_amount = (item.price_without_tax - item.discount_value);
-                item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
-            }else{
-                item.price_without_tax = (parseInt(item.price))*item.quantity;
-                if(item.discounts != 0){
-                    item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
-                }
-                item.taxable_amount = (item.price_without_tax - item.discount_value);
-                item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+            //  if(row.tax_including == 'true'){
+            //     item.price_without_tax =  (Math.round(item.price/1.28))*item.quantity;
+            //     if(item.discounts != 0){
+            //         item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
+            //     }
+            //     item.taxable_amount = (item.price_without_tax - item.discount_value);
+            //     item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+            // }else{
+            //     item.price_without_tax = (parseInt(item.price))*item.quantity;
+            //     if(item.discounts != 0){
+            //         item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
+            //     }
+            //     item.taxable_amount = (item.price_without_tax - item.discount_value);
+            //     item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+            // }
+            
+            item.price_without_tax =  (Math.round(item.price/1.28))*item.quantity;
+            if(item.discounts != 0){
+                item.discount_value = Math.round((item.price_without_tax*item.discounts/100));                        
             }
+            item.taxable_amount = (item.price_without_tax - item.discount_value);
+            item.tax_value = Math.round(((item.taxable_amount)*row.product_value/100));
+
+
             item.net_amount = (item.taxable_amount + item.tax_value)*item.quantity;
         }
 
-        console.log(item);
-        item.index = index;
-        $scope.info.push(item);
-        index++;
+        // console.log(item);
+        if(item.stylist == 0){
+            swal("Please select staff");
+        }else if($scope.gender == 'Gender'){
+            swal("Please select gender");
+        }else{
+            item.index = index;
+            $scope.info.push(item);
+            index++;
 
-        $scope.packageInfoBox = false;
-        $scope.price = 0;
-        $scope.custom_price = 0;
-        $scope.service = '';
-        $scope.quantity = 1;
-        $scope.discount = 0;
-        $scope.staffList = [{id:0,category:'select staff'}];
-        $scope.stylist = {id:0,category:'Select Staff'};
+            $scope.packageInfoBox = false;
+            $scope.price = 0;
+            $scope.custom_price = 0;
+            $scope.service = '';
+            $scope.quantity = 1;
+            $scope.discount = 0;
+            $scope.staffList = [{id:0,category:'select staff'}];
+            $scope.stylist = {id:0,category:'Select Staff'};
+            $scope.discountType = 'Discount';
+        }
+        
+
+
 
     }
 
@@ -462,50 +551,60 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         var product_disc = 0;
         var discount = 0;
         var tax = 0;
+
         var total = 0;
-        array.forEach(function(row,i){
-            sub_total = sub_total + (row.price_without_tax);
-            discount = discount + row.discount_value;
-            tax = tax + row.tax_value;
-            taxable_amount = taxable_amount + row.taxable_amount;
 
-            if(row.category == 'service'){
-                service_sum = service_sum + (row.taxable_amount);
-                service_disc = service_disc + row.discount_value;
+        if(array.length > 0){
+            array.forEach(function(row,i){
+                sub_total = sub_total + (row.price_without_tax);
+                discount = discount + row.discount_value;
+                tax = tax + row.tax_value;
+                taxable_amount = taxable_amount + row.taxable_amount;
 
-            }else if(row.category == 'membership' || row.category == 'package' || row.category == 'card'){
-                other_sum = other_sum + (row.taxable_amount);
-                other_disc = other_disc + row.discount_value;
+                if(row.category == 'service'){
+                    service_sum = service_sum + (row.taxable_amount);
+                    service_disc = service_disc + row.discount_value;
 
-            }else{
-                product_sum = product_sum + (row.taxable_amount);
-                product_disc = product_disc +  row.discount_value;
-            }
+                }else if(row.category == 'membership' || row.category == 'package' || row.category == 'card'){
+                    other_sum = other_sum + (row.taxable_amount);
+                    other_disc = other_disc + row.discount_value;
 
-            if(row.category == 'membership' || row.category == 'package' || row.category== 'card'){
-                is_prepaid = false;
-            }
-            if(array.length == i+1){
-                 service = {
-                    sub_total : sub_total,
-                    taxable_amount: taxable_amount,
-                    service_sum: service_sum,
-                    service_disc:service_disc,
-                    product_sum:product_sum,
-                    product_disc:product_disc,
-                    other_sum:other_sum,
-                    other_disc:other_disc,
-                    discount:discount,
-                    tax:tax,
-                    total :taxable_amount + tax
+                }else{
+                    product_sum = product_sum + (row.taxable_amount);
+                    product_disc = product_disc +  row.discount_value;
                 }
-               
-                $scope.sum = service;
-                $scope.amt = $scope.sum.total;
-                console.log($scope.sum);
-            }
-        });
 
+                if(row.category == 'membership' || row.category == 'package' || row.category== 'card'){
+                    is_prepaid = false;
+                }
+                if(array.length == i+1){
+                     service = {
+                        sub_total : sub_total,
+                        taxable_amount: taxable_amount,
+                        service_sum: service_sum,
+                        service_disc:service_disc,
+                        product_sum:product_sum,
+                        product_disc:product_disc,
+                        other_sum:other_sum,
+                        other_disc:other_disc,
+                        discount:discount,
+                        tax:tax,
+                        total :taxable_amount + tax
+                    }
+                   
+                    $scope.sum = service;
+                    $scope.amt = $scope.sum.total;
+                    //console.log($scope.sum);
+                }
+            });
+        }else{
+            $scope.sum.sub_total = '';
+            $scope.sum.discount = '';
+            $scope.sum.taxable_amount = '';
+            $scope.sum.tax = '';
+            $scope.sum.total = '';
+            $scope.amt = '';
+        }
     });
 
 
@@ -603,10 +702,10 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         if(myArray.length == 0){ 
             var is_partial      = 0;
-            var payment_method  = 0;
+            var payment_method  = myArray;
         }else if(myArray.length == 1){
             var is_partial      = 0;
-            var payment_method  = myArray[0].id;
+            var payment_method  = myArray;
         }else{
             var is_partial      = 1;
             var payment_method  = myArray;
@@ -638,8 +737,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         if(myArray.length > 0 || prepaidCards.length > 0){
 
-            //if( ($scope.sum.total - fullAmt) == 0 || ($scope.sum.total - fullAmt) < 10 ){
-
+                if($scope.gender != 'Gender'){
                     var data =  JSON.stringify(chek_out);
                     $http({
                         method  : 'POST',
@@ -657,10 +755,9 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                             getHoldCustomers();
                         } 
                     });
-                    
-            // }else{
-            //     alert('Please check your amount');
-            // }
+                }else{
+                    alert('Please Select Gender');
+                }
 
         }else{
             alert('Add payment method');
@@ -701,7 +798,6 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
 
         swal({
           title: "Are you sure?",
-          //text: "You will not be able to recover this imaginary file!",
           type: "warning",
           showCancelButton: true,
           confirmButtonColor: "#DD6B55",
@@ -851,6 +947,16 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }else{
             $scope.prepaidCards = false;
         }
+    }
+
+    $scope.settleAmount = '';
+    $scope.due_amt = 0;
+    $scope.changeSettleAmount = function(val){
+        $scope.due_amt = parseInt(val);
+    }
+
+    $scope.settleInvoicePending = function(invoice){
+        console.log({invoice:invoice,pay:$scope.pay_id,amt:$scope.due_amt});
     }
 
     $scope.partialLog = [];

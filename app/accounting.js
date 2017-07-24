@@ -31,13 +31,16 @@ if(localStorage.getItem("access_token") == null){
     var access_token = localStorage.getItem("access_token");  
 }
 
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
 
 
-phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){  
+phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){ 
+    $scope.selected; 
+    $scope.balance;
+
     var selected_id;
-
+    $scope.opening_balance = 0;
     var url = 'http://'+base_url+'/accounting/getPaymentMethods?access_token='+access_token;
     $http({
         method  : 'GET',
@@ -48,6 +51,8 @@ phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){
             $scope.selected = response.data.result[0].id;
             selected_id     = response.data.result[0].id;
             $scope.acc_name = response.data.result[0].account_name;
+            $scope.balance  = response.data.result[0].balance;
+            $scope.opening_balance = response.data.result[0].opening_balance;
             $scope.category = response.data.category; 
             $scope.category.unshift({id:0,category_name:'Select Category'});                         
             $scope.cat_id   = $scope.category[0].category_name;
@@ -75,7 +80,51 @@ phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){
         });               
     }
 
-    $scope.getAccountStats =  function(select){        
+    $scope.authenticateAdmin = function(){
+        var auth = {};
+        var url = 'http://'+base_url+'/salon/authenticateAdmin';   
+        auth['access_token']  = access_token;
+        auth['masterPassword']  = $scope.masterPassword;
+        
+        var data =  JSON.stringify(auth);
+        $http({
+            method  : 'POST',
+            url     : url,
+            data    : {payload:data}
+        }).then(function(response){
+            if(response.data.status == 'success'){
+                $scope.settleBalance();
+                angular.element('#settleModel').modal('hide');      
+            }else{
+                $scope.masterPassword = '';
+                $scope.authErrorMsg = response.data.message;
+                $scope.authError = true;
+            }                                           
+        });        
+    }
+
+    $scope.settleBalance = function(){
+       
+        var settle = {};
+        settle['access_token'] = access_token;
+        settle['payment_type_id'] = $scope.selected;
+        settle['balance'] = $scope.balance;
+
+        var url = 'http://'+base_url+'/accounting/settleBalance';   
+        var data =  JSON.stringify(settle);
+        $http({
+            method  : 'POST',
+            url     : url,
+            data    : {payload:data}
+        }).then(function(response){
+            if(response.data.status == 'success'){
+               $scope.accounts = response.data.account;
+            }             
+        }); 
+    }
+
+    $scope.getAccountStats =  function(select){  
+        $scope.balance = select.balance;      
         $scope.selected = select.id;   
         $scope.acc_name = select.name;
         $http({
@@ -83,7 +132,8 @@ phpro.controller('HomeCtrl', function($scope,$http,$window,$rootScope){
             url     : 'http://'+base_url+'/accounting/getStatsByCategory',
             params  :{access_token:access_token,payment_type_id:select.id,account_name:select.name}          
         }).then(function(response){ 
-            $scope.payment_log  = response.data.result;                       
+            $scope.payment_log  = response.data.result;    
+            $scope.opening_balance = select.opening_balance;                   
         });   
     }
 

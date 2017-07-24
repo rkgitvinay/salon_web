@@ -93,7 +93,12 @@
                         </tr>
                     </thead>
                     <tbody id="tbody">
-
+                        <!-- <tr id="tr">
+                          <td>test</td>
+                          <td>test</td>
+                          <td>test</td>
+                          <td>test</td>
+                        </tr> -->
                         <tr ng-repeat="log in payment_log | orderBy:'-payee'" id="tr">
                             <td ng-if="transaction_type == 'Billing'" style="padding: 4px !important;">
                               <span class="pull-left" style="width: 50px;">

@@ -4,16 +4,31 @@
           
             <div class="cards" style="height: 100%;">
 
-              <div class="nav-side-menu">
+              <div class="nav-side-menu" style="padding-top: 10px;">
                       <div class="menu-list">                
                           <ul id="menu-content" ng-repeat="list in subList"  class="menu-content collapse in">
-                              <li>
+                              <!-- <li>
                                 <a href="javascript:void(0)">
                                   <i class="fa fa-star-o fa-lg"></i>
                                   <span>{{list.key}}</span>
                                   <span style="padding-right: 10px;" class="pull-right">{{list.total}}</span>
                                 </a>
-                              </li>
+                              </li> -->
+
+                              <div class="col-md-4 col-sm-4">
+                                <div class="wrimagecard wrimagecard-topimage">
+                                    <div>
+                                      <div class="wrimagecard-topimage_header" style="background-color:rgba(51, 105, 232, 0.1)">
+                                        <span><i class="fa fa-{{gen.icon}}" style="color: #0cacf7"></i></span>
+                                        <span style="font-size: 20px;margin-left: 10px;">{{list.key}}</span>
+                                      </div>
+                                      <div class="wrimagecard-topimage_title">
+                                         <span><i class="fa fa-inr" style="color: #0cacf7"></i></span>
+                                         <span style="font-size: 50px;padding-left: 10px;">{{list.total}}</span>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
 
                           </ul>
                    </div>

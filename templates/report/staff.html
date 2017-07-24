@@ -1,13 +1,13 @@
 <div class="container" style="width: 100% !important;">
     <div class="row">
-        <div class="col-sm-4 nopadding" style="background-color: #fafbfb;height: 90vh;">
+        <div class="col-sm-3 nopadding" style="background-color: #fafbfb;height: 90vh;">
           
             <div class="cards" style="height: 100%;">
 
               <div class="nav-side-menu">
                       <div class="menu-list">                
                           <ul id="menu-content" ng-repeat="list in subList"  class="menu-content collapse in">
-                              <li ng-click="getCustomerList({id:list.id,text:list.text})" ng-class="{active_list:list.text==heading}">
+                              <li ng-click="getStaffData({id:list.id,text:list.text})" ng-class="{active_list:list.text==heading}">
                                 <a href="javascript:void(0)">
                                   <i class="fa fa-star-o fa-lg"></i>
                                   <span>{{list.text}}</span>
@@ -21,21 +21,21 @@
         </div>
 
 
-        <div class="col-sm-8 nopadding" style="background-color: #ffffff; height: 85vh;">   
+        <div class="col-sm-9 nopadding" style="background-color: #ffffff; height: 85vh;">   
             <div class="menu-head">
-                <span class="dropdown">
+               <!--  <span class="dropdown">
                     <i class="fa fa-calendar dropbtn icon" aria-hidden="true"></i>
                     <div class="dropdown-content">
                         <a href="javascript:void(0)" ng-click="allDate()">All Dates</a>
                         <a href="javascript:void(0)" onclick="assignmentInfo()">Custom</a>
                     </div>
-                </span>
+                </span> -->
 
                 <b><span style="margin-left: 40%;">{{heading}}</span></b>
                 <span ng-click="exportData(heading)"><i class="fa fa-external-link icon" aria-hidden="true"></i></span>
-                <button style="padding: 2px 12px !important;" class="btn btn-success pull-right">
+                <!-- <button style="padding: 2px 12px !important;" class="btn btn-success pull-right">
                   No. Of Customers <span class="badge">{{count}}</span>
-                </button>
+                </button> -->
             </div>
 
             <div class="content nopadding" id="exportable" style="height: 100% !important; overflow:scroll;">
@@ -44,18 +44,16 @@
                         <tr>
                           <th>Name</th>
                           <th>Mobile</th>
-                          <th>Gender</th>
-                          <th ng-if="header.first != ''">{{header.first}}</th>
-                         <th ng-if="header.second != ''">{{header.second}}</th>
+                          <th>Clients Served</th>
+                          <th>Sale Generated</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="log in result">
                             <td>{{log.name}}</td> 
                             <td>{{log.mobile}}</td>
-                            <td>{{log.gender}}</td>
-                            <td ng-if="header.first != ''">{{log.first}}</td>
-                            <td ng-if="header.second != ''">{{log.second}}</td>
+                            <td>{{log.clients}}</td>
+                            <td>{{log.total}}</td>
                         </tr>
                     </tbody>
                 </table>               

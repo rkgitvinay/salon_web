@@ -110,12 +110,12 @@ label{
               </div>
 
                 <div class="col-md-6 well" style="height: 83vh;">
-                  <!--  <button ng-click="uncheckAll();" style="margin-right: 10px">Uncheck all</button>
-                   <button ng-click="checkAll()">Check all</button>   -->
+                   <button ng-click="uncheckAll();" style="margin-right: 10px">Uncheck all</button>
+                   <button ng-click="checkAll()">Check all</button>  
                     <ul class="nav nav-pills nav-stacked" style="height: 75vh;overflow-y: auto;">
                         <li ng-repeat="role in emp_services">
                           <a href="javascript:void(0)">
-                            <input type="checkbox" ng-model="role.is_select"  ng-change="toggleUserRole(role)"> {{role.category_name}}
+                            <input type="checkbox" ng-checked="role.checked=='true'" ng-model="role.checked"  ng-change="toggleUserRole(role)"> {{role.category_name}}
                           </a>
                         </li>
                     </ul>

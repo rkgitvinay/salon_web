@@ -1,0 +1,170 @@
+<style type="text/css">
+  .custom{
+    text-align: center;
+  }
+  .span{
+    font-size: 16px;
+  }
+  .custom_list li{
+    width: 24% !important;
+  }
+  .modal-backdrop{
+    z-index: -1;
+  }
+</style>
+  <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" ng-model="inv_brand" name="brandname" placeholder="Brand">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" ng-model="inv_category" name="categoryname" placeholder="Category">
+                    </div>
+                         <div class="form-group">
+                        <input type="text" class="form-control" ng-model="inv_subcategory" name="subcategory" placeholder="Sub Category">
+                    </div>
+                         <div class="form-group">
+                        <input type="text" class="form-control" ng-model="inv_mrp" name="mrp" placeholder="Mrp">
+                    </div>
+                         <div class="form-group">
+                        <input type="text" class="form-control" ng-model="inv_qty" name="qty" placeholder="Min Qty">
+                    </div>
+                    <div class="form-group">
+              <span>Hsn No</span>
+              <select class="select" style="height: 30px; overflow-y:auto;" ng-model="hsn_no"   ng-change="selectAction()" ng-options="qty as qty for qty in hsn_code">
+                
+              </select>
+            </div>
+                   
+                     <button type="submit" class="btn btn-default" ng-click="createproduct()" >Add</button>
+
+           
+
+                  
+                </form>
+
+    <div class="well" style="padding-bottom: 0px;height: 87vh;padding: 0px;">
+      <div class="tab-content">
+
+        <div class="tab-pane fade in active" id="Addproduct" style="height: 79vh;overflow-y: auto;width: 100%;">
+          <div class="container" ">
+            <div class="row col-md-12">
+            <table class="table table-striped custab">
+              <thead id="thead1">
+                <tr>
+                  <th>ID</th>
+                  <th>Brand</th>
+                  <th>Type</th>
+                  <th>Selling Price</th>
+                  <th>Reminder</th>
+                  <th>Hsn No</th>
+
+                  <th class="text-center"></th>
+                  <th class="text-center"></th>
+                </tr>
+              </thead>
+              <tbody id="tbody1">
+                  <tr ng-repeat="log in array12" id="tr">
+                      <td>{{log.id}}</td>
+                      <td>{{log.item_name}}</td>
+                      <td>{{log.inventory_type}}</td>
+                      <td>{{log.selling_price}}</td>
+                      <td>{{log.riffle_reminder}}</td>
+                      <td>{{log.hsn_number}}</td>
+
+                       <td><a ng-click="removeItem1({id:log.id,type:log.inventory_type})" href="javascript:void(0)">Delete</a></td>
+                       <td><a ng-click="addtomodal({id:log.id,type:log.riffle_reminder,mrp:log.selling_price,qty:log.riffle_reminder,item_name:log.item_name,hsn_number:log.hsn_number})" href="javascript:void(0);" data-toggle="modal" data-target="#editModal">Edit</a></td>
+                  </tr>                                          
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<div class="modal fade" style="margin-top: 50px;" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Product</h4>
+      </div>
+      <div class="modal-body" style="padding-bottom: 0px !important;">
+         
+      <form class="form-horizontal" role="form">
+        <fieldset>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Item Name</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="inv_brand1" placeholder="Item Name" readonly class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+         
+
+          
+           <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Mrp</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="inv_mrp1" placeholder="Mrp" class="form-control">
+            </div>
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Qty</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="inv_qty1" placeholder="Quantity" class="form-control">
+            </div>
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label" for="textinput">Hsn No</label>
+            <div class="col-sm-10">
+              <input type="text" ng-model="inv_hsn1" placeholder="Hsn No" readonly class="form-control">
+            </div>
+          </div>
+
+          <!-- Text input-->
+        
+
+          <!-- Text input-->
+         
+        </fieldset>
+      </form>
+  
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="saveproduct()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+        $("div.bhoechie-tab-menu>div.list-group>a").click(function(e) {
+        //e.preventDefault();        
+        $(this).siblings('a.active').removeClass("active");
+        $(this).addClass("active");
+        var index = $(this).index();
+        $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
+        $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
+    });
+});
+  $(".btn-pref .btn").click(function () {
+        $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+        // $(".tab").addClass("active"); // instead of this do the below 
+        $(this).removeClass("btn-default").addClass("btn-primary");   
+    });
+
+  $(document).on('click','#btnLogout', function(){
+            localStorage.removeItem("access_token");
+        });
+</script>
+

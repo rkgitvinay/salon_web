@@ -58,11 +58,11 @@ label{
                           <div class="info">
                             <h2 class="title">{{line.category_name}}</h2>
                             <p class="desc">{{line.description}}</p>
-                            <ul style="left: 20%;">
-                              <a style="margin-right: 2%;cursor: pointer;" href="javascript:void(0)" data-toggle="modal" data-target="#myModal1">
+                            <ul style="left: 15%;">
+                              <a style="margin-right: 2%;cursor: pointer;" ng-click="getServiceDetail(line)" href="javascript:void(0)" data-toggle="modal" data-target="#myModal1">
                                   <span class="fa fa-pencil"></span> 
                               </a>
-                              <span class="fa fa-trash" style="cursor: pointer;"></span>
+                              <span ng-click="deleteService(line)" class="fa fa-trash" style="cursor: pointer;"></span>
                             </ul>
                           </div>
                         </li>
@@ -204,6 +204,23 @@ label{
                   </div>
               </div>
 
+              <div class="form-group">
+                <div class="col-md-3" style="padding-top: 6px;">
+                  <input type="checkbox" ng-model="notify" ng-change="notifyService(notify)">
+                  Send Reminder Sms
+                </div>
+                
+                <div ng-show="reminderBox">
+                  <div class="col-md-2">
+                    <input type="text" ng-model="notifyDays" placeholder="in days" class="form-control input-md">
+                  </div>
+                  <div class="col-md-7">
+                    <input type="text" ng-model="notifyMSG" class="form-control input-md">
+                  </div>
+                </div>
+
+              </div>
+
               <label ng-repeat="role in roles">
                 <input type="checkbox" ng-model="role.checked" ng-change="toggleUserRole(role)"> &nbsp;&nbsp; {{role.name}}&nbsp;&nbsp;&nbsp;&nbsp;
               </label>
@@ -219,7 +236,152 @@ label{
 </div>
 
 
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="width: 60%;" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal">Close</a>
+        <span style="margin-left: 35%;font-size: 15px;"><b>Edit Service</b></span>
+        <a href="javascript:void(0);" ng-click="updateServiceCategory()" class="pull-right">Save</a>
+      </div>
+        <div class="modal-body">
 
+          <form class="form-horizontal">
+          <fieldset>
+              
+
+              <div class="form-group">
+                <label class="col-md-3" for="country">Select Category</label>
+                <div class="col-md-9">
+                  <select ng-model="service_id" ng-change="changeService(service_id)" ng-options="cat.name for cat in services track by cat.id" class="form-control">
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-3" for="country">Select Service</label>
+                <div class="col-md-9">
+                  <select ng-model="category_id" ng-options="val.name for val in serviceCategory track by val.id" class="form-control">
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-3" for="country">Service Name</label>
+                <div class="col-md-9">
+                  <input type="text" ng-model="serviceNameEdit" placeholder="in days" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-3" for="country">Staff Based</label>
+                <div class="col-md-4">
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-primary active" ng-click="setOptions({type:'staff',value:'false'})">
+                        <input type="radio" autocomplete="off" checked>OFF
+                      </label>
+                      <label class="btn btn-primary" ng-click="setOptions({type:'staff',value:'true'})">
+                        <input type="radio" autocomplete="off">ON
+                      </label>
+                    </div>
+                </div>
+
+              <label class="col-md-2" for="country">Gender Based</label>
+                <div class="col-md-3">
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-primary active" ng-click="setOptions({type:'gender',value:'false'})">
+                        <input type="radio" autocomplete="off" checked>OFF
+                      </label>
+                      <label class="btn btn-primary" ng-click="setOptions({type:'gender',value:'true'})">
+                        <input type="radio" autocomplete="off">ON
+                      </label>
+                    </div>
+                </div>
+              </div>
+
+              <div class="form-group" ng-hide="initialScreen">
+                  <label class="col-md-1 col-md-offset-3" for="country">Price</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="common_price" placeholder="Price" class="form-control input-md" required="">
+                  </div>
+                   <label class="col-md-1" for="country">Duration</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="duration" placeholder="Duration" class="form-control input-md" required="">
+                  </div>
+              </div>
+
+              <div class="form-group" ng-show="genderBased">
+                  <label class="col-md-1 col-md-offset-3" for="country">Male</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="male_price" placeholder="male price" class="form-control input-md" required="">
+                  </div>
+                  <label class="col-md-1" for="country">Female</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="female_price" placeholder="female price" class="form-control input-md" required="">
+                  </div>
+                  <label class="col-md-1" for="country">Duration</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="duration" placeholder="Duration" class="form-control input-md" required="">
+                  </div>
+              </div>
+
+              <div class="form-group" ng-show="staffBased" ng-repeat="stylist in stylistCategory">
+                  <label class="col-md-3" ng-model="stylist.caption" for="country">{{stylist.caption}}</label>
+                  <label class="col-md-1" for="country">Price</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="stylist.common_price" placeholder="Price" class="form-control input-md" required="">
+                  </div>
+                   <label class="col-md-1" for="country">Duration</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="stylist.duration" placeholder="Duration" class="form-control input-md" required="">
+                  </div>
+              </div>
+
+              <div class="form-group" ng-show="staffGenderBased" ng-repeat="stylist in stylistCategory">
+                  <label class="col-md-3" ng-model="stylist.caption" for="country">{{stylist.caption}}</label>
+                  <label class="col-md-1" for="country">Male</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="stylist.male_price" placeholder="male price" class="form-control input-md" required="">
+                  </div>
+                  <label class="col-md-1" for="country">Female</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="stylist.female_price" placeholder="female price" class="form-control input-md" required="">
+                  </div>
+                  <label class="col-md-1" for="country">Duration</label>
+                  <div class="col-md-2">
+                     <input type="text" ng-model="stylist.duration" placeholder="Duration" class="form-control input-md" required="">
+                  </div>
+              </div>
+
+              <div class="form-group">
+                <div class="col-md-3" style="padding-top: 6px;">
+                  <input type="checkbox" ng-model="notify" ng-change="notifyService(notify)">
+                  Send Reminder Sms
+                </div>
+                
+                <div ng-show="reminderBox">
+                  <div class="col-md-2">
+                    <input type="text" ng-model="notifyDays" placeholder="in days" class="form-control input-md">
+                  </div>
+                  <div class="col-md-7">
+                    <input type="text" ng-model="notifyMSG" class="form-control input-md">
+                  </div>
+                </div>
+
+              </div>
+
+              <label ng-repeat="role in roles">
+                <input type="checkbox" ng-checked="role.checked=='true'" ng-model="role.checked" ng-change="toggleUserRole(role)"> &nbsp;&nbsp; {{role.name}}&nbsp;&nbsp;&nbsp;&nbsp;
+              </label>
+
+
+          </fieldset>
+          </form>
+
+        </div>     
+    </div>
+  </div>
+</div>
 
 
 <script type="text/javascript">
