@@ -27,8 +27,20 @@ if(localStorage.getItem("access_token") == null){
     var access_token = localStorage.getItem("access_token");  
 }
 
-var base_url = 'zalonstyle.in:8080';
-// var base_url = 'localhost:3000';
+// var base_url = 'zalonstyle.in:8080';
+var base_url = 'localhost:3000';
+
+phpro.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+
+    for (var i=0; i<total; i++) {
+      input.push(i);
+    }
+
+    return input;
+  };
+});
 
 phpro.controller('mainCtrl', function($scope,$http) {
 

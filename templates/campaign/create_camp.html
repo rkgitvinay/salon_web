@@ -1,15 +1,34 @@
-<!-- <div class="col-md-3">
-    <ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="javascript:void(0)">Saved Segments</a></li>
-        <li ng-repeat="seg in segmentList">
-          <a href="javascript:void(0)" ng-click="getSegmentData({id:seg.id,name:seg.segment_name})" style="padding-left: 0px;padding-right: 0px;">
-              {{seg.segment_name}}
-          </a>
-        </li>
-    </ul>
-</div> -->
-
-<div class="well">
+<style type="text/css">
+  body{
+    font-family:"Open Sans","lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;font-size:13px;color:#3d464d;font-weight:normal
+    }
+    .list-group-item{
+        border: 0;
+        padding-left: 0;
+        border-top: 1px solid;
+        border-color: rgba(37,40,43,0.1);
+    }
+    .list-group .list-group-item:first-child{
+        border:0;
+    }
+    .list-group .list-group-item a{
+        color: #2895F1;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .list-group.list-group-header{
+        padding:0;
+        margin:0;
+    }
+    .list-group.list-group-body .glyphicon {
+     font-size: 25px; vertical-align: middle;
+    }
+    .list-group-panel{
+        border: 1px solid #ccdbeb;
+        border-radius: 0;
+    }
+</style>
+<div class="well" style="height: 100%; margin-bottom: 0px !important;">
         <form class="form-horizontal" ng-submit="createCampaign()">
           <fieldset>
             <legend>
@@ -39,10 +58,106 @@
             <div class="form-group">
               <label class="col-md-3 control-label" for="message">Your message</label>
               <div class="col-md-9">
-                <textarea class="form-control" ng-model="message" ng-trim="false" maxlength="800" ng-keydown="removeTagOnBackspace($event)" placeholder="Please enter your message here..." rows="5"></textarea>
+                <textarea class="form-control" ng-model="message" ng-trim="false" maxlength="800" ng-keydown="removeTagOnBackspace($event)" placeholder="Please enter your message here..." rows="2"></textarea>
                 <span>{{message.length}} characters/{{credit}} credits</span>
               </div>
             </div>
+
+
+
+            <label class="col-md-3 control-label" for="message">Add Rules</label>
+
+            <div class="inline-group col-md-2">
+                <select ng-model="offer_rule" class="form-control inline-item">
+                    <option>Select Rule</option>
+                    <option>Minimum Bill Amount</option>
+                    <option>Service Category</option>
+                    <option>Indidual Service</option>
+                    <option>Day Based</option>
+                    <option>Time Based</option>
+                </select>
+            </div>
+
+            <div class="inline-group col-md-2" ng-show="offer_rule == 'Minimum Bill Amount'">
+                <input ng-model="bill_amount" type="text" class="form-control inline-item" placeholder="Minimum Amount"/>
+            </div>
+
+            <div ng-show="offer_rule == 'Service Category'">
+                <div class="inline-group col-md-2">
+                    <select ng-model="service" ng-options="ser.name for ser in services track by ser.id" class="form-control inline-item">
+                    </select>
+                </div>
+            </div>
+
+            <div ng-show="offer_rule == 'Indidual Service'">
+                <div class="inline-group col-md-4">
+                    <input ng-model="category" type="text" ng-change="showBox()" class="form-control inline-item" placeholder="Search Service"/>
+                    <div class="well" style="position: absolute; width: 100%;z-index: 1;max-height: 250px;overflow-y: auto;" ng-show="showSearchResultBox">
+                      <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+                        <li ng-repeat="list in serviceList | filter:category">
+                            <a ng-click="setCategoryDetail({id:list.id,name:list.category_name})" href="javascript:void(0);">{{list.category_name}}</a>
+                        </li>
+                      </ul>  
+                    </div>
+                </div>
+            </div>
+
+            <div ng-show="offer_rule == 'Day Based'">
+                <div class="inline-group col-md-2">
+                    <select ng-model="day" class="form-control inline-item">
+                        <option>Monday</option>
+                        <option>Tuesday</option>
+                        <option>Wednesday</option>
+                        <option>Thursday</option>
+                        <option>Friday</option>
+                        <option>Saturday</option>
+                        <option>Sunday</option>
+                    </select>
+                </div>
+            </div>
+
+            <div ng-show="offer_rule == 'Time Based'">
+                <div class="inline-group col-md-2">
+                    <input ng-model="start_time" id="start_time" type="text" class="form-control inline-item" placeholder="Start Time"/>
+                </div>
+                <div class="inline-group col-md-2">
+                    <input ng-model="end_time" type="text" id="end_time" class="form-control inline-item" placeholder="End Time"/>
+                </div>
+            </div>
+
+          
+
+            <div class="inline-group col-md-1" ng-show="offer_rule != 'Select Rule'">
+                <span ng-click="addRuleList(offer_rule)" class="btn btn-success">Add</span>
+            </div>
+
+            <br><br>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="message">Rule List</label>
+              <div class="col-md-9">
+                    <div class="panel panel-default list-group-panel" style="margin-bottom: 0px;">
+                        <div class="panel-body">
+                            <ul class="list-group-body" style="margin-bottom: 0px;max-height: 120px;overflow-y: auto;">
+                                <li style="margin-bottom: 5px;" ng-repeat="list in ruleList">
+                                    <div class="col-xs-3 text-left" style=" ">
+                                       <a>{{list.name}}</a> </div>
+                                    <div class="col-xs-5" style="">{{list.first_param}}</div>
+                                    <div class="col-xs-3" style="">{{list.second_param}}</div>
+                                    <div class="col-xs-1 pull-right" ng-click="removeRule(list)">
+                                      <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </div>
+                                    <br>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+              </div>
+            </div>
+
+        
+    
+
 
             <label class="col-md-3 control-label" for="message">Offer Type</label>
             <div class="inline-group col-md-2">
@@ -53,18 +168,25 @@
                 </select>
             </div>
             <div class="inline-group col-md-2 col-md-offset-3">
-                <input ng-model="offer_value" type="text" class="form-control inline-item" placeholder="value"/>
+                <input ng-model="offer_value" type="text" class="form-control inline-item" placeholder="Offer value"/>
             </div>
             <br><br>
 
-            <label class="col-md-3 control-label" for="message">Expiry Date</label>
+            <label class="col-md-3 control-label" for="message">Start Date</label>
             <div class="inline-group col-md-2">
-                <input type="text" class="form-control inline-item" id="datepicker" ng-model="expiry" placeholder="expiry date"/>
+                <input type="text" class="form-control inline-item" id="datepicker" ng-model="start_date" placeholder="Start Date"/>
             </div>
+
+            <label class="col-md-3 control-label" for="message"> End Date</label>
+            <div class="inline-group col-md-2">
+                <input type="text" class="form-control inline-item" id="datepicker1" ng-model="end_date" placeholder="End Date"/>
+            </div>
+
+            <br><br>
 
             <label class="col-md-3 control-label" for="message">SMSs Schedule Date</label>
             <div class="inline-group col-md-2">
-                <input type="text" class="form-control inline-item" id="datepicker1" ng-model="schedule" placeholder="schedule date"/>
+                <input type="text" class="form-control inline-item" id="datepicker2" ng-model="schedule" placeholder="Schedule Date"/>
             </div>
 
             <br><br>
@@ -92,8 +214,15 @@
         dateFormat: 'yy-mm-dd',
         minDate:0,
     });
-     $("#datepicker1" ).datepicker({ 
+    $("#datepicker1" ).datepicker({ 
         dateFormat: 'yy-mm-dd',
         minDate:0,
     });
+    $("#datepicker2" ).datepicker({ 
+        dateFormat: 'yy-mm-dd',
+        minDate:0,
+    });
+
+    $('#start_time, #end_time').timepicker({ 'scrollDefault': 'now','timeFormat': 'h:i A' });
+    
 </script>

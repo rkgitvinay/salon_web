@@ -83,13 +83,13 @@
                 <div class="hidden-xs">Notes</div>
             </button>
         </div>
-        <div class="btn-group" role="group">
+        <!-- <div class="btn-group" role="group">
             <button type="button" class="btn btn-default custom" href="#Feedback" data-toggle="tab"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                 <div class="hidden-xs">Feedback</div>
             </button>
-        </div>
+        </div> -->
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default custom" href="#Pending" data-toggle="tab"><i class="fa fa-calendar" aria-hidden="true"></i>
+            <button type="button" class="btn btn-default custom" href="#Pending" data-toggle="tab"><i class="fa fa-hand-paper-o" aria-hidden="true"></i>
                 <div class="hidden-xs">Pending Payments</div>
             </button>
         </div>
@@ -149,6 +149,10 @@
                     <li>
                       Invoice- {{bill.invoice}}<br>
                       <span style="font-size:18px">Total- {{bill.total}}</span>
+                      <span style="font-size: 18px;" class="pull-right">
+                        
+                        <i ng-repeat="n in [] | range:bill.feedback" class="fa fa-star" aria-hidden="true"></i>
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -244,11 +248,45 @@
         </div>
 
         <div class="tab-pane fade in" id="Notes">
-         <!--  <h3>Comming soon !</h3> -->
+            <div ng-repeat="apt in appointments">
+                <div ng-if="apt.notes != ''">
+                    <div class="month">
+                      <ul>
+                        <li>
+                          {{apt.start_month}}<br>
+                          <span style="font-size:18px">{{apt.start_year}}</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <ul class="weekdays">
+                      <li>Service - {{apt.service}}</li>
+                      <li class="pull-right">Booking Date - {{apt.book_date}}</li>
+                    </ul>
+                    <ul class="days">
+                      <li style="font-weight: bold;">Notes - {{apt.notes}}</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="tab-pane fade in" id="Feedback">
-          <!-- <h3>Comming soon !</h3> -->
+        <div class="tab-pane fade in" id="Pending">
+            <div ng-repeat="bill in billing">
+                <div ng-if="bill.total_due != 0">
+                    <div class="month">
+                        <ul>
+                          <li>
+                            Invoice- {{bill.invoice}}<br>
+                            <span style="font-size:18px">Total- {{bill.total}}</span>
+                          </li>
+                        </ul>
+                    </div>
+                    <ul class="weekdays custom_list">
+                        <li>Pending Amount - {{bill.total_due}}</li>
+                        
+                        <li class="pull-right">Date - {{bill.date}}</li>
+                    </ul>   
+                </div>
+            </div>
         </div>
 
 

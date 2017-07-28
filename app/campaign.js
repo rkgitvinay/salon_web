@@ -123,6 +123,8 @@ phpro.controller('mainCtrl', function($scope,$http,$location){
 });
 
 phpro.controller('createCtrl', function($scope,$http,$location){
+    $scope.offer_rule = 'Select Rule';
+    $scope.category = '';
 
     var url = 'http://'+base_url+'/customer/segments?access_token='+access_token;
     $http({
@@ -134,6 +136,7 @@ phpro.controller('createCtrl', function($scope,$http,$location){
             $scope.segmentList.unshift({id:0,segment_name:'select a custom segment'});
             $scope.segment = response.data.segments[0].id;
             $scope.sms_left = response.data.sms.sms_credits;
+            $scope.serviceList = response.data.service;
         }
 
     });  
@@ -172,8 +175,10 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         $scope.info['message']          = $scope.message;
         $scope.info['offer_type']       = $scope.offer_type;
         $scope.info['offer_value']      = $scope.offer_value;
-        $scope.info['expiry']           = $scope.expiry;
+        $scope.info['start']            = $scope.start_date;
+        $scope.info['expiry']           = $scope.end_date;
         $scope.info['schedule']         = $scope.schedule;
+        $scope.info['ruleList']         = $scope.ruleList;
 
         if($scope.sms_left >= ($scope.credit*$scope.count)){
             var data =  JSON.stringify($scope.info);
@@ -182,22 +187,86 @@ phpro.controller('createCtrl', function($scope,$http,$location){
                 url     : url,
                 data    : {payload:data}
             }).then(function(response){
-                // if(response.data.status == 'success'){
-                //     $scope.campaign = '';
-                //     $scope.segment = 0;
-                //     $scope.message = 'Hi [customer name] ';
-                //     $scope.offer_type = 0;
-                //     $scope.offer_value = '';
-                //     $scope.expiry = '';
-                //     $scope.schedule = '';
-                // } 
                 $location.path('/');                                         
             }); 
         }else{
             swal("You don't have enough credits");
         }
     }
+
+    $scope.services = [
+        {id:0,name:'Select Service'},
+        {id:1,name:'Body'},
+        {id:2,name:'Hair'},
+        {id:3,name:'Nail'},
+        {id:4,name:'Face'},
+        {id:5,name:'Hair Removal'},
+        {id:6,name:'Massage'},
+        {id:7,name:'Others'}
+    ]
+
+
+    var first_param ;
+    var second_param;
+    var first_id;
+    var second_id;
+    $scope.day = 'Monday';
+    var service_name = '';
+    var service_id = 0;
+    $scope.service = {id:0,name:'Select Service'};
+    $scope.ruleList = [];
+    var index = 1;
+    $scope.addRuleList = function(offer){
+        switch(offer){
+            case 'Minimum Bill Amount':
+                first_param = $scope.bill_amount;
+                second_param = '';
+                break;
+            case 'Service Category':
+                first_param = $scope.service.name;
+                second_param = $scope.service.id;
+                break;
+            case 'Indidual Service':
+                first_param = service_name;
+                second_param = service_id;
+                break;
+            case 'Day Based':
+                first_param = $scope.day;
+                second_param = '';
+                break;
+            case 'Time Based':
+                first_param = $scope.start_time;
+                second_param = $scope.end_time;
+                break;
+            case 'Date Based':
+                first_param = $scope.start_date;
+                second_param = $scope.end_date;
+                break;
+        }
+
+
+        var obj = {index:index,name:$scope.offer_rule,first_param:first_param,second_param:second_param}
+        $scope.ruleList.push(obj);
+        index++;
+    }
+
+    $scope.removeRule = function(list){
+        $scope.ruleList =  $scope.ruleList.filter(function( obj ){
+            return obj.index !== list.index;
+        });
+    }
+
+    $scope.showBox = function(){
+        $scope.showSearchResultBox = true;
+    }
+    $scope.setCategoryDetail = function(ser){
+        $scope.showSearchResultBox = false;
+        $scope.category = ser.name;
+        service_name    = ser.name;
+        service_id      = ser.id;
+    }
 });
+
 
 phpro.controller('editCtrl', function($scope,$http,$routeParams,$filter,$location){
     $scope.createCampBtn = true;

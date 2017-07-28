@@ -57,6 +57,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             $scope.mobile = response.data.customer[0].mobile;
             $scope.gender = response.data.customer[0].gender;
             $scope.staffList = response.data.stylist;
+            //$scope.stylist = {id:0,category:'select staff'};
 
             if(response.data.package.length >0){
                 $scope.package_tab = true;
@@ -71,8 +72,9 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                 selectedItem.id = response.data.service[0].service_id;
                 selectedItem.type = 'Service';
                 selectedItem.name = response.data.service[0].service;
+                selectedItem.service_id = response.data.service[0].category_id;
                 $scope.service = selectedItem.name;
-                $scope.stylist = response.data.service[0].staff_id;
+                $scope.stylist = {id:0,category:'select staff'};
                 var staff_id = response.data.service[0].staff_id;
                 billing_events.push(response.data.service[0].event_id);
                 $scope.getPrice(staff_id);
@@ -116,7 +118,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             response.data.promo.unshift({id:0,campaign_name:'Select Offer'});
             response.data.promo.push({id:9999999,campaign_name:'Referral'});
             $scope.promo = response.data.promo;
-            $scope.promo_id = 0;
+            $scope.promo_id = {id:0,campaign_name:'Select Offer'};
             $scope.referral = response.data.referral;
 
             $scope.serviceListAll = response.data.services;
@@ -345,6 +347,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
                     $scope.pendingPayMethod.push(row);
                 }
             });
+            $scope.due_pay_id = $scope.pendingPayMethod[0].id;
 
             if(response.data.favourites.length > 0){
                 $scope.favouritesList = response.data.favourites;
@@ -456,6 +459,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
             quantity:$scope.quantity,
             Service:selectedItem.name,
             id:selectedItem.id,
+            service_id:selectedItem.service_id,
             package_id:pkg_id,
             package_name:pkg_name,
             membership_id:mem_id,
@@ -519,6 +523,7 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }else if($scope.gender == 'Gender'){
             swal("Please select gender");
         }else{
+            console.log(item);
             item.index = index;
             $scope.info.push(item);
             index++;
@@ -949,14 +954,36 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         }
     }
 
-    $scope.settleAmount = '';
-    $scope.due_amt = 0;
-    $scope.changeSettleAmount = function(val){
-        $scope.due_amt = parseInt(val);
+    $scope.updatePayPending = function(id){
+        console.log(id);
+        $scope.due_pay_id = id;
     }
 
+
     $scope.settleInvoicePending = function(invoice){
-        console.log({invoice:invoice,pay:$scope.pay_id,amt:$scope.due_amt});
+        console.log({invoice:invoice,pay:$scope.due_pay_id});
+        var settle = {};
+        settle['access_token']    = access_token;
+        settle['invoice']         = invoice;
+        settle['pay_id']          = $scope.due_pay_id;
+        var data =  JSON.stringify(settle);
+
+        $http({
+            method  : 'POST',
+            url     : 'http://'+base_url+'/billing/settleInvoicePending',
+            data  : {payload:data}
+        }).then(function(response){
+            if(response.data.status == 'success'){
+
+                $scope.pendingList =  $scope.pendingList.filter(function( obj ){
+                    return obj.id !== invoice.id;
+                });
+                if($scope.pendingList.length == 0){
+                    $scope.pendingBox = false;
+                }
+            }
+        }); 
+        
     }
 
     $scope.partialLog = [];
@@ -1126,12 +1153,36 @@ phpro.controller('mainCtrl', function($scope,$http,$window,$modal) {
         $scope.custom_price = 0;
     }
 
-    $scope.applyOffer = function(value){
-        if(value.promo == 9999999){
-            $scope.referrar_input = true;
-        }else{
-            $scope.referrar_input = false;
+    var validateOfferRules = function(rules,offer){
+        console.log(offer);
+        if(rules.length > 0){
+            rules.forEach(function(rule){
+                console.log(rule.rule_name);
+            });
         }
+    }
+
+    $scope.applyOffer = function(value){
+        // if(value.promo.campaign_name == 'Referral'){
+        //     $scope.referrar_input = true;
+        // }else{
+        //     //$scope.offer = {offer:value.promo.campaign_name,param:''}
+        // }
+            
+            var offer = {};
+            offer['access_token']    = access_token;
+            offer['campaign_id']          = value.promo.id;
+            var data =  JSON.stringify(offer);
+            $http({
+                method  : 'POST',
+                url     : 'http://'+base_url+'/campaign/getCampaignRules',
+                data  : {payload:data}
+            }).then(function(response){
+                if(response.data.status == 'success'){
+                    validateOfferRules(response.data.result,value.promo);
+                }
+                
+            });
     }
 
     var checkUser = {}

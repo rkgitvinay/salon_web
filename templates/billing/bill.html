@@ -1,3 +1,4 @@
+
 <style type="text/css">
 	/* USER PROFILE PAGE */
  .card {
@@ -193,11 +194,11 @@ select{
 		      </accordion-heading>
 
 	      	<div>
-		      	<select class="select" style="width: 100%;" ng-model="pay_id" ng-change="testChange(pay_id)" ng-options="pay.id as pay.payment_method for pay in pendingPayMethod">
+		      	<select class="select" style="width: 100%;" ng-model="due_pay_id" ng-change="updatePayPending(due_pay_id)" ng-options="pay.id as pay.payment_method for pay in pendingPayMethod">
 			    </select>
-		      	<div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
+		      	<!-- <div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
 		          <input type="text" ng-model="settleAmount" ng-change="changeSettleAmount(settleAmount)" class="form-control" placeholder="Amount">
-		        </div>
+		        </div> -->
 		        <div class="form-group" style="margin-top: 10px;margin-bottom: 0px;">
 		          <button style="width: 100%;" class="btn btn-success" ng-click="settleInvoicePending(group)">Settle</button>
 		        </div>
@@ -379,7 +380,7 @@ select{
 	    	<div class="well" style="position: absolute; width: 100%;z-index: 100;height: 300px; overflow-y: auto;" ng-show="searchItemBox">
 	          <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
 	             <li ng-repeat="list in itemList | filter: service">
-	             		<a ng-click="getStaffByService({id:list.id,type:list.type,name:list.name})" href="javascript:void(0)">
+	             		<a ng-click="getStaffByService({id:list.id,service_id:list.service_id,type:list.type,name:list.name})" href="javascript:void(0)">
 	             			<span>{{list.name}}</span>
 	             		</a>
 	             </li>
@@ -484,7 +485,7 @@ select{
 				<button ng-click="addToJobCard()" class="btn btn-primary">Create Jobcard</button>
 			</span>
 			<span class="col-md-3 custome-padding">
-				<select class="select" ng-model="promo_id" ng-change="applyOffer({promo:promo_id,mobile:mobile})" ng-options="pro.id as pro.campaign_name for pro in promo">
+				<select class="select" ng-model="promo_id" ng-change="applyOffer({promo:promo_id,mobile:mobile})" ng-options="pro.campaign_name for pro in promo track by pro.id">
 				</select>
 			</span>
 			<span class="col-md-3 custome-padding" ng-show="referrar_input">
