@@ -123,6 +123,7 @@ phpro.controller('mainCtrl', function($scope,$http,$location){
 });
 
 phpro.controller('createCtrl', function($scope,$http,$location){
+    $scope.offer_valid = 'Select Type';
     $scope.offer_rule = 'Select Rule';
     $scope.category = '';
 
@@ -171,6 +172,7 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         var url = 'http://'+base_url+'/campaign/createCampaign';   
         $scope.info['access_token']     = access_token;
         $scope.info['campaign']         = $scope.campaign;
+        $scope.info['offer_list']       = $scope.offer_list;
         $scope.info['segment']          = $scope.segment;
         $scope.info['message']          = $scope.message;
         $scope.info['offer_type']       = $scope.offer_type;
@@ -180,6 +182,7 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         $scope.info['schedule']         = $scope.schedule;
         $scope.info['ruleList']         = $scope.ruleList;
 
+        //console.log($scope.info);
         if($scope.sms_left >= ($scope.credit*$scope.count)){
             var data =  JSON.stringify($scope.info);
             $http({
@@ -205,7 +208,7 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         {id:7,name:'Others'}
     ]
 
-
+    var offer_service_id = 0;
     var first_param ;
     var second_param;
     var first_id;
@@ -214,6 +217,7 @@ phpro.controller('createCtrl', function($scope,$http,$location){
     var service_name = '';
     var service_id = 0;
     $scope.service = {id:0,name:'Select Service'};
+    $scope.offer_service = {id:0,name:'Select Service'};
     $scope.ruleList = [];
     var index = 1;
     $scope.addRuleList = function(offer){
@@ -250,8 +254,45 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         index++;
     }
 
+    var i = 0;
+    $scope.offer_list = [];
+    var effect_type;
+    var effect_param;
+    var name;
+    $scope.addValidList = function(valid){
+        switch(valid){
+            case 'Total Bill':
+                effect_type = $scope.offer_valid;
+                name = ''
+                effect_param = '';
+                break;
+            case 'Service Category':
+                effect_type = $scope.offer_valid;
+                name = $scope.offer_service.name;
+                effect_param = $scope.offer_service.id;
+                break;
+            case 'Indidual Service':
+                effect_type = $scope.offer_valid;
+                name =  $scope.offer_category;
+                effect_param = offer_service_id;
+                break;
+        }
+
+
+        var obj = {index:i,name:name,effect_type:effect_type,effect_param:effect_param}
+        $scope.offer_list.push(obj);
+        i++;
+        console.log($scope.offer_list);
+    }
+
     $scope.removeRule = function(list){
         $scope.ruleList =  $scope.ruleList.filter(function( obj ){
+            return obj.index !== list.index;
+        });
+    }
+
+    $scope.removeOffer = function(list){
+        $scope.offer_list =  $scope.offer_list.filter(function( obj ){
             return obj.index !== list.index;
         });
     }
@@ -265,6 +306,13 @@ phpro.controller('createCtrl', function($scope,$http,$location){
         service_name    = ser.name;
         service_id      = ser.id;
     }
+
+    $scope.setOfferCategoryDetail = function(ser){
+        $scope.showSearchResultBox = false;
+        $scope.offer_category       = ser.name;
+        offer_service_id            = ser.id;
+    }
+
 });
 
 
@@ -330,8 +378,8 @@ phpro.controller('editCtrl', function($scope,$http,$routeParams,$filter,$locatio
 
 phpro.controller('createRefferalCtrl', function($scope,$http,$routeParams,$filter,$location){
     $scope.message = 'Recieve free 1x month membership on every successful referral';
-    $scope.offer_type_referral = 'Select Offer Type';
-    $scope.offer_type_referee = 'Select Offer Type';
+    $scope.offer_type_referral = 'Rupee Discount';
+    $scope.offer_type_referee = 'Rupee Discount';
 
     $scope.info = {};
     $scope.createRefferal = function(){

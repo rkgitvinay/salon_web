@@ -27,8 +27,8 @@ if(localStorage.getItem("access_token") == null){
     var access_token = localStorage.getItem("access_token");  
 }
 
-// var base_url = 'zalonstyle.in:8080';
-var base_url = 'localhost:3000';
+var base_url = 'zalonstyle.in:8080';
+// var base_url = 'localhost:3000';
 
 phpro.filter('range', function() {
   return function(input, total) {
@@ -92,7 +92,7 @@ phpro.controller('mainCtrl', function($scope,$http) {
             $scope.billing = response.data.billing;
             
             //$scope.gender = $scope.general[2].value;
-            $scope.dob = $scope.general[3].value;
+            $scope.dob = $scope.general[4].value;
         }); 
     }
 
@@ -111,7 +111,8 @@ phpro.controller('mainCtrl', function($scope,$http) {
             url     : 'http://'+base_url+'/customer/updateCustomer',
             data  : {payload:data}
         }).then(function(response){
-            console.log(response);
+            
+            $scope.getCustomerDetails({id:$scope.customer_id,name:$scope.name,mobile:$scope.mobile,gender:$scope.gender,email:$scope.email});
             angular.element('#editModal').modal('hide');
         }); 
     }

@@ -65,8 +65,74 @@
 
 
 
-            <label class="col-md-3 control-label" for="message">Add Rules</label>
 
+
+            <label class="col-md-3 control-label" for="message">Offer Valid On</label>
+            <div class="inline-group col-md-2">
+                <select ng-model="offer_valid" class="form-control inline-item">
+                    <option>Select Type</option>
+                    <option>Total Bill</option>
+                    <option>Service Category</option>
+                    <option>Indidual Service</option>
+                </select>
+            </div>
+
+            <div ng-show="offer_valid == 'Service Category'">
+                <div class="inline-group col-md-2">
+                    <select ng-model="offer_service" ng-options="ser.name for ser in services track by ser.id" class="form-control inline-item">
+                    </select>
+                </div>
+            </div>
+
+            <div ng-show="offer_valid == 'Indidual Service'">
+                <div class="inline-group col-md-4">
+                    <input ng-model="offer_category" type="text" ng-change="showBox()" class="form-control inline-item" placeholder="Search Service"/>
+                    <div class="well" style="position: absolute; width: 100%;z-index: 1;max-height: 250px;overflow-y: auto;" ng-show="showSearchResultBox">
+                      <ul class="nav nav-pills nav-stacked" role="tablist" style="margin: -18px;">       
+                        <li ng-repeat="list in serviceList | filter:offer_category">
+                            <a ng-click="setOfferCategoryDetail({id:list.id,name:list.category_name})" href="javascript:void(0);">{{list.category_name}}</a>
+                        </li>
+                      </ul>  
+                    </div>
+                </div>
+            </div>
+            <div class="inline-group col-md-1" ng-show="offer_valid != 'Select Type'">
+                <span ng-click="addValidList(offer_valid)" class="btn btn-success">Add</span>
+            </div>
+
+
+            <br><br>
+
+            <label class="col-md-3 control-label" for="message">Offer List</label>
+            <div class="form-group">  
+              <div class="col-md-8">
+                    <div class="panel panel-default list-group-panel" style="margin-bottom: 0px;">
+                        <div class="panel-body">
+                            <ul class="list-group-body" style="margin-bottom: 0px;max-height: 80px;overflow-y: auto;">
+                                <li style="margin-bottom: 5px;" ng-repeat="list in offer_list">
+                                    <div class="col-xs-3 text-left" style=" ">
+                                       <a>{{list.effect_type}}</a> </div>
+                                    <div class="col-xs-5" style="">{{list.name}}</div>
+                                    <!-- <div class="col-xs-3" style="">{{list.second_param}}</div> -->
+                                    <div class="col-xs-1 pull-right" ng-click="removeOffer(list)">
+                                      <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </div>
+                                    <br>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+            <br>
+            <label class="col-md-3 control-label" for="message">Add Rules</label>
             <div class="inline-group col-md-2">
                 <select ng-model="offer_rule" class="form-control inline-item">
                     <option>Select Rule</option>
@@ -143,7 +209,7 @@
                                     <div class="col-xs-3 text-left" style=" ">
                                        <a>{{list.name}}</a> </div>
                                     <div class="col-xs-5" style="">{{list.first_param}}</div>
-                                    <div class="col-xs-3" style="">{{list.second_param}}</div>
+                                    <!-- <div class="col-xs-3" style="">{{list.second_param}}</div> -->
                                     <div class="col-xs-1 pull-right" ng-click="removeRule(list)">
                                       <i class="fa fa-trash" aria-hidden="true"></i>
                                     </div>
